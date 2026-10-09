@@ -10,6 +10,7 @@ export default defineConfig({
   use: {
     baseURL: 'http://127.0.0.1:4175',
     ...devices['Desktop Chrome'],
+    ...(process.env.CI ? {channel:'chrome' as const} : {}),
     trace: 'retain-on-failure',
   },
   webServer: {
