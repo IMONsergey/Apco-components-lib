@@ -1,10 +1,25 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+const FoundationsPage = lazy(() => import('./brand/FoundationsPage'));
+const IconsPage = lazy(() => import('./brand/IconsPage'));
+const GuidelinesPage = lazy(() => import('./brand/GuidelinesPage'));
 import { catalog, groups, type Item } from './catalog';
 import { Logo } from './components/ui/Logo';
 import { Icon } from './components/ui/Icon';
 import Preview from './gallery/Preview';
 
 type Tone = 'light' | 'dark';
+type View = 'components' | 'foundations' | 'icons' | 'guidelines';
+const views: {id:View;label:string}[] = [
+  {id:'components',label:'Components'},
+  {id:'foundations',label:'Foundations'},
+  {id:'icons',label:'Icons'},
+  {id:'guidelines',label:'Guidelines'},
+];
+const titleByView:Record<View,string>={components:'Components',foundations:'Foundations',icons:'Icons',guidelines:'Guidelines'};
+function currentView():View {
+  const hash = window.location.hash.replace('#','');
+  return views.some(v=>v.id===hash)?hash as View:'components';
+}
 
 function useInView() {
   const ref = useRef<HTMLElement>(null);
@@ -77,6 +92,12 @@ function Detail({ item, tone, onClose }: { item: Item; tone: Tone; onClose: () =
 }
 
 export default function App() {
+  const [view,setView] = useState<View>(currentView);
+  useEffect(() => {
+    const onHash = () => {setView(currentView());setSelected(null)};
+    window.addEventListener('hashchange',onHash);
+    return () => window.removeEventListener('hashchange',onHash);
+  }, []);
   const [category, setCategory] = useState<(typeof groups)[number]>('All components');
   const [search, setSearch] = useState('');
   const [tone, setTone] = useState<Tone>(() => document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
@@ -98,19 +119,26 @@ export default function App() {
         <div className="container lib-header__inner">
           <a href="https://imonsergey.github.io/apcoweb/" aria-label="APCOSYS website"><Logo /></a>
           <span className="lib-header__divider" aria-hidden="true"/>
-          <span className="lib-header__title">Component library</span>
+          <span className="lib-header__title">Design system</span>
           <a className="lib-header__repo" href="https://github.com/IMONsergey/Apco-components-lib" target="_blank" rel="noreferrer">GitHub <Icon name="external"/></a>
         </div>
       </header>
 
       <main className="container lib-main">
         <div className="lib-title-row">
-          <h1>Components <span>{catalog.length}</span></h1>
+          <h1>{titleByView[view]} {view==='components'&&<span>{catalog.length}</span>}</h1>
           <div className="lib-tools">
             <button className="lib-icon-button" type="button" aria-label={tone === 'light' ? 'Dark theme' : 'Light theme'} aria-pressed={tone === 'dark'}
               onClick={() => setTone(tone === 'light' ? 'dark' : 'light')}><Icon name="appearance"/></button>
           </div>
         </div>
+        <nav className="ds-main-nav" aria-label="Design system sections">
+          {views.map(v=><a key={v.id} href={'#'+v.id}
+            aria-current={view===v.id?'page':undefined} data-active={view===v.id}
+            onClick={()=>{if(view!==v.id){setView(v.id);setSelected(null);window.scrollTo({top:0,behavior:'auto'})}}}>
+            {v.label}</a>)}
+        </nav>
+        {view === 'components' && <>
         <div className="lib-filters">
           <div className="lib-tabs" aria-label="Component types">
             {groups.map(g => <button key={g} type="button" aria-pressed={category === g} data-active={category === g}
@@ -125,9 +153,15 @@ export default function App() {
         {filtered.length > 0
           ? <div className="lib-grid">{filtered.map(item => <Card key={item.id} item={item} tone={tone} open={setSelected}/>)}</div>
           : <p className="lib-empty">No components found.</p>}
+        </>}
+        <Suspense fallback={<p className="lib-empty">Loading…</p>}>
+          {view === 'foundations' && <FoundationsPage />}
+          {view === 'icons' && <IconsPage />}
+          {view === 'guidelines' && <GuidelinesPage />}
+        </Suspense>
       </main>
-      <footer className="lib-footer"><div className="container">APCOSYS <span> / </span> Components</div></footer>
-      {selected && <Detail key={selected.id} item={selected} tone={tone} onClose={() => setSelected(null)} />}
+      <footer className="lib-footer"><div className="container">APCOSYS <span> / </span> Design system</div></footer>
+      {view==='components' && selected && <Detail key={selected.id} item={selected} tone={tone} onClose={() => setSelected(null)} />}
     </div>
   );
 }

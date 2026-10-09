@@ -6,6 +6,7 @@ import { AnimatedDetails } from '../components/ui/AnimatedDetails';
 import { BillingSwitch } from '../components/ui/BillingSwitch';
 import type { BillingPeriod } from '../content/pricing';
 import PartnerMarquee from '../visuals/marquee/PartnerMarquee';
+import {PlainButton,IconAction,SearchField,NavDisclosure,LanguageButton,UseCaseTags,PlanCard,ModalExample} from '../components/system/SitePrimitives';
 
 const Flow = lazy(() => import('../visuals/flow/TurquoiseFlow'));
 const Dots = lazy(() => import('../visuals/dots/DotCascade'));
@@ -113,6 +114,31 @@ export default function Preview({ id, active, tone, speed, large = false }: {
       content = <div className="lib-plan-demo">
         <button className="plan-button" type="button">Get started</button>
       </div>;
+      break;
+
+    case 'plain':
+      content = <PlainButton>Sign in</PlainButton>;
+      break;
+    case 'iconaction':
+      content = <div className="ds-action-preview"><IconAction name="search" label="Search"/><IconAction name="appearance" label="Theme"/><IconAction name="close" label="Close"/><IconAction name="plus" label="Add" disabled/></div>;
+      break;
+    case 'searchfield':
+      content = <SearchField />;
+      break;
+    case 'navmenu':
+      content = <NavDisclosure label="Platform" />;
+      break;
+    case 'language':
+      content = <LanguageButton/>;
+      break;
+    case 'tags':
+      content = <UseCaseTags/>;
+      break;
+    case 'plancard':
+      content = <PlanCard/>;
+      break;
+    case 'modal':
+      content = <ModalExample/>;
       break;
   }
   return <Suspense fallback={<div className="lib-preview lib-preview__blank"><span className="lib-preview__loading" aria-label="Loading"/></div>}>

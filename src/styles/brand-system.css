@@ -1,0 +1,18 @@
+
+.ds-main-nav{display:flex;align-items:center;gap:28px;margin:-16px 0 38px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.ds-main-nav::-webkit-scrollbar{display:none}
+.ds-main-nav a{display:inline-flex;align-items:center;min-height:46px;flex:none;border-bottom:2px solid transparent;padding:0 2px 12px;text-decoration:none;color:var(--muted);font-size:14px;font-weight:500}
+.ds-main-nav a:hover{color:var(--ink)}
+.ds-main-nav a[data-active='true']{border-bottom-color:var(--action);color:var(--ink)}
+.ds-action-preview{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.lib-preview--plain,.lib-preview--iconaction,.lib-preview--searchfield,.lib-preview--navmenu,.lib-preview--language,.lib-preview--tags,.lib-preview--plancard,.lib-preview--modal{padding:20px}
+.lib-preview--searchfield .search-form{width:min(100%,390px)}
+.lib-preview--navmenu,.lib-preview--language{overflow:visible}
+.lib-preview--plancard{align-items:flex-start;padding:14px}
+.lib-preview--plancard .ds-plan-card{min-height:100%;max-width:100%;width:100%;gap:10px}
+.lib-preview--plancard .ds-plan-card dl{margin-top:auto}
+.lib-card:has(.lib-preview--navmenu),.lib-card:has(.lib-preview--language){overflow:visible}
+.lib-card:has(.lib-preview--navmenu) .lib-card__preview,.lib-card:has(.lib-preview--language) .lib-card__preview{overflow:visible;isolation:auto;z-index:2}
+.lib-preview--modal .double-button{flex-shrink:0}
+.lib-preview--tags .use-case-tags{justify-content:center}
+@media(max-width:599px){.ds-main-nav{gap:20px;margin-bottom:30px}.ds-main-nav a{font-size:13px}.lib-preview--plancard .ds-plan-card{padding:16px}.lib-preview--plancard .plan-price{font-size:40px!important}}
