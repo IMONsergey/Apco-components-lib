@@ -2,115 +2,136 @@ import { useState } from 'react';
 import { Logo } from '../components/ui/Logo';
 import tokens from '../tokens/apcosys.tokens.json';
 
-type Mode='light'|'dark';
-const pairs=Object.entries(tokens.colors);
+type Theme = 'light' | 'dark';
 const base=import.meta.env.BASE_URL;
-const dimensions=[
- ['Container max',tokens.layout.maxWidth],
- ['Side gutters',tokens.layout.baseGutter],
- ['Large screens',tokens.layout.desktopWideGutter],
- ['Compact screens',tokens.layout.mobileGutter],
- ['Header height',tokens.layout.header],
- ['Section spacing',tokens.layout.sectionSpace],
+const groups=[
+  {name:'Surfaces',keys:['page','card','elevated','strong','tint']},
+  {name:'Typography',keys:['primary','body','muted','visualInk']},
+  {name:'Brand & actions',keys:['mark','accent','action','actionHover','onAction','api']},
+  {name:'Borders',keys:['subtle','strongBorder']},
+] as const;
+const typeSamples=[
+  {title:'Display',spec:'72–106 · 500',cls:'ds-type-display',text:'Internet, understood.'},
+  {title:'Heading',spec:'48–86 · 500',cls:'ds-type-heading',text:'One query. Full context.'},
+  {title:'Body',spec:'18 / 16 mobile',cls:'ds-type-body',text:'Explore every host, network and service.'},
+  {title:'Interface',spec:'14 · 500',cls:'ds-type-control',text:'Get started'},
+  {title:'Data',spec:'13 · Mono',cls:'ds-type-mono',text:'93.184.216.34 · 200 OK'},
 ];
-const sampleStyles=[
- {label:'Display / Hero',className:'ds-type-display',sample:'Internet, understood.',css:'clamp(72px, 7.3611vw, 106px) · −0.04em'},
- {label:'Heading / H2',className:'ds-type-heading',sample:'One query. Full context.',css:'clamp(48px, 5.9722vw, 86px) · −0.05em'},
- {label:'Body',className:'ds-type-body',sample:'Explore the technology behind every host, network and service.',css:'18px / 1.4 · 16px on mobile'},
- {label:'Control',className:'ds-type-control',sample:'Get started',css:'14px / 20px · weight 500'},
- {label:'Metadata / Mono',className:'ds-type-mono',sample:'103.45.21.0 · API 200 OK',css:'IBM Plex Mono · 13px'},
+const spaces=tokens.spaces;
+const metrics=[
+  ['Container',tokens.layout.maxWidth],
+  ['Gutter',tokens.layout.baseGutter],
+  ['Header',tokens.layout.header],
+  ['Section gap',tokens.layout.sectionSpace],
 ];
-function Copy({value}:{value:string}){
- const [copied,setCopied]=useState(false);
- return <button className="ds-copy" type="button" onClick={()=>{void navigator.clipboard?.writeText(value).then(()=>setCopied(true)).catch(()=>setCopied(false))}}>
- {copied?'Copied':'Copy'}</button>;
-}
-function hexLuminance(hex:string){
- const rgb=hex.replace('#','').match(/.{2}/g);
- if(!rgb)return 0;
- const values=rgb.map(chunk=>{const c=parseInt(chunk,16)/255;return c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4)});
- return .2126*(values[0]??0)+.7152*(values[1]??0)+.0722*(values[2]??0);
-}
-function contrast(a:string,b:string){
- const one=hexLuminance(a),two=hexLuminance(b);
- return ((Math.max(one,two)+.05)/(Math.min(one,two)+.05)).toFixed(1);
-}
-export default function FoundationsPage(){
- const [colorMode,setColorMode]=useState<Mode>('light');
- return <div className="ds-foundations">
-   <section className="ds-section" id="foundation-brand">
-    <div className="ds-section-bar"><div><h2>Identity</h2><p>Approved brand marks · supplied clear assets and website geometry</p></div><span className="ds-label">APCOSYS</span></div>
-    <div className="ds-brand-grid">
-      <div className="ds-brand-sample ds-brand-sample--light">
-        <img src={base+'assets/brand/wordmark-light.svg'} alt="APCOSYS logotype light background"/>
-        <span>Light / #12212A + #50A9B7</span>
+const anchors=[['Identity','ds-identity'],['Colors','ds-colors'],['Type','ds-type'],['Spacing','ds-spacing'],['Layout','ds-layout'],['Motion','ds-motion']] as const;
+const pxVar=(px:number)=>'--ds-space-'+px/4;
+const luminance=(hex:string)=>{
+  const values=(hex.match(/[a-f0-9]{2}/gi)||[]).map(part=>{const n=parseInt(part,16)/255;return n<=.04045?n/12.92:((n+.055)/1.055)**2.4;});
+  return .2126*(values[0]||0)+.7152*(values[1]||0)+.0722*(values[2]||0);
+};
+const ratio=(a:string,b:string)=>((Math.max(luminance(a),luminance(b))+.05)/(Math.min(luminance(a),luminance(b))+.05)).toFixed(1);
+
+export default function FoundationsPage({tone}:{tone:Theme}){
+  const [copied,setCopied]=useState<string|null>(null);
+  const copy=async(value:string)=>{
+    try{await navigator.clipboard.writeText(value);setCopied(value);}catch{setCopied(null);}
+  };
+  return <div className="ds-foundations ds-foundations--compact">
+    <nav className="ds-local-nav" aria-label="Foundation sections">
+      {anchors.map(([label,id])=><button type="button" key={id} onClick={()=>document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'})}>{label}</button>)}
+    </nav>
+
+    <section className="ds-section" id="ds-identity">
+      <div className="ds-section-bar"><h2>Identity</h2></div>
+      <div className="ds-brand-grid">
+        <a className="ds-brand-sample ds-brand-sample--light" href={base+'assets/brand/wordmark-light.svg'} target="_blank" rel="noreferrer" title="Open light logo SVG">
+          <img src={base+'assets/brand/wordmark-light.svg'} alt="APCOSYS light wordmark"/><span>Light SVG ↗</span>
+        </a>
+        <a className="ds-brand-sample ds-brand-sample--dark" href={base+'assets/brand/wordmark-dark.svg'} target="_blank" rel="noreferrer" title="Open dark logo SVG">
+          <img src={base+'assets/brand/wordmark-dark.svg'} alt="APCOSYS dark wordmark"/><span>Dark SVG ↗</span>
+        </a>
       </div>
-      <div className="ds-brand-sample ds-brand-sample--dark">
-        <img src={base+'assets/brand/wordmark-dark.svg'} alt="APCOSYS logotype dark background"/>
-        <span>Dark / #FFFFFF + #52BFD0</span>
-      </div>
-    </div>
-    <div className="ds-brand-meta">
-      <div><span className="ds-label">Native responsive mark</span><div className="ds-logo-inline"><Logo/></div></div>
-      <div><span className="ds-label">Symbol</span><div className="ds-symbols"><img src={base+'assets/brand/symbol-light.svg'} alt="APCOSYS light symbol" /><img src={base+'assets/brand/symbol-dark.svg'} alt="APCOSYS dark symbol"/></div></div>
-      <div><span className="ds-label">Assets</span><a href={base+'assets/brand/wordmark-light.svg'} target="_blank" rel="noreferrer">Light SVG ↗</a><a href={base+'assets/brand/wordmark-dark.svg'} target="_blank" rel="noreferrer">Dark SVG ↗</a></div>
-    </div>
-    <p className="ds-caption">The logotype geometry is immutable. Theme variants preserve the approved light/dark brand colors. UI action colors follow semantic tokens and must not be substituted for logo colors.</p>
-   </section>
-   <section className="ds-section" id="foundation-colors">
-    <div className="ds-section-bar"><div><h2>Color tokens</h2><p>17 semantic roles · values taken from published CSS</p></div>
-      <div className="ds-toggle-row">{(['light','dark'] as const).map(mode=>
-        <button key={mode} type="button" data-active={colorMode===mode} aria-pressed={colorMode===mode} onClick={()=>setColorMode(mode)}>{mode}</button>)}</div>
-    </div>
-    <div className="ds-color-grid">{pairs.map(([key,entry])=>{
-      const color=entry[colorMode] as string;
-      return <div className="ds-color-cell" key={key}>
-        <div className="ds-color-chip" style={{background:color}}/>
-        <div className="ds-color-meta"><span>{key}</span><code>{entry.css}</code><strong>{color.toUpperCase()}</strong><small>{entry.usage}</small><Copy value={entry.css}/></div>
-      </div>;
-    })}</div>
-    <div className="ds-contrast-pair">
-      <div className="ds-contrast-sample" style={{background:tokens.colors.card[colorMode],color:tokens.colors.primary[colorMode]}}>
-        <span>Text on card</span><strong>Aa</strong><small>{contrast(tokens.colors.primary[colorMode],tokens.colors.card[colorMode])}:1 contrast</small>
-      </div>
-      <div className="ds-contrast-sample" style={{background:tokens.colors.action[colorMode],color:tokens.colors.onAction[colorMode]}}>
-        <span>On action</span><strong>Aa</strong><small>{contrast(tokens.colors.onAction[colorMode],tokens.colors.action[colorMode])}:1 contrast</small>
-      </div>
-    </div>
-   </section>
-   <section className="ds-section" id="foundation-type">
-    <div className="ds-section-bar"><div><h2>Typography</h2><p>Instrument Sans / IBM Plex Mono · self-hosted</p></div><a href={base+'tokens/apcosys.tokens.json'} target="_blank" rel="noreferrer">Token JSON ↗</a></div>
-    <div className="ds-type-list">{sampleStyles.map(item=>
-      <div key={item.label} className="ds-type-row">
-        <div><span className="ds-label">{item.label}</span><code>{item.css}</code></div>
-        <div className={item.className}>{item.sample}</div>
+      <details className="ds-native-details ds-identity-details">
+        <summary>Symbols and logo usage <span>+</span></summary>
+        <div className="ds-identity-extra">
+          <div><span>Responsive website mark</span><Logo/></div>
+          <a href={base+'assets/brand/symbol-light.svg'} target="_blank" rel="noreferrer"><img src={base+'assets/brand/symbol-light.svg'} alt="Light symbol"/>Light symbol ↗</a>
+          <a href={base+'assets/brand/symbol-dark.svg'} target="_blank" rel="noreferrer"><img src={base+'assets/brand/symbol-dark.svg'} alt="Dark symbol"/>Dark symbol ↗</a>
+        </div>
+        <p className="ds-caption">Use the supplied SVG geometry without distortion. Select the appropriate variant for the background.</p>
+      </details>
+    </section>
+
+    <section className="ds-section" id="ds-colors">
+      <div className="ds-section-bar"><h2>Colors</h2><span className="ds-muted-note">{tone==='dark'?'Dark':'Light'} theme · select a token to copy its CSS variable</span></div>
+      {groups.map(group=><div key={group.name} className="ds-token-group">
+        <h3>{group.name}</h3>
+        <div className="ds-token-list">
+          {group.keys.map(key=>{
+            const entry=tokens.colors[key] as {css:string;light:string;dark:string;usage:string};
+            const value=entry[tone];
+            return <button className="ds-token-row" type="button" key={key} title={entry.usage+' · Click to copy CSS variable'}
+              onClick={()=>void copy('var('+entry.css+')')}>
+              <span className="ds-token-swatch" style={{backgroundColor:value}}/>
+              <span className="ds-token-name">{key}</span>
+              <code>{entry.css}</code><span className="ds-token-hex">{value.toUpperCase()}</span>
+              <span className="ds-token-copy">{copied==='var('+entry.css+')'?'Copied':'↗'}</span>
+            </button>;
+          })}
+        </div>
+      </div>)}
+      <details className="ds-native-details">
+        <summary>Contrast reference <span>+</span></summary>
+        <div className="ds-contrast-pair">
+          <div className="ds-contrast-sample" style={{background:tokens.colors.card[tone],color:tokens.colors.primary[tone]}}>
+            <span>Text / Card</span><strong>Aa</strong><small>{ratio(tokens.colors.primary[tone],tokens.colors.card[tone])}:1</small>
+          </div>
+          <div className="ds-contrast-sample" style={{background:tokens.colors.action[tone],color:tokens.colors.onAction[tone]}}>
+            <span>Text / Action</span><strong>Aa</strong><small>{ratio(tokens.colors.onAction[tone],tokens.colors.action[tone])}:1</small>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <section className="ds-section" id="ds-type">
+      <div className="ds-section-bar"><h2>Typography</h2><a href={base+'tokens/apcosys.tokens.json'} target="_blank" rel="noreferrer">Token JSON ↗</a></div>
+      <p className="ds-muted-note ds-section-subtitle">Instrument Sans · IBM Plex Mono</p>
+      <div className="ds-type-list">{typeSamples.map(t=><div className="ds-type-row" key={t.title}>
+        <div><span className="ds-label">{t.title}</span><code>{t.spec}</code></div>
+        <div className={t.cls}>{t.text}</div>
       </div>)}</div>
-    <p className="ds-caption">Use responsive clamps only where published. Body size is 18px on desktop, 16px at ≤599px. Headings use weight 500 and negative tracking. No faux bold, nonbrand fonts or arbitrary uppercase transformations.</p>
-   </section>
-   <section className="ds-section" id="foundation-spacing">
-    <div className="ds-section-bar"><div><h2>Spacing & radii</h2><p>Normalized spacing scale · exact values used throughout the source site</p></div><span className="ds-label">4px basis</span></div>
-    <div className="ds-spacing-grid">{tokens.spaces.map(px=><div className="ds-space-row" key={px}>
-      <code>{px}px</code><div className="ds-space-bar" style={{width:'min(100%, '+px+'px)'}}/><span>--ds-space-{px===100?'25':px===160?'40':px/4===Math.floor(px/4)?px/4:px}</span>
-    </div>)}</div>
-    <div className="ds-radii-grid">{Object.entries(tokens.radii).map(([name,size])=><div key={name}>
-      <div style={{borderRadius:size}}/><strong>{name}</strong><code>{size}</code></div>)}</div>
-    <p className="ds-caption">Spacing aliases are the library's normalized layer; the published site did not define a universal numeric spacing variable for each value. Do not change approved component geometry to enforce a scale mechanically.</p>
-   </section>
-   <section className="ds-section" id="foundation-layout">
-    <div className="ds-section-bar"><div><h2>Layout</h2><p>Fluid container, gutters, column behavior, breakpoints</p></div></div>
-    <div className="ds-layout-metrics">{dimensions.map(([name,value])=><div key={name}><span>{name}</span><code>{value}</code></div>)}</div>
-    <div className="ds-grid-visual" aria-label="Twelve-column layout reference">
-      {Array.from({length:12},(_,i)=><span key={i}>{String(i+1).padStart(2,'0')}</span>)}
-    </div>
-    <p className="ds-caption">12 columns here are a visual alignment reference, not a fixed production contract. The published page uses section-specific grids (2, 3, 4 and 6 columns); the system rule is fluid containers + intentional collapse.</p>
-    <div className="ds-breakpoint-list">{tokens.breakpoints.map(b=><div key={b.label}>
-      <strong>{b.label}</strong><code>{b.max===null?b.min+'px+':b.min+'–'+b.max+'px'}</code><span>{b.notes}</span></div>)}</div>
-   </section>
-   <section className="ds-section" id="foundation-motion">
-    <div className="ds-section-bar"><div><h2>Motion</h2><p>Functional, interruptible, reduced-motion aware</p></div></div>
-    <div className="ds-motion-grid">{Object.entries(tokens.motions).map(([key,value])=><div key={key}>
-      <span>{key}</span><code>{value}</code><div className="ds-motion-rule" /></div>)}</div>
-    <p className="ds-caption">Hover changes paint, not geometry. Stateful disclosure uses Web Animations API; narrative product sequences remain isolated GSAP scenes. No autoplay for controls requiring user intent. Reduce-motion mode disables nonessential movement.</p>
-   </section>
- </div>;
+    </section>
+
+    <section className="ds-section" id="ds-spacing">
+      <div className="ds-section-bar"><h2>Spacing</h2><span className="ds-muted-note">4px base</span></div>
+      <div className="ds-spacing-grid">{spaces.map(n=><div className="ds-space-row" key={n}>
+        <code>{n}px</code><span className="ds-space-bar" style={{width:n}}/><code>{pxVar(n)}</code>
+      </div>)}</div>
+      <details className="ds-native-details">
+        <summary>Border radii <span>+</span></summary>
+        <div className="ds-radii-grid">{Object.entries(tokens.radii).map(([name,size])=><div key={name}>
+          <div style={{borderRadius:size}}/><strong>{name}</strong><code>{size}</code>
+        </div>)}</div>
+      </details>
+    </section>
+
+    <section className="ds-section" id="ds-layout">
+      <div className="ds-section-bar"><h2>Layout</h2></div>
+      <div className="ds-layout-metrics">{metrics.map(([name,value])=><div key={name}><span>{name}</span><code>{value}</code></div>)}</div>
+      <details className="ds-native-details">
+        <summary>Responsive breakpoints <span>+</span></summary>
+        <div className="ds-breakpoint-list">{tokens.breakpoints.map(b=><div key={b.label}>
+          <strong>{b.label}</strong><code>{b.max===null?b.min+'px+':b.min+'–'+b.max+'px'}</code><span>{b.notes}</span>
+        </div>)}</div>
+      </details>
+    </section>
+
+    <section className="ds-section" id="ds-motion">
+      <div className="ds-section-bar"><h2>Motion</h2></div>
+      <div className="ds-motion-simple">{Object.entries(tokens.motions).map(([name,value])=><div key={name}>
+        <span>{name}</span><code>{value}</code>
+      </div>)}</div>
+    </section>
+  </div>;
 }
