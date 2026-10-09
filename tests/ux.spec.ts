@@ -20,21 +20,21 @@ test('sections and dark theme stay coordinated', async ({page})=>{
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
 });
 
-test('icon selection shows immediate copy inspector and dismisses', async ({page})=>{
-  await page.goto(root+'#icons');
-  await page.getByRole('button',{name:/Feather/}).click();
-  await page.getByRole('button',{name:'activity',exact:true}).click();
-  const inspector=page.getByRole('region',{name:'Selected icon'});
-  await expect(inspector).toBeVisible();
-  await expect(inspector).toContainText('activity');
-  await expect(inspector).toContainText('LibraryIcon');
-  await expect.poll(()=>inspector.evaluate(el=>getComputedStyle(el).position)).toBe('fixed');
-  await inspector.getByRole('button',{name:'Close icon inspector'}).click();
-  await expect(inspector).toHaveCount(0);
-  const settings=page.locator('details.ds-icon-settings');
-  await expect(settings).not.toHaveAttribute('open','');
-  await settings.locator('summary').click();
-  await expect(settings).toHaveAttribute('open','');
+test('icons copy usage on one click without any floating panel',async({page})=>{
+ await page.goto(root+'#icons');
+ await page.getByRole('button',{name:/Feather/}).click();
+ const tile=page.getByRole('button',{name:'activity',exact:true});
+ await tile.click();
+ await expect(tile).toHaveAttribute('data-selected','true');
+ await expect(tile).toHaveAttribute('data-copied','true');
+ await expect(page.getByRole('status')).toContainText('Code copied · activity');
+ await expect(page.locator('.ds-selected-icon')).toHaveCount(0);
+ const settings=page.locator('details.ds-icon-settings');
+ await expect(settings).not.toHaveAttribute('open','');
+ await settings.locator('summary').click();
+ await expect(settings).toHaveAttribute('open','');
+ await page.getByRole('button',{name:/Phosphor/}).click();
+ await expect(page.getByRole('searchbox',{name:'Search icons'})).toHaveValue('');
 });
 
 test('guidelines use progressive disclosure',async({page})=>{
@@ -49,39 +49,36 @@ test('guidelines use progressive disclosure',async({page})=>{
   await expect(examples).not.toHaveAttribute('open','');
 });
 
-test('component inspector displays preview and usable code',async({page})=>{
-  await page.goto(root+'#components');
-  await expect(page.locator('.lib-card')).toHaveCount(28);
-  await page.getByRole('button',{name:'Double Button',exact:true}).click();
-  const dialog=page.locator('dialog.lib-dialog');
-  await expect(dialog).toBeVisible();
-  await expect(dialog.locator('.lib-dialog__preview')).toBeVisible();
-  await expect(dialog.locator('pre.lib-code')).toContainText('DoubleButton');
-  const box=await dialog.locator('.lib-dialog__preview').boundingBox();
-  const code=await dialog.locator('pre.lib-code').boundingBox();
-  expect(box).not.toBeNull();
-  expect(code).not.toBeNull();
-  expect(box!.x+box!.width).toBeLessThanOrEqual(code!.x+8);
-  await dialog.getByRole('button',{name:'Close'}).click();
-  await expect(dialog).toHaveCount(0);
+test('component card opens its documentation in one step, code on demand',async({page})=>{
+ await page.goto(root+'#components');
+ await expect(page.locator('.lib-card')).toHaveCount(28);
+ await expect(page.locator('dialog.lib-dialog')).toHaveCount(0);
+ await expect(page.locator('.lib-card').first()).toHaveAttribute('data-group','Interface motion');
+ const card=page.locator('.lib-card[data-testid="button"]');
+ await card.getByRole('link',{name:'Double Button'}).click();
+ await expect(page).toHaveURL(/#components\/button$/);
+ await expect(page.locator('.docs-component__stage .double-button').first()).toBeVisible();
+ const details=page.locator('details.docs-component__code');
+ await expect(details).not.toHaveAttribute('open','');
+ await details.locator('summary').click();
+ await expect(details).toHaveAttribute('open','');
+ await expect(details.locator('pre.lib-code')).toContainText('DoubleButton');
+ await expect(details.getByRole('button',{name:/Copy code/})).toBeVisible();
+ await page.getByRole('link',{name:/All components/}).click();
+ await expect(page.locator('.lib-card')).toHaveCount(28);
 });
 
-test('small screens have no horizontal overflow and inspector fits viewport',async({page})=>{
-  await page.setViewportSize({width:390,height:844});
-  await page.goto(root+'#icons');
-  await page.getByRole('button',{name:/Feather/}).click();
-  await page.getByRole('button',{name:'activity',exact:true}).click();
-  const inspector=page.getByRole('region',{name:'Selected icon'});
-  await expect(inspector).toBeVisible();
-  const bounds=await inspector.boundingBox();
-  expect(bounds).not.toBeNull();
-  expect(bounds!.x).toBeGreaterThanOrEqual(0);
-  expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(391);
-  await inspector.getByRole('button',{name:'Close icon inspector'}).click();
-  const overflows=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+2);
-  expect(overflows).toBe(false);
+test('mobile icon interaction stays inline and without horizontal overflow',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto(root+'#icons');
+ await page.getByRole('button',{name:/Feather/}).click();
+ const tile=page.getByRole('button',{name:'activity',exact:true});
+ await tile.click();
+ await expect(tile).toHaveAttribute('data-copied','true');
+ await expect(page.locator('.ds-selected-icon')).toHaveCount(0);
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+ expect(overflow).toBeLessThanOrEqual(2);
 });
-
 
 test('source parity: dark Plain Button retains readable colors and hover',async({page})=>{
   await page.goto(root+'#components');
@@ -191,7 +188,7 @@ test('docs home exposes a persistent hierarchy and deep-linked color tokens',asy
  await expect(nav.getByRole('link',{name:'Home'})).toBeVisible();
  await nav.getByRole('link',{name:'Colors'}).click();
  await expect(page).toHaveURL(/#foundations\/colors$/);
- await expect(page.getByRole('heading',{name:'Brand styles',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Colors',exact:true})).toBeVisible();
  await expect(page.locator('.ds-token-row')).toHaveCount(17);
  await expect(page.locator('#ds-colors')).toBeInViewport();
 });
@@ -267,9 +264,9 @@ test('search finds an individual icon and opens it',async({page})=>{
  await expect(command.getByRole('option',{name:/activity/i}).first()).toBeVisible();
  await command.getByRole('option',{name:/activity/i}).first().click();
  await expect(page).toHaveURL(/#icons\/feather\/activity$/);
- const detail=page.getByRole('region',{name:'Selected icon'});
- await expect(detail).toBeVisible();
- await expect(detail).toContainText('activity');
+ const tile=page.getByRole('button',{name:'activity',exact:true});
+ await expect(tile).toHaveAttribute('data-selected','true');
+ await expect(page.locator('.ds-selected-icon')).toHaveCount(0);
 });
 
 test('full-width component grid has no unused right column at large desktop widths',async({page})=>{
@@ -331,4 +328,28 @@ test('library UI has no links to the published APCOSYS website',async({page})=>{
  }
  // Library repository and asset links remain available.
  await expect(page.getByRole('link',{name:/GitHub/i}).first()).toBeVisible();
+});
+
+
+test('navigation has no duplicate controls or icon family filters in the sidebar',async({page})=>{
+ await page.goto(root+'#components');
+ const nav=page.getByRole('navigation',{name:'Design system',exact:true});
+ await expect(nav.getByRole('link',{name:'Components',exact:true})).toHaveCount(1);
+ await expect(nav.getByRole('link',{name:'Icons',exact:true})).toHaveCount(1);
+ await expect(nav.getByRole('link',{name:'Interface & controls'})).toHaveCount(0);
+ await expect(nav.getByRole('link',{name:'Phosphor'})).toHaveCount(0);
+ await expect(page.locator('.lib-card__open,.lib-card__foot')).toHaveCount(0);
+ await expect(page.locator('.lib-tabs a')).toHaveCount(4);
+});
+
+test('search results do not repeat the same token destination',async({page})=>{
+ await page.goto(root+'#overview');
+ await page.keyboard.press('ControlOrMeta+k');
+ const dialog=page.getByRole('dialog',{name:'Search design system'});
+ await dialog.getByRole('combobox',{name:'Search all docs'}).fill('color');
+ const options=dialog.getByRole('option');
+ const hrefs=await options.evaluateAll(nodes=>nodes.map(n=>(n as HTMLAnchorElement).getAttribute('href')));
+ expect(hrefs.length).toBeGreaterThan(0);
+ expect(hrefs.length).toBeLessThanOrEqual(8);
+ expect(new Set(hrefs).size).toBe(hrefs.length);
 });
