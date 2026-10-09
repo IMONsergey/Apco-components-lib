@@ -3,6 +3,7 @@ import { Icon, type IconName } from '../ui/Icon';
 import { DoubleButton } from '../ui/DoubleButton';
 import { LanguageBadge } from './LanguageBadge';
 import { AnimatedPrice } from '../ui/AnimatedPrice';
+import { SiteModal } from './SiteModal';
 import { plans } from '../../content/site-plans';
 import { calculatePrice, formatPrice, type BillingPeriod } from '../../content/pricing';
 
@@ -89,14 +90,14 @@ export function PlanCard({id='plus',period='monthly'}:{
    <button type="button" className="plan-button">{plan.action}</button>
  </article>;
 }
+/** Native focus-trapping modal with the same source animation and cancel behavior. */
 export function ModalExample(){
- const ref=useRef<HTMLDialogElement>(null);
+ const [open,setOpen]=useState(false);
  return <div className="ds-modal-example">
-  <DoubleButton onClick={()=>ref.current?.showModal()} variant="primary">Open modal</DoubleButton>
-  <dialog className="modal ds-site-modal" ref={ref} onClick={e=>{if(e.target===e.currentTarget)ref.current?.close()}}>
-   <div className="modal__header"><h2>APCOSYS workspace</h2><button className="icon-button" type="button" aria-label="Close" onClick={()=>ref.current?.close()}><Icon name="close"/></button></div>
+  <DoubleButton onClick={()=>setOpen(true)} variant="primary">Open modal</DoubleButton>
+  <SiteModal open={open} onClose={()=>setOpen(false)} title="APCOSYS workspace">
    <p>Inspect your infrastructure in a unified workspace.</p>
-   <DoubleButton onClick={()=>ref.current?.close()}>Continue</DoubleButton>
-  </dialog>
+   <DoubleButton onClick={()=>setOpen(false)}>Continue</DoubleButton>
+  </SiteModal>
  </div>;
 }

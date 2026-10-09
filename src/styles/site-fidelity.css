@@ -303,6 +303,42 @@
 }
 
 
+.modal {
+  width: min(620px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  margin: auto;
+  padding: 32px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--ink);
+  background: var(--white);
+  overflow-y: auto;
+  box-shadow: 0 20px 100px #0b273028;
+}
+.modal::backdrop {
+  background: #102d354d;
+  backdrop-filter: blur(5px);
+}
+.modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.modal__header h2 {
+  font-size: 32px;
+  line-height: 38px;
+  letter-spacing: -0.04em;
+}
+.modal > p {
+  color: var(--body);
+}
+.modal > .double-button {
+  margin-top: 28px;
+}
+
+
 /* Production always uses semantic ink for buttons. The previous library
    inherited #fff from the dark parent and applied light-mode hover paint. */
 .lib-surface .plain-button { color:var(--ink); }
