@@ -45,7 +45,7 @@ function Card({ item, tone, open }: {
     <article className="lib-card" ref={ref} data-testid={item.id}>
       <div className="lib-card__head">
         <button type="button" className="lib-card__name" onClick={() => open(item)}>{item.name}</button>
-        <button type="button" className="lib-card__open" aria-label={`View ${item.name} source`} onClick={() => open(item)}>
+        <button type="button" className="lib-card__open" aria-label={`Inspect ${item.name}`} onClick={() => open(item)}>
           <Icon name="external" />
         </button>
       </div>
@@ -144,7 +144,6 @@ export default function App() {
             {groups.map(g => <button key={g} type="button" aria-pressed={category === g} data-active={category === g}
               onClick={() => setCategory(g)}>
               {g === 'All components' ? 'All' : g === 'Visual engines' ? 'Visual' : g === 'Product motion' ? 'Product' : 'Interface'}
-              <span>{g === 'All components' ? catalog.length : catalog.filter(item => item.group === g).length}</span>
             </button>)}
           </div>
           <label className="lib-search"><Icon name="search"/><input type="search" aria-label="Search components" placeholder="Search"
@@ -155,7 +154,7 @@ export default function App() {
           : <p className="lib-empty">No components found.</p>}
         </>}
         <Suspense fallback={<p className="lib-empty">Loading…</p>}>
-          {view === 'foundations' && <FoundationsPage />}
+          {view === 'foundations' && <FoundationsPage tone={tone} />}
           {view === 'icons' && <IconsPage />}
           {view === 'guidelines' && <GuidelinesPage />}
         </Suspense>

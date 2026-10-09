@@ -65,6 +65,7 @@ export default function IconsPage(){
   const [stroke,setStroke]=useState(1.5);
   const [limit,setLimit]=useState(72);
   const [selected,setSelected]=useState<IconChoice|null>(null);
+  const [copied,setCopied]=useState(false);
   const names=useMemo(()=>all[family].filter(name=>name.toLowerCase().includes(search.trim().toLowerCase())),[family,search]);
   const visible=names.slice(0,limit);
   const sourceCode=(item:IconChoice)=>{
@@ -72,34 +73,36 @@ export default function IconsPage(){
     return `<LibraryIcon family="${item.family}" name="${item.name}" size={24} />`;
   };
   return <div className="ds-icons-page">
-    <div className="ds-section-bar"><div><h2>Icon library</h2><p>Native system + open-source extended families</p></div><span className="ds-label">All icons use currentColor</span></div>
+    <div className="ds-section-bar"><h2>Browse icons</h2><span className="ds-label">Select an icon for code</span></div>
     <div className="ds-icon-toolbar">
       <div className="ds-toggle-row">{families.map(f=><button key={f.key} type="button" data-active={family===f.key} aria-pressed={family===f.key}
         onClick={()=>{setFamily(f.key);setSelected(null);setLimit(72)}}>{f.label}<small>{all[f.key].length}</small></button>)}</div>
       <input type="search" aria-label="Search icons" placeholder="Search icons" value={search} onChange={e=>{setSearch(e.target.value);setLimit(72)}}/>
     </div>
-    <div className="ds-icon-options">
+    <details className="ds-icon-settings"><summary>Size & stroke <span>+</span></summary><div className="ds-icon-options">
       <span>{families.find(f=>f.key===family)?.notes}</span>
       <label>Size <select aria-label="Icon size" value={size} onChange={e=>setSize(Number(e.target.value))}>
         {[16,20,24,32].map(n=><option key={n} value={n}>{n}px</option>)}</select></label>
       <label>Stroke <select aria-label="Icon stroke width" value={stroke} onChange={e=>setStroke(Number(e.target.value))} disabled={family==='phosphor'}>
         {[1,1.5,2].map(n=><option key={n} value={n}>{n}px</option>)}</select></label>
     </div>
+    </div></details>
     <div className="ds-icon-catalog" role="list" aria-label={family+' icons'}>
       {visible.map(name=><button role="listitem" key={name} type="button" className="ds-icon-tile" data-selected={selected?.family===family&&selected.name===name}
-        onClick={()=>setSelected({family,name})} title={name}>
+        onClick={()=>{setSelected({family,name});setCopied(false)}} title={name}>
         <LibraryIcon family={family} name={name} size={size} stroke={stroke} spriteBaseUrl={spriteBaseUrl}/>
         <span>{name}</span></button>)}
     </div>
     {names.length===0&&<p className="ds-caption ds-empty">No icons found</p>}
     {names.length>limit&&<button className="ds-load-more" type="button" onClick={()=>setLimit(v=>v+72)}>Show more · {names.length-limit} remaining</button>}
-    {selected&&<div className="ds-selected-icon">
+    {selected&&<div className="ds-selected-icon" role="region" aria-label="Selected icon">
       <div className="ds-selected-symbol"><LibraryIcon {...selected} size={32} stroke={stroke} spriteBaseUrl={spriteBaseUrl}/></div>
       <div><strong>{selected.name}</strong><span>{selected.family} · {size}px</span></div>
       <code>{sourceCode(selected)}</code>
-      <button type="button" onClick={()=>void copyText(sourceCode(selected))}>Copy usage</button>
+      <button type="button" onClick={async()=>{try{await navigator.clipboard.writeText(sourceCode(selected));setCopied(true);}catch{setCopied(false);}}}>{copied?'Copied':'Copy code'}</button>
+      <button type="button" className="ds-selected-close" onClick={()=>setSelected(null)} aria-label="Close icon inspector">×</button>
     </div>}
-    <div className="ds-icon-states">
+    <details className="ds-native-details ds-extra-section"><summary>Icon states & usage <span>+</span></summary><div className="ds-icon-states">
       <div className="ds-section-bar"><div><h2>States</h2><p>Color is semantic. Stroke and icon silhouette stay consistent.</p></div></div>
       <div className="ds-state-grid">
         {(['Default','Hover','Active','Disabled','Inverse'] as const).map((state,i)=>
@@ -110,6 +113,7 @@ export default function IconsPage(){
       </div>
       <p className="ds-caption">Phosphor is fill-based: stroke weight does not apply. Use native APCOSYS for navigation and Feather for new stroke-based product icons. Reserve Phosphor for clearly defined alternative families.</p>
     </div>
-    <MorphPairs/>
+    </details>
+    <details className="ds-native-details ds-extra-section"><summary>Morphicons · animated transitions <span>+</span></summary><MorphPairs/></details>
   </div>;
 }

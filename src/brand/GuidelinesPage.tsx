@@ -25,25 +25,27 @@ export default function GuidelinesPage(){
  return <div className="ds-guidelines">
   <div className="ds-section-bar"><div><h2>Implementation rules</h2><p>Published constraints + explicit extension policy</p></div><span className="ds-label">10 rules</span></div>
   <div className="ds-guideline-list">{rules.map(rule=>
-   <article key={rule.id} className="ds-guideline">
-    <div className="ds-guideline__heading"><span>{rule.id}</span><h3>{rule.name}</h3></div>
+   <details key={rule.id} className="ds-guideline">
+    <summary className="ds-guideline__heading"><span>{rule.id}</span><h3>{rule.name}</h3><span className="ds-rule-caret">+</span></summary>
     <div className="ds-guideline__content">
      <p><strong>Use</strong>{rule.required}</p>
      <p><strong>Avoid</strong>{rule.avoid}</p>
      <code>{rule.source}</code>
     </div>
-   </article>)}</div>
+   </details>)}</div>
+  <details className="ds-native-details ds-doc-details"><summary>Code examples <span>+</span></summary>
   <section className="ds-section">
-   <div className="ds-section-bar"><div><h2>Usage</h2><p>Copy-paste patterns using real component sources and token names</p></div></div>
+   <div className="ds-section-bar"><h2>Usage</h2></div>
    <div className="ds-recipes">{snippets.map(s=><div key={s.label}><div><span>{s.label}</span><Copy code={s.code}/></div><pre><code>{s.code}</code></pre></div>)}</div>
-  </section>
+  </section></details>
+  <details className="ds-native-details ds-doc-details"><summary>Integration <span>+</span></summary>
   <section className="ds-section">
-   <div className="ds-section-bar"><div><h2>Adoption</h2><p>Use the library as source, not a remote runtime dependency</p></div></div>
+   <div className="ds-section-bar"><h2>Adoption</h2></div>
    <div className="ds-adoption"><div><span className="ds-label">01 / Install</span><code>npm ci</code><code>npm run build</code></div>
     <div><span className="ds-label">02 / Reuse</span><code>src/components/ui</code><code>src/components/system</code><code>src/visuals</code></div>
     <div><span className="ds-label">03 / Theme</span><code>src/styles/tokens.css</code><code>src/styles/theme-page.css</code><code>src/styles/system-primitives.css</code></div>
    </div>
    <p className="ds-caption">Core APCOSYS icons are proprietary artwork from the site; Feather (MIT) and Phosphor (MIT) come from maintained Iconify JSON packages. Morphicons is MIT; Lucide is ISC. Preserve upstream license notices when distributing the library. Product GSAP scenes are inert previews, not finished product workflows.</p>
-  </section>
+  </section></details>
  </div>;
 }
