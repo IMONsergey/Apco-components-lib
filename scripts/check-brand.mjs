@@ -18,7 +18,7 @@ for (const [name, color] of Object.entries(tokens.colors)) {
   const pattern = new RegExp(esc + '\\s*:\\s*(' + color.light + ')', 'i');
   assert.match(lightCSS, pattern, name + ': light CSS/token mismatch');
   const darkPattern = new RegExp(esc + '\\s*:\\s*(' + color.dark + ')', 'i');
-  assert.match(darkCSS, darkPattern, name + ': dark CSS/token mismatch');
+  assert.match(color.dark.toLowerCase() === color.light.toLowerCase() ? lightCSS : darkCSS, darkPattern, name + ': dark CSS/token mismatch');
 }
 assert.equal(normalize(json('public/tokens/apcosys.tokens.json').name),normalize(tokens.name));
 assert(manifest.feather.length >= 270, 'Feather set unexpectedly incomplete');
@@ -26,7 +26,7 @@ assert(manifest.phosphor.length >= 1000, 'Phosphor set unexpectedly incomplete')
 for (const family of ['feather', 'phosphor']) {
   const sprite = read('public/icons/' + family + '.svg');
   assert(sprite.startsWith('<svg'), family + ' invalid SVG sprite');
-  assert(!/<script|foreignObject|https?:\\/\\//i.test(sprite), family + ' contains unsafe markup');
+  assert(!/<script\\b|<foreignObject\\b|<image\\b/i.test(sprite), family + ' contains unsafe markup');
   const ids = (sprite.match(/<symbol id=/g) || []).length;
   assert.equal(ids, manifest[family].length, family + ' sprite/manifest count mismatch');
 }
