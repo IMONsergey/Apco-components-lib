@@ -100,9 +100,9 @@ export default function IconsPage({initialFamily='',state,onStateChange}:{initia
     </div>
     <div id="docs-icon-options" className="ds-icon-settings"><div className="ds-icon-options">
       <span>{families.find(f=>f.key===family)?.notes}</span>
-      <label>Size <select aria-label="Icon size" value={size} onChange={e=>setSize(Number(e.target.value))}>
+      <label className="ds-icon-options__control">Size <select aria-label="Icon size" value={size} onChange={e=>setSize(Number(e.target.value))}>
         {[16,20,24,32].map(n=><option key={n} value={n}>{n}px</option>)}</select></label>
-      <label>Stroke <select aria-label="Icon stroke width" value={stroke} onChange={e=>setStroke(Number(e.target.value))} disabled={family==='phosphor'}>
+      <label className="ds-icon-options__control">Stroke <select aria-label="Icon stroke width" value={stroke} onChange={e=>setStroke(Number(e.target.value))} disabled={family==='phosphor'}>
         {[1,1.5,2].map(n=><option key={n} value={n}>{n}px</option>)}</select></label>
     </div></div>
     <div className="ds-icon-catalog" role="group" aria-label={family+' icons'}>
