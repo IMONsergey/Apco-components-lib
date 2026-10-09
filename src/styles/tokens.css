@@ -1,0 +1,224 @@
+:root {
+  color-scheme: light;
+  --font-sans: 'Instrument Sans', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  /* Semantic color roles. The legacy names below are aliases so the light theme stays pixel-identical. */
+  --surface-page: #f6f6f6;
+  --surface-card: #ffffff;
+  --surface-elevated: #eceef1;
+  --surface-strong: #e1e4e7;
+  --text-primary: #121314;
+  --color-text-body: #3a3e43;
+  --text-muted: #62666b;
+  --brand-mark: #03879f;
+  --accent-text: #037a8f;
+  --focus: #037a8f;
+  --action-fill: #037a8f;
+  --action-hover-fill: #036c7f;
+  --on-action: #ffffff;
+  --surface-tint: #d3eaee;
+  --border-subtle: #dde1e5;
+  --border-strong: #828993;
+  --api-surface: #037a8f;
+  --visual-ink: #121314;
+  --page: var(--surface-page);
+  --white: var(--surface-card);
+  --ink: var(--text-primary);
+  --body: var(--color-text-body);
+  --muted: var(--text-muted);
+  --brand: var(--action-fill);
+  --action: var(--action-fill);
+  --action-hover: var(--action-hover-fill);
+  --surface: var(--surface-elevated);
+  --tint: var(--surface-tint);
+  --line: var(--border-subtle);
+  --control-line: var(--border-strong);
+  --radius-control: 5px;
+  --radius-panel: 7px;
+  --gutter: clamp(32px, calc(4vw - 8px), 40px);
+  --space-density: 1;
+  --media-density: 1;
+  --section-space: clamp(48px, calc(100px * var(--space-density)), 100px);
+  --header-height: 96px;
+  --font-size-body: 18px;
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  font-family: var(--font-sans);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  color: var(--ink);
+  /* The root canvas shows through Safari's top overscroll: match the hero. */
+  background: var(--white);
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-height) + 24px);
+}
+body {
+  margin: 0;
+  min-width: 0;
+}
+button,
+input {
+  font: inherit;
+}
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  color: inherit;
+  cursor: pointer;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button:disabled {
+  cursor: default;
+}
+img,
+svg,
+canvas {
+  display: block;
+}
+img {
+  max-width: 100%;
+}
+ul,
+ol,
+dl {
+  margin: 0;
+  padding: 0;
+}
+li {
+  list-style: none;
+}
+h1,
+h2,
+h3,
+p,
+dd {
+  margin: 0;
+}
+/* Search has its own prominent :focus-within frame. Other controls have
+   quiet keyboard-only focus cues without teal outlines. */
+:focus-visible {
+  outline: none;
+}
+:is(a, button, summary):focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+:is(.icon-button, .brand):focus-visible {
+  opacity: 0.86;
+}
+::selection {
+  background: var(--tint);
+  color: var(--ink);
+}
+[hidden] {
+  display: none !important;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.container {
+  width: calc(100% - 2 * var(--gutter));
+  max-width: 1760px;
+  margin-inline: auto;
+}
+.section-space {
+  padding-block: var(--section-space);
+}
+h2 {
+  font-size: clamp(48px, 5.9722vw, 86px);
+  font-weight: 500;
+  line-height: 0.99;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+h3 {
+  font-weight: 500;
+}
+p {
+  font-size: var(--font-size-body);
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+.eyebrow {
+  font: 400 13px/1.4 var(--font-mono);
+  color: var(--muted);
+}
+@media (min-width: 1600px) {
+  :root {
+    --gutter: clamp(48px, calc(10vw - 112px), 80px);
+  }
+}
+@media (max-width: 1199px) {
+  :root {
+    --gutter: 32px;
+    --section-space: 80px;
+  }
+}
+@media (max-width: 599px) {
+  :root {
+    --gutter: 24px;
+    --section-space: 64px;
+    --header-height: 78px;
+  }
+  h2 {
+    font-size: 40px;
+    line-height: 1.05;
+  }
+  p {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+}
+@media (max-width: 375px) {
+  :root {
+    --gutter: 20px;
+  }
+  h2 {
+    font-size: 38px;
+  }
+}
+@media (max-width: 340px) {
+  :root {
+    --gutter: 16px;
+  }
+  h2 {
+    font-size: 36px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0s !important;
+  }
+}
+
+/* One desktop density state. Typography, line breaks and CTA direction stay native. */
+@media (min-width: 1200px) and (max-height: 800px) {
+  :root {
+    --space-density: 0.55;
+    --media-density: 0.82;
+  }
+}
