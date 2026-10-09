@@ -40,15 +40,7 @@
  .lib-card__foot{height:34px}
  .lib-dialog__preview{height:280px}
 }
-/* Progressive sections common to foundation reference and icon options. */
-.ds-native-details{margin-top:22px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.ds-native-details>summary{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:52px;padding:12px 2px;list-style:none;cursor:pointer;font-size:13px;font-weight:500}
-.ds-native-details>summary::-webkit-details-marker{display:none}
-.ds-native-details>summary>span:last-child{font-size:20px;line-height:1;color:var(--muted);font-weight:400;transition:transform 160ms var(--ease)}
-.ds-native-details[open]>summary>span:last-child{transform:rotate(45deg)}
-.ds-native-details>summary:hover{color:var(--action)}
-.ds-native-details>summary:focus-visible{outline:2px solid var(--action);outline-offset:2px}
-.ds-native-details[open]{padding-bottom:20px}
+/* All reference material is visible by default. */
 .ds-muted-note{font:400 11px/1.55 var(--font-mono);color:var(--muted)}
 .ds-section-subtitle{margin:-12px 0 12px}
 /* Foundations */
@@ -109,58 +101,27 @@
  .ds-identity-extra>div{grid-column:span 2}
  .ds-motion-simple>div{flex-direction:column;gap:4px}
 }
-/* Icon browser: selection stays where the user's attention is. */
+/* Icon catalog stays compact; reference sections are visible below it. */
 .ds-icons-page>.ds-section-bar{margin-bottom:14px}
-.ds-icon-toolbar{margin:8px 0 10px}
-.ds-icon-settings{margin:0 0 14px;border-top:0}
-.ds-icon-settings>summary{min-height:37px;padding:4px 0;font-size:12px;color:var(--muted)}
-.ds-icon-settings[open]{padding-bottom:8px}
-.ds-icon-options{margin:12px 0 2px}
+.ds-icon-toolbar{margin:12px 0}
 .ds-icon-tile{height:88px;gap:10px}
 .ds-icon-tile span{font-size:10px}
 .ds-icon-catalog{grid-template-columns:repeat(10,minmax(0,1fr))}
-.ds-icon-states{margin:18px 0 0}
-.ds-icon-states .ds-section-bar{display:none}
-.ds-extra-section{margin-top:28px}
-.ds-extra-section .ds-morph-panel{margin:0;padding:24px 0 0;border:0;box-shadow:none}
-.ds-extra-section .ds-morph-panel>.ds-section-bar{display:none}
-.ds-extra-section .ds-morph-panel>.ds-caption{margin-top:14px}
-.ds-extra-section .ds-state-grid{margin-top:0}
-.ds-extra-section .ds-icon-states>.ds-caption{margin-top:12px}
 @media(max-width:1299px){.ds-icon-catalog{grid-template-columns:repeat(8,minmax(0,1fr))}}
 @media(max-width:899px){.ds-icon-catalog{grid-template-columns:repeat(6,minmax(0,1fr))}}
-@media(max-width:599px){
- .ds-icon-catalog{grid-template-columns:repeat(4,minmax(0,1fr))}
- .ds-icon-tile{height:83px}
- .ds-icons-page .ds-icon-toolbar .ds-toggle-row{width:100%;justify-content:space-between}
- .ds-icons-page .ds-icon-toolbar .ds-toggle-row button{padding-inline:10px}
-}
-/* Guidelines are an index first; detailed advice is available on demand. */
-.ds-guideline-list{margin-bottom:42px}
-.ds-guideline{display:block;padding:0;border-bottom:1px solid var(--line)}
-.ds-guideline__heading{display:flex;align-items:center;gap:24px;min-height:59px;padding:10px 2px;cursor:pointer;list-style:none}
-.ds-guideline__heading::-webkit-details-marker{display:none}
-.ds-guideline__heading>span:first-child{flex:none}
-.ds-guideline__heading h3{font-size:16px;flex:1}
-.ds-rule-caret{margin-left:auto;color:var(--muted);font-size:20px;font-weight:400}
-.ds-guideline[open] .ds-rule-caret{transform:rotate(45deg)}
-.ds-guideline__heading:hover h3{color:var(--action)}
-.ds-guideline__content{padding:0 12px 22px 48px}
-.ds-guideline__content p{font-size:13px;line-height:1.55;max-width:750px}
-.ds-guideline__content code{display:block;margin-top:12px}
-.ds-doc-details{margin:22px 0}
-.ds-doc-details .ds-section{margin:14px 0 0}
-.ds-doc-details .ds-section-bar{display:none}
-.ds-doc-details .ds-recipes{margin-top:12px}
-.ds-doc-details .ds-adoption{margin-top:12px}
-@media(max-width:599px){
- .ds-guideline{display:block;padding:0}
- .ds-guideline__heading{min-height:54px;gap:14px}
- .ds-guideline__heading h3{font-size:14px}
- .ds-guideline__content{padding-left:34px}
- .ds-guideline__content p{grid-template-columns:40px 1fr}
-}
-@media(prefers-reduced-motion:reduce){.ds-native-details>summary>span:last-child,.ds-token-row{transition:none}}
+@media(max-width:599px){.ds-icon-catalog{grid-template-columns:repeat(4,minmax(0,1fr))}.ds-icon-tile{height:83px}.ds-icons-page .ds-icon-toolbar .ds-toggle-row{width:100%;justify-content:space-between}.ds-icons-page .ds-icon-toolbar .ds-toggle-row button{padding-inline:10px}}
+/* Reference rules are readable on the page, without disclosure controls. */
+.ds-guideline-list{margin:16px 0 44px}
+.ds-guideline{display:grid;grid-template-columns:minmax(185px,.7fr) minmax(0,1.8fr);align-items:start;gap:32px;padding:22px 0;border-bottom:1px solid var(--line)}
+.ds-guideline__heading{display:flex;align-items:baseline;gap:16px;min-width:0}
+.ds-guideline__heading>span{font:400 11px/1.5 var(--font-mono);color:var(--muted);flex:none}
+.ds-guideline__heading h3{font-size:15px;font-weight:500;line-height:1.4}
+.ds-guideline__content{padding:0;min-width:0}
+.ds-guideline__content p{font-size:13px;line-height:1.55;max-width:850px}
+.ds-guideline__content code{display:block;margin-top:10px;font:400 10px/1.5 var(--font-mono);color:var(--muted);overflow-wrap:anywhere}
+.ds-guide-section{margin:42px 0 0;scroll-margin-top:100px}
+@media(max-width:700px){.ds-guideline{grid-template-columns:1fr;gap:12px;padding:20px 0}.ds-guideline__heading{gap:12px}.ds-guideline__content p{grid-template-columns:44px minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.ds-token-row{transition:none}}
 
 .ds-color-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:flex-end}
 .ds-copy-format{display:inline-flex;gap:2px;border:1px solid var(--line);padding:2px;border-radius:5px}
