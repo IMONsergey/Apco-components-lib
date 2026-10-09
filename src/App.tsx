@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { catalog, groups, type Item, type Group } from './catalog';
+import { catalog, groups, type Item } from './catalog';
 import Preview from './gallery/Preview';
 
 type Tone = 'light' | 'dark';
