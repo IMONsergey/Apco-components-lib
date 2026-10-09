@@ -78,3 +78,18 @@ import './styles/site-fidelity.css';
 ```
 
 The original APCOSYS PLUS plan is $40 / month (not a placeholder $89).
+
+
+## Documentation portal navigation
+
+The published site is a responsive design-system documentation portal. Navigation is built into React and does not depend on an external docs/CMS platform.
+
+- **Desktop:** fixed left navigation, a focused reading column, and a contextual table of contents on extra-wide screens. The sidebar can be collapsed.
+- **Mobile:** an accessible off-canvas navigation menu; documentation contents have a single readable column.
+- **Search:** `⌘K` on macOS / `Ctrl+K` on other platforms or the search control in the header. The indexed items include routes, 28 components and 17 color tokens. Arrow keys select and Enter opens a result.
+- **Deep links:** `#overview`, `#foundations/colors`, `#foundations/typography`, `#components/button`, `#icons/phosphor`, `#guidelines/usage`.
+- **Source of navigation:** `src/docs/navigation.ts` defines the hierarchy, section URLs, search index and the contextual table of contents. `src/docs/DocsChrome.tsx` contains only the shell interaction/accessible navigation, not design components.
+- **Adding a page:** register its address and label in `src/docs/navigation.ts`, route it through `src/App.tsx`, and author page content under `src/brand/` or `src/docs/`. Keep implementation source code under `src/components/` and `src/visuals/`.
+
+Legacy `#components`, `#foundations`, `#icons`, and `#guidelines` anchors still work. React demos, tokens and asset source remain separate from the docs UI.
+
