@@ -247,7 +247,7 @@ test('homepage is visual and favicon matches published APCOSYS source',async({pa
  await expect(page.locator('.docs-overview__card--visual')).toHaveCount(4);
  await expect(page.locator('.docs-overview__swatches span')).toHaveCount(5);
  const favicon=page.locator('link[rel="icon"]');
- await expect(favicon).toHaveAttribute('href','./assets/brand/favicon.svg');
+ await expect(favicon).toHaveAttribute('href',/assets\/brand\/favicon\.svg$/);
  const url=await favicon.getAttribute('href');
  const resolved=new URL(url!,page.url());
  expect(resolved.pathname).toBe('/Apco-components-lib/assets/brand/favicon.svg');
