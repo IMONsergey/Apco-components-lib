@@ -221,7 +221,7 @@ test('mobile docs drawer navigates without horizontal overflow',async({page})=>{
  await expect(drawer).toHaveAttribute('data-open','true');
  await drawer.getByRole('link',{name:'Typography'}).click();
  await expect(page).toHaveURL(/#foundations\/typography$/);
- await expect(drawer).toHaveAttribute('data-open','false');
+ await expect(page.locator('.docs-sidebar')).toHaveAttribute('data-open','false');
  await expect(page.locator('#ds-type')).toBeInViewport();
  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)).toBeLessThanOrEqual(2);
 });
