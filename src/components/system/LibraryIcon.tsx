@@ -10,7 +10,8 @@ export type LibraryIconProps = {family:IconFamily;name:string;size?:number;strok
 export function LibraryIcon({family,name,size=24,stroke=1.5,spriteBaseUrl='/icons/'}:LibraryIconProps) {
   if (family === 'apcosys')
     return <NativeIcon name={name as IconName} width={size} height={size} strokeWidth={stroke} />;
-  const url = spriteBaseUrl.replace(/\\/?$/, '/') + family + '.svg#' + family + '-' + name;
+  const assetRoot = spriteBaseUrl.endsWith('/') ? spriteBaseUrl : spriteBaseUrl + '/';
+  const url = assetRoot + family + '.svg#' + family + '-' + name;
   return <svg className={'ds-icon ds-icon--'+family} width={size} height={size}
     viewBox={family==='phosphor'?'0 0 256 256':'0 0 24 24'}
     fill={family==='phosphor'?'currentColor':'none'} stroke={family==='feather'?'currentColor':'none'}
