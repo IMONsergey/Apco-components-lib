@@ -80,3 +80,35 @@
  .docs-content .lib-card__foot{font-size:10px}
  .ds-token-row{grid-template-columns:30px minmax(0,1fr) 78px 40px}
 }
+
+/* UX R5: single-action catalog; reference details, not modal stacks. */
+.docs-sidebar__section-link{min-height:47px;margin-top:2px;display:flex;align-items:center;justify-content:space-between;gap:15px;padding:11px;border-top:1px solid var(--line);border-radius:4px;color:var(--ink);font-size:13px;font-weight:500}
+.docs-sidebar__section-link svg{width:14px;height:14px;color:var(--muted)}
+.docs-sidebar__section-link:hover{background:var(--surface)}
+.docs-sidebar__section-link[aria-current='page']{color:var(--action);background:var(--surface)}
+.docs-sidebar__section-link[aria-current='page'] svg{color:var(--action)}
+.docs-content .lib-card__head{height:54px;padding:0}
+.docs-content .lib-card__name{display:flex;width:100%;height:100%;align-items:center;justify-content:space-between;gap:12px;padding:0 17px;text-decoration:none!important;color:var(--ink);font-size:15px}
+.docs-content .lib-card__name:hover{color:var(--action)}
+.docs-content .lib-card__name svg{width:17px;height:17px;color:var(--muted);flex-shrink:0}
+.docs-content .lib-card__name:hover svg{color:var(--action)}
+.docs-content .lib-card__preview{border-bottom:0;height:274px}
+.docs-content .lib-card[data-group='Interface motion']:not(:has(.lib-preview--plancard)) .lib-card__preview{height:238px}
+.docs-content .lib-card:has(.lib-preview--plancard) .lib-card__preview{height:432px}
+.docs-component__code{border:1px solid var(--line);border-radius:5px;background:var(--white);overflow:hidden}
+.docs-component__code>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;min-height:58px;padding:16px 19px;cursor:pointer;font-size:15px;font-weight:500}
+.docs-component__code>summary::-webkit-details-marker{display:none}
+.docs-component__code>summary:hover{background:var(--surface)}
+.docs-component__code>summary svg{width:15px;height:15px;color:var(--muted);transition:transform .18s var(--ease)}
+.docs-component__code[open]>summary svg{transform:rotate(180deg)}
+.docs-component__copy{display:flex;justify-content:flex-end;border-top:1px solid var(--line);padding:12px 19px}
+.docs-component__copy button{display:flex;gap:8px;align-items:center;border:0;background:transparent;color:var(--action);font-size:12px}
+.docs-component__copy button svg{width:15px}
+.docs-component__code pre.lib-code{margin:0 19px 19px;max-height:480px}
+.docs-icons-page>.ds-section-bar .ds-label[role='status']{min-height:18px}
+.ds-icon-tile[data-copied='true']{color:var(--action);background:var(--tint)}
+@media(max-width:640px){
+ .docs-content .lib-card__preview{height:255px}
+ .docs-content .lib-card[data-group='Interface motion']:not(:has(.lib-preview--plancard)) .lib-card__preview{height:228px}
+ .docs-content .lib-card:has(.lib-preview--plancard) .lib-card__preview{height:422px}
+}

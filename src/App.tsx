@@ -31,7 +31,7 @@ function Card({ item, tone }: {
 }) {
   const { ref, visible } = useInView();
   return (
-    <article className="lib-card" ref={ref} data-testid={item.id}>
+    <article className="lib-card" ref={ref} data-testid={item.id} data-group={item.group}>
       <div className="lib-card__head">
         <a className="lib-card__name" href={href('components',item.id)}>
           <span>{item.name}</span><Icon name="arrow"/>
@@ -129,7 +129,7 @@ export default function App() {
   )}
   <Suspense fallback={<p className="lib-empty">Loading…</p>}>
    {route.section==='foundations'&&<>
-    <div className="docs-page-title"><h1>Brand styles</h1><p>Colors, fonts, logos and layouts — all in one place.</p></div>
+    {!route.slug&&<div className="docs-page-title"><h1>Brand styles</h1><p>Colors, fonts, logos and layouts — all in one place.</p></div>}
     <FoundationsPage tone={tone} jumpTo={route.slug}/>
    </>}
    {route.section==='icons'&&<>

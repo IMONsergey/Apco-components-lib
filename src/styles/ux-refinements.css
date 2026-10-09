@@ -119,13 +119,6 @@
 .ds-icon-tile{height:88px;gap:10px}
 .ds-icon-tile span{font-size:10px}
 .ds-icon-catalog{grid-template-columns:repeat(10,minmax(0,1fr))}
-.ds-selected-icon{position:fixed;right:24px;bottom:24px;z-index:50;width:min(440px,calc(100vw - 32px));max-height:50dvh;overflow-y:auto;display:grid;grid-template-columns:56px minmax(0,1fr) auto auto;gap:12px;align-items:center;margin:0;padding:18px;border:1px solid var(--control-line);box-shadow:0 12px 48px rgb(0 0 0 / 18%);border-radius:7px;background:var(--white)}
-.ds-selected-icon>.ds-selected-symbol{grid-column:1;grid-row:1;width:56px;height:56px}
-.ds-selected-icon>div:nth-child(2){grid-column:2/4;grid-row:1}
-.ds-selected-icon>code{grid-column:1/5;grid-row:2;margin:0;padding:12px;background:var(--page);font-size:11px}
-.ds-selected-icon>button:not(.ds-selected-close){grid-column:1/5;grid-row:3;min-height:40px}
-.ds-selected-icon>.ds-selected-close{grid-column:4;grid-row:1;border:0;background:none;color:var(--muted);font-size:24px;padding:8px}
-.ds-selected-icon>.ds-selected-close:hover{color:var(--ink)}
 .ds-icon-states{margin:18px 0 0}
 .ds-icon-states .ds-section-bar{display:none}
 .ds-extra-section{margin-top:28px}
@@ -139,7 +132,6 @@
 @media(max-width:599px){
  .ds-icon-catalog{grid-template-columns:repeat(4,minmax(0,1fr))}
  .ds-icon-tile{height:83px}
- .ds-selected-icon{right:12px;bottom:max(12px,env(safe-area-inset-bottom));width:calc(100vw - 24px);max-height:54dvh}
  .ds-icons-page .ds-icon-toolbar .ds-toggle-row{width:100%;justify-content:space-between}
  .ds-icons-page .ds-icon-toolbar .ds-toggle-row button{padding-inline:10px}
 }
