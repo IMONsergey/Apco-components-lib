@@ -154,7 +154,7 @@
  .docs-sidebar{width:min(290px,85vw);transform:translateX(-102%);z-index:90;box-shadow:none}
  .docs-sidebar[data-open='true']{transform:translateX(0);box-shadow:10px 0 60px #0002}
  .docs-mobile-shade{display:block;position:fixed;z-index:80;inset:var(--docs-header) 0 0;background:#06101466}
- .docs-main-shell{margin-left:0}
+ .docs-main-shell{margin-left:0;transition:none}
  .docs-content-layout{gap:0}
 }
 @media(max-width:640px){

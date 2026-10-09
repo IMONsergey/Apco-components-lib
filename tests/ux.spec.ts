@@ -318,14 +318,5 @@ test('homepage uses simple APCOSYS links with no invented artwork',async({page})
  }
  await page.setViewportSize({width:390,height:844});
  await expect(page.locator('.docs-overview__grid')).toBeVisible();
- const overflow=await page.evaluate(()=>{
-  const width=window.innerWidth;
-  return [...document.querySelectorAll<HTMLElement>('*')].map(el=>({
-    tag:el.tagName.toLowerCase(),selector:el.className?.toString().slice(0,100),
-    right:Math.round(el.getBoundingClientRect().right),left:Math.round(el.getBoundingClientRect().left),
-    width:Math.round(el.getBoundingClientRect().width),scroll:el.scrollWidth,client:el.clientWidth
-  })).filter(x=>x.right>width+3&&x.width>0).slice(0,25);
- });
- console.log('MOBILE_OVERFLOW_DIAGNOSTIC:',JSON.stringify(overflow));
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)).toBeLessThanOrEqual(2);
 });
