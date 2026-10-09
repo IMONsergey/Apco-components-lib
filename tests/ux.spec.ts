@@ -320,3 +320,15 @@ test('homepage uses simple APCOSYS links with no invented artwork',async({page})
  await expect(page.locator('.docs-overview__grid')).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)).toBeLessThanOrEqual(2);
 });
+
+test('library UI has no links to the published APCOSYS website',async({page})=>{
+ const routes=['#overview','#components','#foundations/colors','#foundations/typography','#icons','#guidelines'];
+ for(const route of routes){
+  await page.goto(root+route);
+  const publishedLinks=page.locator('a[href*="imonsergey.github.io/apcoweb"],a[href*="apcosys.net"]');
+  await expect(publishedLinks).toHaveCount(0);
+  await expect(page.getByRole('link',{name:/APCOSYS website|Live website/i})).toHaveCount(0);
+ }
+ // Library repository and asset links remain available.
+ await expect(page.getByRole('link',{name:/GitHub/i}).first()).toBeVisible();
+});

@@ -92,7 +92,6 @@ function Sidebar({route,open,compact,onClose,onCompact}:{route:DocRoute;open:boo
       </details>)}
     </nav>
     <div className="docs-sidebar__links">
-     <a href="https://imonsergey.github.io/apcoweb/" target="_blank" rel="noreferrer">APCOSYS website <Icon name="external"/></a>
      <a href="https://github.com/IMONsergey/Apco-components-lib" target="_blank" rel="noreferrer">GitHub <Icon name="external"/></a>
     </div>
    </div>
