@@ -241,11 +241,12 @@ test('wide layout retains on-page toc without replacing sidebar',async({page})=>
  await expect(page.locator('.docs-shell')).toHaveAttribute('data-collapsed','false');
 });
 
-test('homepage is visual and favicon matches published APCOSYS source',async({page})=>{
+test('clean homepage and favicon match published APCOSYS source',async({page})=>{
  await page.goto(root);
  await expect(page.getByRole('heading',{name:'Everything in one place.'})).toBeVisible();
  await expect(page.locator('.docs-overview__card--visual')).toHaveCount(4);
- await expect(page.locator('.docs-overview__swatches span')).toHaveCount(5);
+ await expect(page.locator('.docs-overview__art')).toHaveCount(0);
+ await expect(page.locator('.docs-overview__card--visual .docs-overview__card-bottom svg')).toHaveCount(4);
  const favicon=page.locator('link[rel="icon"]');
  await expect(favicon).toHaveAttribute('href',/assets\/brand\/favicon\.svg$/);
  const url=await favicon.getAttribute('href');
@@ -269,4 +270,53 @@ test('search finds an individual icon and opens it',async({page})=>{
  const detail=page.getByRole('region',{name:'Selected icon'});
  await expect(detail).toBeVisible();
  await expect(detail).toContainText('activity');
+});
+
+test('full-width component grid has no unused right column at large desktop widths',async({page})=>{
+ await page.setViewportSize({width:1920,height:1080});
+ await page.goto(root+'#components');
+ await expect(page.locator('.lib-card')).toHaveCount(28);
+ const bounds=await page.locator('.lib-grid').boundingBox();
+ expect(bounds).not.toBeNull();
+ expect(bounds!.x).toBeGreaterThan(240);
+ expect(bounds!.x+bounds!.width).toBeGreaterThan(1870);
+ expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(1920);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)).toBeLessThanOrEqual(2);
+ await page.getByRole('button',{name:'Dark theme'}).click();
+ const dark=await page.locator('.lib-grid').boundingBox();
+ expect(dark!.width).toBeGreaterThan(1450);
+});
+
+test('color token rows have no empty painted grid cell and use source copy icons',async({page})=>{
+ await page.setViewportSize({width:1728,height:1024});
+ await page.goto(root+'#foundations/colors');
+ const list=page.locator('.ds-token-list').first();
+ await expect(list.locator('.ds-token-row')).toHaveCount(5);
+ const listBox=await list.boundingBox();
+ const lastBox=await list.locator('.ds-token-row').last().boundingBox();
+ expect(listBox&&lastBox).not.toBeNull();
+ expect(lastBox!.width).toBeGreaterThan(listBox!.width-3);
+ await expect(list.locator('.ds-token-copy svg')).toHaveCount(5);
+ await expect(page.getByText('Token JSON ↗')).toHaveCount(0);
+ await expect(page.getByRole('link',{name:/Download design tokens/})).toBeVisible();
+ await page.getByRole('button',{name:'Dark theme'}).click();
+ const width=await list.locator('.ds-token-row').last().boundingBox();
+ expect(width!.width).toBeGreaterThan(listBox!.width-3);
+});
+
+test('homepage uses simple APCOSYS links with no invented artwork',async({page})=>{
+ await page.setViewportSize({width:1440,height:900});
+ await page.goto(root+'#overview');
+ const cards=page.locator('.docs-overview__card--visual');
+ await expect(cards).toHaveCount(4);
+ await expect(page.locator('.docs-overview__art')).toHaveCount(0);
+ for(const card of await cards.all()){
+   const bounds=await card.boundingBox();
+   expect(bounds!.height).toBeGreaterThanOrEqual(100);
+   await expect(card.locator('svg')).toHaveCount(1);
+   await expect(card.locator('svg path')).toHaveAttribute('d','M3 8h10M8 3l5 5-5 5');
+ }
+ await page.setViewportSize({width:390,height:844});
+ await expect(page.locator('.docs-overview__grid')).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)).toBeLessThanOrEqual(2);
 });

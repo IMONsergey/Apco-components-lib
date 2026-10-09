@@ -47,7 +47,7 @@
 .docs-sidebar__links a:hover{color:var(--action)}
 .docs-mobile-shade{display:none}
 .docs-main-shell{margin-left:var(--docs-side);padding-top:var(--docs-header);min-height:100dvh;transition:margin-left 220ms var(--ease);min-width:0}
-.docs-breadcrumbs{height:58px;margin:0 auto;padding:0 clamp(28px,4.2vw,68px);max-width:1660px;display:flex;align-items:center;gap:12px;overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--line);font:400 11px/1.5 var(--font-mono);color:var(--muted)}
+.docs-breadcrumbs{height:58px;margin:0 auto;padding:0 clamp(28px,4.2vw,68px);max-width:none;display:flex;align-items:center;gap:12px;overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--line);font:400 11px/1.5 var(--font-mono);color:var(--muted)}
 .docs-breadcrumbs>a{color:var(--muted)}
 .docs-breadcrumbs>a:hover{color:var(--ink)}
 .docs-breadcrumbs>span:last-child{overflow:hidden;text-overflow:ellipsis}
