@@ -1,3 +1,4 @@
+import {enterDraft} from './support/editing';
 import { expect, test } from '@playwright/test';
 
 const root='/Apco-components-lib/';
@@ -440,21 +441,21 @@ test('palette draft is separate from approved tokens, persists and resets', asyn
   await page.goto(root + '#foundations/colors');
   await expect(page.locator('.ds-token-row')).toHaveCount(17);
   await expect(page.getByText('Page background').first()).toBeVisible();
-  await page.getByRole('button', { name: 'Try color changes' }).click();
-  await expect(page.getByLabel('Preview · matches approved palette preview')).toBeVisible();
+  await enterDraft(page);
+  await expect(page.getByLabel('Draft preview')).toBeVisible();
   const edit = page.getByRole('textbox', { name: 'HEX for Cards & panels' });
   await edit.fill('#E0EEFA');
   await edit.press('Enter');
   await expect(edit).toHaveValue('#E0EEFA');
-  await expect(page.getByLabel('Approved preview')).toBeVisible();
-  await expect(page.getByLabel('Your draft preview').locator('.ds-workbench__demo')).toHaveCSS('background-color', 'rgb(224, 238, 250)');
-  await expect(page.getByLabel('Approved preview').locator('.ds-workbench__demo')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(page.locator('.ds-workbench__preview')).toHaveCount(1);
+  await expect(page.getByLabel('Draft preview').locator('.ds-workbench__demo')).toHaveCSS('background-color', 'rgb(224, 238, 250)');
+  await expect(page.getByRole('textbox',{name:'HEX for Cards & panels'})).toHaveValue('#E0EEFA');
   await page.getByRole('button', { name: 'Dark theme' }).click();
   await expect(edit).toHaveValue('#151B1F');
   await page.getByRole('button', { name: 'Light theme' }).click();
   await expect(edit).toHaveValue('#E0EEFA');
   await page.reload();
-  await page.getByRole('button', { name: 'Try color changes' }).click();
+  await enterDraft(page);
   await expect(page.getByRole('textbox', { name: 'HEX for Cards & panels' })).toHaveValue('#E0EEFA');
   await page.getByRole('button', { name: 'Reset all' }).click();
   await expect(page.getByRole('textbox', { name: 'HEX for Cards & panels' })).toHaveValue('#FFFFFF');
@@ -466,7 +467,7 @@ test('palette draft is separate from approved tokens, persists and resets', asyn
 test('palette draft validates input and exports changed semantic values', async ({ page }) => {
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto(root + '#foundations/colors');
-  await page.getByRole('button', { name: 'Try color changes' }).click();
+  await enterDraft(page);
   const edit = page.getByRole('textbox', { name: 'HEX for Primary action' });
   await edit.fill('#ZZZZZZ');
   await expect(edit).toHaveAttribute('aria-invalid', 'true');
@@ -488,7 +489,7 @@ test('palette draft validates input and exports changed semantic values', async 
 
 test('palette edit mode remains responsive with visible controls', async ({ page }) => {
   await page.goto(root + '#foundations/colors');
-  await page.getByRole('button', { name: 'Try color changes' }).click();
+  await enterDraft(page);
   for (const width of [375, 599, 899, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
     await expect(page.getByRole('textbox', { name: 'HEX for Page background' })).toBeVisible();
@@ -500,8 +501,8 @@ test('palette edit mode remains responsive with visible controls', async ({ page
 test('unified token draft spans type, spacing, radii, layout and motion', async ({ page }) => {
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto(root+'#foundations/typography');
-  await expect(page.getByRole('button',{name:'Try type changes'})).toBeVisible();
-  await page.getByRole('button',{name:'Try type changes'}).click();
+  await expect(page.getByRole('button',{name:'Edit draft'})).toBeVisible();
+  await enterDraft(page);
   const type=page.getByRole('spinbutton',{name:'Display size scale'});
   await type.fill('110');
   await type.press('Enter');
@@ -511,7 +512,7 @@ test('unified token draft spans type, spacing, radii, layout and motion', async 
   await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toContainText('1 change');
 
   await page.goto(root+'#foundations/spacing');
-  await page.getByRole('button',{name:'Try spacing changes'}).first().click();
+  await enterDraft(page);
   const space=page.getByRole('spinbutton',{name:'Spacing token 16 value'});
   await space.fill('28'); await space.press('Enter');
   await expect(space).toHaveValue('28');
@@ -520,16 +521,16 @@ test('unified token draft spans type, spacing, radii, layout and motion', async 
   await expect(radius).toHaveValue('8');
   await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toContainText('3 changes');
   await page.reload();
-  await page.getByRole('button',{name:'Try spacing changes'}).first().click();
+  await enterDraft(page);
   await expect(page.getByRole('spinbutton',{name:'Spacing token 16 value'})).toHaveValue('28');
 
   await page.goto(root+'#foundations/layout');
-  await page.getByRole('button',{name:'Try max width'}).click();
+  await enterDraft(page);
   const max=page.getByRole('spinbutton',{name:'Maximum content width'});
   await max.fill('1600'); await max.press('Enter');
   await expect(max).toHaveValue('1600');
   await page.goto(root+'#foundations/motion');
-  await page.getByRole('button',{name:'Try timing changes'}).click();
+  await enterDraft(page);
   const duration=page.getByRole('spinbutton',{name:'disclosure duration'});
   await duration.fill('360'); await duration.press('Enter');
   await expect(duration).toHaveValue('360');
@@ -569,7 +570,7 @@ test('unified token editors reject invalid numbers, retain source values and sta
    ['motion','Try timing changes','disclosure duration'],
   ]){
    await page.goto(root+'#foundations/'+route);
-   await page.getByRole('button',{name:button}).first().click();
+   await enterDraft(page);
    const field=page.getByRole('spinbutton',{name:input});
    const initial=await field.inputValue();
    await field.fill('99999');
@@ -591,25 +592,25 @@ test('legacy R7 color-only drafts migrate without changing brand source',async({
    localStorage.removeItem('apcosys-design-draft-v2');
   });
   await page.goto(root+'#foundations/colors');
-  await page.getByRole('button',{name:'Try color changes'}).click();
+  await enterDraft(page);
   await expect(page.getByRole('textbox',{name:'HEX for Primary action'})).toHaveValue('#004466');
   await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toContainText('1 change');
 });
 
 test('resetting a foundation does not erase unrelated draft sections',async({page})=>{
  await page.goto(root+'#foundations/colors');
- await page.getByRole('button',{name:'Try color changes'}).click();
+ await enterDraft(page);
  const color=page.getByRole('textbox',{name:'HEX for Page background'});
  await color.fill('#ABCDEF');await color.press('Enter');
  await page.goto(root+'#foundations/typography');
- await page.getByRole('button',{name:'Try type changes'}).click();
+ await enterDraft(page);
  const type=page.getByRole('spinbutton',{name:'Display size scale'});
  await type.fill('115');await type.press('Enter');
  await page.goto(root+'#foundations/colors');
  await page.getByRole('button',{name:'Reset colors'}).click();
  await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toContainText('1 change');
  await page.goto(root+'#foundations/typography');
- await page.getByRole('button',{name:'Try type changes'}).click();
+ await enterDraft(page);
  await expect(page.getByRole('spinbutton',{name:'Display size scale'})).toHaveValue('115');
  await page.getByRole('button',{name:'Reset type'}).click();
  await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toContainText('All values match');
@@ -621,7 +622,7 @@ test('CSS export has manual copy fallback if clipboard permission is denied',asy
   Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:()=>Promise.reject(new Error('not allowed'))}});
  });
  await page.goto(root+'#foundations/colors');
- await page.getByRole('button',{name:'Try color changes'}).click();
+ await enterDraft(page);
  const color=page.getByRole('textbox',{name:'HEX for Page background'});
  await color.fill('#FAFAFA');await color.press('Enter');
  await page.getByRole('button',{name:'Copy CSS'}).click();

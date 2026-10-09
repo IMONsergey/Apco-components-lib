@@ -32,10 +32,14 @@ function CommandSearch({open,onClose,onNavigate}:{open:boolean;onClose:()=>void;
    .filter(({item})=>{if(seen.has(item.route))return false;seen.add(item.route);return true})
    .slice(0,8).map(x=>x.item);
  },[query]);
+ useEffect(()=>{
+  if(open&&matches.length)document.getElementById('docs-search-option-'+Math.min(active,matches.length-1))?.scrollIntoView({block:'nearest',behavior:'instant'});
+ },[open,active,query,matches.length]);
  if(!open)return null;
  return <div className="docs-command-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
   <section ref={dialog} className="docs-command" role="dialog" aria-modal="true" aria-label="Search design system"
    onKeyDown={e=>{
+    if(e.nativeEvent.isComposing)return;
     if(e.key==='Escape'){e.preventDefault();e.stopPropagation();onClose();return;}
     if(e.target!==field.current)return;
     if(e.key==='ArrowDown'){e.preventDefault();setActive(v=>Math.max(0,Math.min(matches.length-1,v+1)))}

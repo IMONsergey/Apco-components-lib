@@ -37,7 +37,7 @@ Do not casually replace approved page geometry with new primitives. The spacing 
 
 ## Foundation drafts: inspect → try → export
 
-**Brand styles** opens the approved reference. Essential values, code and examples are visible without expanding panels. **Try … changes** activates a separate local draft; **View reference** returns both labels and specimens to approved values. Reference copy always copies what is displayed, never an inactive draft.
+**Brand styles** opens the approved reference. Essential values, code and examples are visible without expanding panels. **Edit draft** activates a separate local draft; **View reference** returns both labels and specimens to approved values. Reference copy always copies what is displayed, never an inactive draft.
 
 | Foundation | Editable draft | Preserved reference |
 | --- | --- | --- |
@@ -48,11 +48,11 @@ Do not casually replace approved page geometry with new primitives. The spacing 
 | Layout | Maximum content width, 960–2400px, 8px increments | Compound gutter, header and breakpoint rules |
 | Motion | Disclosure and theme duration, 80–800ms, 20ms increments | Easing and hover range; reduced-motion behaviour |
 
-**Enter or blur applies a valid input; Escape cancels the pending edit.** Invalid inputs revert rather than corrupting the draft. Changed values show their approved origin. Both motion durations have live examples. Color contrast readings concern only the two demonstrated text/background pairs, not the entire design system.
+**Enter or blur applies a valid input; Escape cancels the pending edit.** HEX accepts three or six digits, with an optional `#` and surrounding whitespace, then stores canonical `#RRGGBB`. Invalid inputs revert rather than corrupting the draft. Changed values show their approved origin. Colors uses one compact draft preview; reference values and the contrast section stay visible. The action row reserves its space before the first edit, so applying a value does not push the editor away. Both motion durations have live examples. Color contrast readings concern only the two demonstrated text/background pairs, not the entire design system.
 
 ### Recovery and storage
 
-The shared draft survives navigation between all application pages. It is saved to this browser when local storage is available. Valid R7 color drafts migrate from `apcosys-palette-draft-v1` into `apcosys-design-draft-v2`; migration removes the legacy entry only after a successful write.
+The shared draft survives navigation between all application pages. Each foundation also remembers its edit/reference mode within the current session; reload returns to reference mode. It is saved to this browser when local storage is available. Valid R7 color drafts migrate from `apcosys-palette-draft-v1` into `apcosys-design-draft-v2`; migration removes the legacy entry only after a successful write.
 
 **Undo / Redo** retain up to 30 changes during the current app session, including section resets and **Reset all**. A combined Spacing / Radii reset is one undoable change. History is not persisted across reloads. When browser storage is blocked, the editor remains usable in memory and explicitly warns that a reload will lose the draft; download the JSON to preserve it. This is not a collaborative or cross-tab synchronized editor.
 
@@ -75,7 +75,7 @@ There is no backend write, auto-publishing, font download or silent change to th
 
 ## Quality checks
 
-The current audit is [R9: findings, fixes and evidence](docs/AUDIT_R9.md); [verification metadata](docs/verification-r9.json) records the tested scope. Earlier audits remain as history, not a claim that every subsequent state has been independently verified.
+The current audit is [R10: less friction, fewer interruptions](docs/AUDIT_R10.md); [R10 verification metadata](docs/verification-r10.json) records its tested scope. The [R9 integrity/accessibility audit](docs/AUDIT_R9.md) remains available as history. Earlier audits remain as history, not a claim that every subsequent state has been independently verified.
 
 Pull requests to `main` run an isolated build, complete token consistency checks and browser tests in `.github/workflows/quality.yml`. Playwright uses its installed Chromium and a dedicated server on port 4276, never another agent's development server. The Pages workflow only publishes `main` and separately installs the required browser.
 
@@ -87,6 +87,8 @@ npm run audit:runtime
 AUDIT_URL=http://127.0.0.1:5187/Apco-components-lib/ \
 AUDIT_PHASE=after AUDIT_OUTPUT=artifacts/audit npm run audit:runtime
 ```
+
+Optional targeted checks across three engines: `npx playwright install chromium firefox webkit`, then `npm run audit:cross-browser` against the running dev server. This is a focused smoke check, not a claim of exhaustive browser coverage.
 
 The runtime audit examines six documentation routes in both themes and captures eight interface components at mobile and desktop widths. Generated evidence stays in ignored `artifacts/`; it is not included in the shipped application.
 
@@ -143,7 +145,7 @@ The published site is a responsive design-system documentation portal. Navigatio
 
 - **Desktop:** fixed left navigation, a focused reading column, and a contextual table of contents on extra-wide screens. The sidebar can be collapsed.
 - **Mobile:** modal off-canvas navigation with focus containment, background scroll locking and focus restoration; documentation contents have a single readable column.
-- **Search:** `⌘K` on macOS / `Ctrl+K` on other platforms or the search control in the header. The index includes routes, 28 components, icon names, colors and scalar token names for spacing, radius, type and motion. Arrow keys select and Enter opens a result.
+- **Search:** `⌘K` on macOS / `Ctrl+K` on other platforms or the search control in the header. The index includes routes, 28 components, icon names, colors and scalar token names for spacing, radius, type and motion. Arrow keys select and keep the active result visible, including on short screens; Enter opens it. Returning from a component restores its catalog filter and scroll position. Icon browsing preferences stay intact during the session.
 - **Deep links:** `#overview`, `#foundations/colors`, `#foundations/typography`, `#components/button`, `#icons/phosphor`, `#guidelines/usage`.
 - **Source of navigation:** `src/docs/navigation.ts` defines the hierarchy, section URLs, search index and the contextual table of contents. `src/docs/DocsChrome.tsx` contains only the shell interaction/accessible navigation, not design components.
 - **Adding a page:** register its address and label in `src/docs/navigation.ts`, route it through `src/App.tsx`, and author page content under `src/brand/` or `src/docs/`. Keep implementation source code under `src/components/` and `src/visuals/`.

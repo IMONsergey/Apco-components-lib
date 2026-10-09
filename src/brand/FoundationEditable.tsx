@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import FoundationHeader from './FoundationHeader';
 import tokens from '../tokens/apcosys.tokens.json';
-import { useDesignDraft, draftCount, scalarSpecs, type ScalarKind, type TypeRole } from './draft-store';
+import { useDesignDraft, useFoundationMode, draftCount, scalarSpecs, type ScalarKind, type TypeRole } from './draft-store';
 
 const samples: Record<TypeRole, { cls:string; text:string; spec:string }> = {
  'Display': {cls:'ds-type-display', text:'Internet, understood.', spec:'72–106 · 500'},
@@ -30,7 +31,7 @@ export function ScalarInput({kind,id,name,min,max,step,unit}:{
   <span className="ds-sr-only">{name}</span>
   <input type="number" inputMode="numeric" aria-label={name} aria-invalid={!valid}
    value={raw} min={min} max={max} step={step}
-   title={min+'–'+max+' '+unit+'; step '+step+'. Enter to apply, Escape to cancel.'} onFocus={()=>{cancelled.current=false;}} onChange={e=>setRaw(e.target.value)} onBlur={commit} onKeyDown={e=>{
+   title={min+'–'+max+' '+unit+'; step '+step+'. Enter to apply, Escape to cancel.'} onFocus={e=>{cancelled.current=false;e.currentTarget.select();}} onChange={e=>setRaw(e.target.value)} onBlur={commit} onKeyDown={e=>{
     if(e.key==='Enter')e.currentTarget.blur();
     if(e.key==='Escape'){e.preventDefault();e.stopPropagation();cancelled.current=true;setRaw(String(value));e.currentTarget.blur();}
    }}/>
@@ -40,18 +41,11 @@ export function ScalarInput({kind,id,name,min,max,step,unit}:{
 
 export function TypographyReference({focused}:{focused:boolean}){
  const {draft,reset}=useDesignDraft();
- const [editing,setEditing]=useState(false);
+ const [editing,setEditing]=useFoundationMode('typography');
  return <>
-  <div className="ds-section-bar ds-foundation-edit-heading">
-   {focused?<h1 className="ds-focused-title">Typography</h1>:<h2>Typography</h2>}
-   <div className="ds-edit-heading-actions">
-    {draftCount(draft,'typography')>0&&<button type="button" className="ds-edit-reset" onClick={()=>reset('typography')}>Reset type</button>}
-    <button type="button" className="ds-workbench__mode" aria-pressed={editing}
-     onClick={()=>setEditing(!editing)}>{editing?'View reference':'Try type changes'}</button>
-   </div>
-  </div>
-  <p className="ds-muted-note ds-section-subtitle">Instrument Sans · IBM Plex Mono. Source sizes below; specimens scale to fit this page.</p>
-  {editing&&<p className="ds-edit-description">Scale type specimens without destroying responsive clamp values. A size-scale experiment is exported separately and requires explicit integration.</p>}
+  <FoundationHeader title="Typography" focused={focused} editing={editing} onEditing={setEditing}/>
+  <p className="ds-muted-note ds-section-subtitle">Instrument Sans · IBM Plex Mono. Samples fit the available width.</p>
+  {editing&&<p className="ds-edit-description">Adjust the sample size. Source font rules stay unchanged.</p>}
   <div className="ds-type-list">
    {typeNames.map(id=>{
     const spec=samples[id], percent=draft.typography[id]??100;
@@ -59,37 +53,30 @@ export function TypographyReference({focused}:{focused:boolean}){
       style={{'--ds-preview-scale':percent/100} as CSSProperties}>
      <div>
       <span className="ds-label">{id==='Eyebrow'?'Data / Eyebrow':id==='Section body'?'Body':id}</span>
-      <code>{spec.spec}</code>{editing && percent!==100 && <small className="ds-value-origin">Approved scale 100%</small>}
+      <code>{spec.spec}</code>{editing && <small className="ds-value-origin" data-changed={percent!==100}>Approved scale 100%</small>}
       {editing&&<ScalarInput kind="typography" id={id} name={id+' size scale'} min={70} max={130} step={5} unit="%"/>}
      </div>
      <div className={spec.cls}>{spec.text}</div>
     </div>;
    })}
   </div>
+  {draftCount(draft,'typography')>0&&<div className="ds-foundation-footer"><button type="button" className="ds-edit-reset" onClick={()=>reset('typography')}>Reset type</button></div>}
  </>;
 }
 
 export function SpacingReference({focused}:{focused:boolean}){
- const [editing,setEditing]=useState(false);
+ const [editing,setEditing]=useFoundationMode('spacing');
  const {draft,reset}=useDesignDraft();
  return <>
-  <div className="ds-section-bar ds-foundation-edit-heading">
-   {focused?<h1 className="ds-focused-title">Spacing</h1>:<h2>Spacing</h2>}
-   <div className="ds-color-actions">
-    <span className="ds-muted-note">4px base</span>
-    {draftCount(draft,'spacing')+draftCount(draft,'radii')>0&&<button type="button" className="ds-edit-reset" onClick={()=>{reset(['spacing','radii'])}}>Reset spacing & radii</button>}
-    <button type="button" className="ds-workbench__mode" aria-pressed={editing}
-     onClick={()=>setEditing(!editing)}>{editing?'View reference':'Try spacing changes'}</button>
-   </div>
-  </div>
-  {editing&&<p className="ds-edit-description">Keep the token names; change values on the 4px grid. Enter applies a value, Escape cancels. Corner radii are below.</p>}
+  <FoundationHeader title="Spacing" focused={focused} editing={editing} onEditing={setEditing}/>
+  {editing&&<p className="ds-edit-description">Spacing uses a 4px grid. Enter applies; Escape cancels.</p>}
   <div className="ds-spacing-grid ds-edit-spacing-grid" data-editing={editing} id="ds-spacing-values">
    {tokens.spaces.map(n=>{
     const px=editing?(draft.spacing[String(n)]??n):n;
     return <div className="ds-space-row ds-edit-space-row" key={n} title={'Approved '+n+'px'} data-changed={Boolean(draft.spacing[String(n)])}>
      {editing?<ScalarInput kind="spacing" id={String(n)} name={'Spacing token '+n+' value'} min={4} max={240} step={4} unit="px"/>:<code>{n}px</code>}
      <span className="ds-space-bar" style={{width:Math.min(px,240)}}/>
-     <code>{spacingVar(n)}{editing&&px!==n&&<small className="ds-value-origin">Approved {n}px</small>}</code>
+     <code>{spacingVar(n)}{editing&&<small className="ds-value-origin" data-changed={px!==n}>Approved {n}px</small>}</code>
     </div>;
    })}
   </div>
@@ -107,12 +94,13 @@ export function SpacingReference({focused}:{focused:boolean}){
     })}
    </div>
   </div>
+  {draftCount(draft,'spacing')+draftCount(draft,'radii')>0&&<div className="ds-foundation-footer"><button type="button" className="ds-edit-reset" onClick={()=>reset(['spacing','radii'])}>Reset spacing & radii</button></div>}
  </>;
 }
 
 export function LayoutReference({focused}:{focused:boolean}){
  const {draft,reset}=useDesignDraft();
- const [editing,setEditing]=useState(false);
+ const [editing,setEditing]=useFoundationMode('layout');
  const metrics=[
   {name:'Content width',value:tokens.layout.maxWidth,usage:'Maximum width'},
   {name:'Desktop gutter',value:tokens.layout.baseGutter,usage:'Standard screens'},
@@ -122,16 +110,8 @@ export function LayoutReference({focused}:{focused:boolean}){
   {name:'Section spacing',value:tokens.layout.sectionSpace,usage:'Vertical rhythm'},
  ];
  return <>
-  <div className="ds-section-bar ds-foundation-edit-heading">
-   {focused?<h1 className="ds-focused-title">Layout</h1>:<h2>Layout</h2>}
-   <div className="ds-edit-heading-actions">
-    {draftCount(draft,'layout')>0&&<button type="button" className="ds-edit-reset" onClick={()=>reset('layout')}>Reset layout</button>}
-    <button className="ds-workbench__mode" type="button" aria-pressed={editing} onClick={()=>setEditing(!editing)}>
-     {editing?'View reference':'Try max width'}
-    </button>
-   </div>
-  </div>
-  {editing&&<p className="ds-edit-description">Only the single-value maximum width is editable. Responsive gutters, section spacing and breakpoints remain reference-only; changing their composite rules blindly would break the approved layout.</p>}
+  <FoundationHeader title="Layout" focused={focused} editing={editing} onEditing={setEditing}/>
+  {editing&&<p className="ds-edit-description">Try a maximum width. Responsive gutters and breakpoints stay fixed.</p>}
   <div className="ds-layout-metrics" id="ds-layout-values">
    {metrics.map((item,index)=><div key={item.name}>
     <span>{item.name}</span>
@@ -151,23 +131,17 @@ export function LayoutReference({focused}:{focused:boolean}){
     <strong>{b.label}</strong><code>{b.max===null?b.min+'px+':b.min+'–'+b.max+'px'}</code><span>{b.notes}</span>
    </div>)}</div>
   </div>
+  {draftCount(draft,'layout')>0&&<div className="ds-foundation-footer"><button type="button" className="ds-edit-reset" onClick={()=>reset('layout')}>Reset layout</button></div>}
  </>;
 }
 
 export function MotionReference({focused}:{focused:boolean}){
- const [editing,setEditing]=useState(false);
+ const [editing,setEditing]=useFoundationMode('motion');
  const [toggle,setToggle]=useState(false);
  const {draft,reset}=useDesignDraft();
  return <>
-  <div className="ds-section-bar ds-foundation-edit-heading">
-   {focused?<h1 className="ds-focused-title">Animations</h1>:<h2>Animations</h2>}
-   <div className="ds-edit-heading-actions">
-    {draftCount(draft,'motion')>0&&<button type="button" className="ds-edit-reset" onClick={()=>reset('motion')}>Reset motion</button>}
-    <button type="button" className="ds-workbench__mode" aria-pressed={editing}
-     onClick={()=>setEditing(!editing)}>{editing?'View reference':'Try timing changes'}</button>
-   </div>
-  </div>
-  {editing&&<p className="ds-edit-description">Adjust disclosure and theme transition durations. Hover timing remains an approved range, not a single editable value. Reduced-motion preferences disable this animation.</p>}
+  <FoundationHeader title="Animations" focused={focused} editing={editing} onEditing={setEditing}/>
+  {editing&&<p className="ds-edit-description">Try disclosure and theme timings below. Reduced-motion preferences are respected.</p>}
   <div className="ds-motion-simple ds-edit-motion-list">
    {Object.entries(tokens.motions).map(([name,value])=><div key={name}>
     <span>{name}</span>
@@ -182,5 +156,6 @@ export function MotionReference({focused}:{focused:boolean}){
     <div><div className="ds-motion-tone" data-active={toggle} style={{transitionDuration:(draft.motion.theme??220)+'ms'}}/><code>{draft.motion.theme??220}ms · theme</code></div>
    </div>
   </div>}
+  {draftCount(draft,'motion')>0&&<div className="ds-foundation-footer"><button type="button" className="ds-edit-reset" onClick={()=>reset('motion')}>Reset motion</button></div>}
  </>;
 }

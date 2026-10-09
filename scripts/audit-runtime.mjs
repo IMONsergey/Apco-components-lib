@@ -15,7 +15,7 @@ try {
   for(const [section,action] of [['overview',null],['foundations/colors',null],['foundations/typography','Try type changes'],['foundations/spacing','Try spacing changes'],['icons',null],['guidelines',null]]) {
    await page.goto(base+'#'+section);await page.locator('main h1').first().waitFor();
    if(await page.locator('html').getAttribute('data-theme')!==theme)await page.locator('.docs-header__theme').click();
-   if(action)await page.getByRole('button',{name:action}).click();
+   if(action&&await page.getByRole('button',{name:'Edit draft',exact:true}).count())await page.getByRole('button',{name:'Edit draft',exact:true}).click();
    await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(250);
    const report=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();
    result.accessibility.push({theme,section,violations:report.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>({target:n.target,summary:n.failureSummary})).slice(0,8)}))});

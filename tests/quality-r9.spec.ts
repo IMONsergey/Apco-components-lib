@@ -1,3 +1,4 @@
+import {enterDraft} from './support/editing';
 import { expect, test, type Locator } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { readFileSync } from 'node:fs';
@@ -19,21 +20,21 @@ async function alignedScreenshot(locator: Locator) {
 
 test('Escape cancels pending HEX and numeric input rather than committing it',async({page})=>{
  await page.goto(root+'#foundations/colors');
- await page.getByRole('button',{name:'Try color changes'}).click();
+ await enterDraft(page);
  const hex=page.getByRole('textbox',{name:'HEX for Page background'});
  await hex.fill('#AABBCC');await hex.press('Escape');
  await expect(hex).toHaveValue('#F6F6F6');
- await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toHaveCount(0);
- await page.goto(root+'#foundations/spacing');await page.getByRole('button',{name:'Try spacing changes'}).click();
+ await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toContainText('no changes');
+ await page.goto(root+'#foundations/spacing');await enterDraft(page);
  const value=page.getByRole('spinbutton',{name:'Spacing token 16 value'});
  await value.fill('28');await value.press('Escape');
  await expect(value).toHaveValue('16');
- await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toHaveCount(0);
+ await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toContainText('no changes');
 });
 
 test('approved color copying never leaks a draft and feedback expires on changes',async({page})=>{
  await page.context().grantPermissions(['clipboard-read','clipboard-write']);
- await page.goto(root+'#foundations/colors');await page.getByRole('button',{name:'Try color changes'}).click();
+ await page.goto(root+'#foundations/colors');await enterDraft(page);
  const value=page.getByRole('textbox',{name:'HEX for Page background'});
  await value.fill('#AABBCC');await value.press('Enter');
  await page.getByRole('button',{name:'Copy CSS',exact:true}).click();
@@ -51,7 +52,7 @@ test('spacing and radii restore exact reference rendering after leaving edit mod
  await page.goto(root+'#foundations/spacing');await page.locator('#ds-radii').waitFor();await page.evaluate(()=>document.fonts.ready);
  const sourceSpace=await page.locator('#ds-spacing-values').screenshot({animations:'disabled'});
  const sourceRadii=await alignedScreenshot(page.locator('.ds-radii-grid'));
- await page.getByRole('button',{name:'Try spacing changes'}).click();
+ await enterDraft(page);
  const space=page.getByRole('spinbutton',{name:'Spacing token 16 value'});await space.fill('28');await space.press('Enter');
  const radius=page.getByRole('spinbutton',{name:'control radius'});await radius.fill('22');await radius.press('Enter');
  await page.getByRole('button',{name:'View reference'}).click();
@@ -62,7 +63,7 @@ test('spacing and radii restore exact reference rendering after leaving edit mod
 });
 
 test('draft reset is recoverable with undo and redo and multi-group reset is atomic',async({page})=>{
- await page.goto(root+'#foundations/spacing');await page.getByRole('button',{name:'Try spacing changes'}).click();
+ await page.goto(root+'#foundations/spacing');await enterDraft(page);
  const space=page.getByRole('spinbutton',{name:'Spacing token 16 value'});await space.fill('28');await space.press('Enter');
  const radius=page.getByRole('spinbutton',{name:'control radius'});await radius.fill('8');await radius.press('Enter');
  await page.getByRole('button',{name:'Reset spacing & radii'}).click();
@@ -79,11 +80,11 @@ test('draft reset is recoverable with undo and redo and multi-group reset is ato
 
 test('blocked browser storage preserves in-memory edits across non-foundation routes and warns',async({page})=>{
  await page.addInitScript(()=>{Storage.prototype.setItem=()=>{throw new Error('Denied')};});
- await page.goto(root+'#foundations/colors');await page.getByRole('button',{name:'Try color changes'}).click();
+ await page.goto(root+'#foundations/colors');await enterDraft(page);
  const value=page.getByRole('textbox',{name:'HEX for Page background'});await value.fill('#AABBCC');await value.press('Enter');
  await expect(page.getByText('Browser storage is unavailable.',{exact:false})).toBeVisible();
  await page.goto(root+'#icons');await page.locator('main h1').waitFor();
- await page.goto(root+'#foundations/colors');await page.getByRole('button',{name:'Try color changes'}).click();
+ await page.goto(root+'#foundations/colors');await enterDraft(page);
  await expect(page.getByRole('textbox',{name:'HEX for Page background'})).toHaveValue('#AABBCC');
 });
 
@@ -148,6 +149,7 @@ test('search resolves scalar token names and does not hijack editable slash inpu
  await page.goto(root+'#overview');await page.getByRole('button',{name:'Search documentation'}).click();
  const input=page.getByRole('combobox',{name:'Search all docs'});await input.fill('--ds-radius-panel');
  await input.press('Enter');await expect(page).toHaveURL(/#foundations\/spacing$/);
+ await expect(page.getByRole('dialog',{name:'Search design system'})).toHaveCount(0);await expect(page.locator('main h1')).toHaveText('Spacing');
  await page.evaluate(()=>{const node=document.createElement('div');node.contentEditable='true';node.id='editor-test';document.querySelector('main')!.append(node);node.focus()});
  await page.keyboard.type('/');await expect(page.getByRole('dialog',{name:'Search design system'})).toHaveCount(0);
 });
@@ -171,7 +173,7 @@ test('component code recovers from denied clipboard access',async({page})=>{
 });
 
 test('motion previews use both edited timings and honour reduced motion',async({page})=>{
- await page.goto(root+'#foundations/motion');await page.getByRole('button',{name:'Try timing changes'}).click();
+ await page.goto(root+'#foundations/motion');await enterDraft(page);
  const field=page.getByRole('spinbutton',{name:'theme duration'});await field.fill('600');await field.press('Enter');
  await expect(page.locator('.ds-motion-tone')).toHaveCSS('transition-duration','0.6s');
  await page.emulateMedia({reducedMotion:'reduce'});await expect(page.locator('.ds-motion-tone')).toHaveCSS('transition-duration','0s');
@@ -184,7 +186,7 @@ for(const theme of ['light','dark'] as const) {
   for(const [route,action] of [['overview',''],['foundations/colors',''],['foundations/typography','Try type changes'],['foundations/spacing','Try spacing changes'],['icons',''],['guidelines','']]) {
    await page.goto(root+'#'+route);await page.locator('main h1').waitFor();
    if(await page.locator('html').getAttribute('data-theme')!==theme)await page.locator('.docs-header__theme').click();
-   if(action)await page.getByRole('button',{name:action}).click();
+   if(action)await enterDraft(page);
    await page.evaluate(()=>document.fonts.ready);
    const report=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();
    expect(report.violations.filter(v=>v.impact==='serious'||v.impact==='critical'),route).toEqual([]);
@@ -201,7 +203,7 @@ for(const [section,editName,fieldName,value] of [
 ]) {
  test('reference and edited '+section+' fit breakpoint edges in both themes',async({page})=>{
   test.setTimeout(60000);
-  await page.goto(root+'#foundations/'+section!);await page.getByRole('button',{name:editName!}).click();
+  await page.goto(root+'#foundations/'+section!);await enterDraft(page);
   const field=section==='colors'?page.getByRole('textbox',{name:fieldName!}):page.getByRole('spinbutton',{name:fieldName!});
   await field.fill(value!);await field.press('Enter');
   for(const width of [320,340,375,599,899,1000,1001,1440,1920]) {

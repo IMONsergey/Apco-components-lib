@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from 'react';
 import { Menu, X, Search, Check, Plus, Minus, ArrowRight, ArrowDown } from 'lucide';
 import { MorphIcon } from 'morphicons/react';
 import { useClipboard } from '../hooks/useClipboard';
@@ -6,6 +6,7 @@ import ManualCopy from './ManualCopy';
 import { href } from '../docs/navigation';
 import { Icon, type IconName } from '../components/ui/Icon';
 import { LibraryIcon } from '../components/system/LibraryIcon';
+import type {IconBrowserState} from './icon-browser-state';
 import registry from '../generated/icon-manifest.json';
 
 type Family = 'apcosys' | 'feather' | 'phosphor';
@@ -60,21 +61,26 @@ function MorphPairs(){
   </section>;
 }
 
-export default function IconsPage({initialFamily}:{initialFamily?:string}){
+export default function IconsPage({initialFamily='',state,onStateChange}:{initialFamily?:string;state:IconBrowserState;onStateChange:Dispatch<SetStateAction<IconBrowserState>>}){
+  const {family,search,size,stroke,limit}=state;
+  const setFamily=(value:Family)=>onStateChange(previous=>({...previous,family:value}));
+  const setSearch=(value:string)=>onStateChange(previous=>({...previous,search:value}));
+  const setSize=(value:number)=>onStateChange(previous=>({...previous,size:value}));
+  const setStroke=(value:number)=>onStateChange(previous=>({...previous,stroke:value}));
+  const setLimit=(value:number|((previous:number)=>number))=>onStateChange(previous=>({...previous,limit:typeof value==='function'?value(previous.limit):value}));
   useEffect(()=>{
-   const [requestedFamily,requestedIcon]=initialFamily?.split('/')??[];
-   const family=(requestedFamily==='feather'||requestedFamily==='phosphor'||requestedFamily==='apcosys')?requestedFamily:'apcosys';
-   setFamily(family);setLimit(72);
-   const valid=Boolean(requestedIcon&&all[family].includes(requestedIcon));
-   setSelected(valid?{family,name:requestedIcon!}:null);
-   clear();
-   setSearch(valid?requestedIcon!:'');
-  },[initialFamily]);
-  const [family,setFamily]=useState<Family>('apcosys');
-  const [search,setSearch]=useState('');
-  const [size,setSize]=useState(24);
-  const [stroke,setStroke]=useState(1.5);
-  const [limit,setLimit]=useState(72);
+   onStateChange(previous=>{
+    if(previous.route===initialFamily)return previous;
+    const [requestedFamily,requestedIcon]=initialFamily.split('/');
+    const family=(requestedFamily==='feather'||requestedFamily==='phosphor'||requestedFamily==='apcosys')?requestedFamily:previous.family;
+    const valid=Boolean(requestedIcon&&all[family].includes(requestedIcon));
+    const sameFamily=family===previous.family;
+    return {...previous,route:initialFamily,family,search:valid?requestedIcon!:sameFamily?previous.search:'',limit:sameFamily?previous.limit:72};
+   });
+   const [source,name]=initialFamily.split('/');
+   const validSource=source==='apcosys'||source==='feather'||source==='phosphor';
+   setSelected(validSource&&name&&all[source].includes(name)?{family:source,name}:null);clear();
+  },[initialFamily,onStateChange]);
   const [selected,setSelected]=useState<IconChoice|null>(null);
   const {copiedId:copied,manualValue:manualCode,copy,clear}=useClipboard(family+':'+size+':'+stroke+':'+search);
   const copyFallback=manualCode!==null?selected:null;

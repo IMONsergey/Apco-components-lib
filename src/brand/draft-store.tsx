@@ -15,6 +15,7 @@ function readInitial(): DesignDraft {
  return blank();
 }
 interface DesignDraftContext {
+ editing: Partial<Record<DraftScope, boolean>>; setEditing: (scope: DraftScope, enabled: boolean) => void;
  draft: DesignDraft; count: number; canUndo: boolean; canRedo: boolean; storageAvailable: boolean;
  setColor: (theme: Theme, role: ColorRole, value: string) => void;
  setScalar: (kind: ScalarKind, role: string, value: number) => void;
@@ -26,6 +27,7 @@ const Context = createContext<DesignDraftContext | null>(null);
 export function DesignDraftProvider({children}: {children: ReactNode}) {
  const [history, setHistory] = useState<History>(() => ({present: readInitial(), past: [], future: []}));
  const [storageAvailable, setStorageAvailable] = useState(true);
+ const [editing,setEditingState]=useState<Partial<Record<DraftScope,boolean>>>({});
  const draft = history.present;
  useEffect(() => {
   try {
@@ -42,6 +44,7 @@ export function DesignDraftProvider({children}: {children: ReactNode}) {
    return {present: next, past: [...current.past, current.present].slice(-30), future: []};
   });
   return {
+   editing, setEditing(scope,enabled){setEditingState(current=>({...current,[scope]:enabled}));},
    draft, count: draftCount(draft), canUndo: history.past.length > 0, canRedo: history.future.length > 0, storageAvailable,
    setColor(theme, role, hex) {
     if (!Object.hasOwn(tokens.colors, role) || !/^#[\da-f]{6}$/i.test(hex)) return;
@@ -60,11 +63,17 @@ export function DesignDraftProvider({children}: {children: ReactNode}) {
    exportCss: () => buildDraftCss(draft),
    exportJson: () => downloadDraft(JSON.stringify(buildDraftJson(draft),null,2)+'\n','apcosys.tokens.draft.json','application/json'),
   };
- }, [draft, history, storageAvailable]);
+ }, [draft, history, storageAvailable, editing]);
  return <Context.Provider value={value}>{children}</Context.Provider>;
 }
 export function useDesignDraft() {
  const context = useContext(Context);
  if (!context) throw new Error('useDesignDraft requires DesignDraftProvider');
  return context;
+}
+
+/** Session-only edit modes: leaving a reference does not throw away the chosen workspace. */
+export function useFoundationMode(scope: DraftScope) {
+ const context=useDesignDraft();
+ return [context.editing[scope]??false, (enabled:boolean)=>context.setEditing(scope,enabled)] as const;
 }
