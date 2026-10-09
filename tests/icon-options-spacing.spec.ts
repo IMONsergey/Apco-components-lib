@@ -9,13 +9,9 @@ test('Size and Stroke labels, selects, and groups have a compact consistent rhyt
     const geometry = await page.locator('.ds-icon-options').evaluate(node => {
       const controls = Array.from(node.querySelectorAll<HTMLLabelElement>('.ds-icon-options__control'));
       const measurements = controls.map(control => {
-        const labelNode = Array.from(control.childNodes).find(child =>
-          child.nodeType === Node.TEXT_NODE && child.textContent?.trim()
-        );
-        if (!labelNode) throw new Error('Missing Size/Stroke text node');
-        const range = document.createRange();
-        range.selectNodeContents(labelNode);
-        const text = range.getBoundingClientRect();
+        const labelNode = control.querySelector<HTMLElement>(':scope > span:first-child');
+        if (!labelNode) throw new Error('Missing Size/Stroke label');
+        const text = labelNode.getBoundingClientRect();
         const select = control.querySelector('select')!.getBoundingClientRect();
         const wrapper = control.getBoundingClientRect();
         return {
@@ -43,7 +39,7 @@ test('Size and Stroke labels, selects, and groups have a compact consistent rhyt
     expect(geometry.groupGap, label + ' between Size/Stroke groups').toBeCloseTo(width <= 599 ? 10 : 12, 1);
     for (const [i, control] of geometry.measurements.entries()) {
       expect(control.selectLeft - control.textRight, label + ' text/select gap ' + i).toBeCloseTo(6, 1);
-      expect(control.selectWidth, label + ' select width ' + i).toBeCloseTo(82, 1);
+      expect(control.selectWidth, label + ' select width ' + i).toBeCloseTo(width <= 599 ? 88 : 92, 1);
       expect(control.selectHeight, label + ' select height ' + i).toBeCloseTo(36, 1);
       expect(Math.abs(control.textCenterY - control.selectCenterY), label + ' vertical alignment ' + i).toBeLessThanOrEqual(1);
     }

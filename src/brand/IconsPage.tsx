@@ -100,10 +100,28 @@ export default function IconsPage({initialFamily='',state,onStateChange}:{initia
     </div>
     <div id="docs-icon-options" className="ds-icon-settings"><div className="ds-icon-options">
       <span>{families.find(f=>f.key===family)?.notes}</span>
-      <label className="ds-icon-options__control">Size <select aria-label="Icon size" value={size} onChange={e=>setSize(Number(e.target.value))}>
-        {[16,20,24,32].map(n=><option key={n} value={n}>{n}px</option>)}</select></label>
-      <label className="ds-icon-options__control">Stroke <select aria-label="Icon stroke width" value={stroke} onChange={e=>setStroke(Number(e.target.value))} disabled={family==='phosphor'}>
-        {[1,1.5,2].map(n=><option key={n} value={n}>{n}px</option>)}</select></label>
+      <label className="ds-icon-options__control">
+        <span>Size</span>
+        <span className="ds-icon-select">
+          <select aria-label="Icon size" value={size} onChange={e=>setSize(Number(e.target.value))}>
+            {[16,20,24,32].map(n=><option key={n} value={n}>{n}px</option>)}
+          </select>
+          <svg className="ds-icon-select__chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+            <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </span>
+      </label>
+      <label className="ds-icon-options__control">
+        <span>Stroke</span>
+        <span className="ds-icon-select">
+          <select aria-label="Icon stroke width" value={stroke} onChange={e=>setStroke(Number(e.target.value))} disabled={family==='phosphor'}>
+            {[1,1.5,2].map(n=><option key={n} value={n}>{n}px</option>)}
+          </select>
+          <svg className="ds-icon-select__chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+            <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </span>
+      </label>
     </div></div>
     <div className="ds-icon-catalog" role="group" aria-label={family+' icons'}>
       {visible.map(name=><div className="ds-icon-cell" key={name}>
