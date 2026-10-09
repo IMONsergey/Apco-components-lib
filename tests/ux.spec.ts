@@ -182,3 +182,60 @@ test('14 interface previews retain content in light/dark desktop and mobile',asy
   }
  }
 });
+
+
+test('docs home exposes a persistent hierarchy and deep-linked color tokens',async({page})=>{
+ await page.goto(root);
+ await expect(page.getByRole('heading',{name:'Design system',exact:true})).toBeVisible();
+ const nav=page.getByRole('navigation',{name:'Design system',exact:true});
+ await expect(nav.getByRole('link',{name:'Overview'})).toBeVisible();
+ await nav.getByRole('link',{name:'Color tokens'}).click();
+ await expect(page).toHaveURL(/#foundations\/colors$/);
+ await expect(page.getByRole('heading',{name:'Foundations',exact:true})).toBeVisible();
+ await expect(page.locator('.ds-token-row')).toHaveCount(17);
+ await expect(page.locator('#ds-colors')).toBeInViewport();
+});
+
+test('global command search navigates to full source component page',async({page})=>{
+ await page.goto(root+'#overview');
+ await page.keyboard.press('ControlOrMeta+k');
+ const dialog=page.getByRole('dialog',{name:'Search design system'});
+ await expect(dialog).toBeVisible();
+ await dialog.getByRole('searchbox',{name:'Search all docs'}).fill('Double Button');
+ await expect(dialog.getByRole('option',{name:/Double Button/}).first()).toBeVisible();
+ await page.keyboard.press('Enter');
+ await expect(page).toHaveURL(/#components\/button$/);
+ await expect(page.getByRole('heading',{name:'Double Button',exact:true})).toBeVisible();
+ await expect(page.locator('.docs-component__stage .double-button').first()).toBeVisible();
+ await expect(page.locator('.docs-component .lib-code')).toContainText('DoubleButton');
+ await expect(dialog).toHaveCount(0);
+});
+
+test('mobile docs drawer navigates without horizontal overflow',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto(root+'#overview');
+ const opener=page.getByRole('button',{name:'Open navigation'});
+ await expect(opener).toBeVisible();
+ await opener.click();
+ const drawer=page.getByRole('complementary',{name:'Documentation navigation'});
+ await expect(drawer).toHaveAttribute('data-open','true');
+ await drawer.getByRole('link',{name:'Typography'}).click();
+ await expect(page).toHaveURL(/#foundations\/typography$/);
+ await expect(drawer).toHaveAttribute('data-open','false');
+ await expect(page.locator('#ds-type')).toBeInViewport();
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)).toBeLessThanOrEqual(2);
+});
+
+test('wide layout retains on-page toc without replacing sidebar',async({page})=>{
+ await page.setViewportSize({width:1760,height:990});
+ await page.goto(root+'#foundations');
+ const toc=page.getByRole('complementary',{name:'On this page'});
+ await expect(toc.getByRole('link',{name:'Colors'})).toBeVisible();
+ await expect(page.getByRole('navigation',{name:'Design system',exact:true})).toBeVisible();
+ await toc.getByRole('link',{name:'Colors'}).click();
+ await expect(page.locator('#ds-colors')).toBeInViewport();
+ await page.getByRole('button',{name:'Collapse navigation'}).click();
+ await expect(page.locator('.docs-shell')).toHaveAttribute('data-collapsed','true');
+ await page.getByRole('button',{name:'Expand navigation'}).click();
+ await expect(page.locator('.docs-shell')).toHaveAttribute('data-collapsed','false');
+});
