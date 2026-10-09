@@ -39,7 +39,7 @@ export default function FoundationsPage({tone}:{tone:Theme}){
   };
   return <div className="ds-foundations ds-foundations--compact">
     <nav className="ds-local-nav" aria-label="Foundation sections">
-      {anchors.map(([label,id])=><button type="button" key={id} onClick={()=>document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'})}>{label}</button>)}
+      {anchors.map(([label,id])=><button type="button" key={id} onClick={()=>document.getElementById(id)?.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'})}>{label}</button>)}
     </nav>
 
     <section className="ds-section" id="ds-identity">
