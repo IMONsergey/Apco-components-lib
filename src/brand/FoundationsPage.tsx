@@ -21,10 +21,12 @@ const typeSamples=[
 const colorLabels:Record<string,string>={"page":"Page background","card":"Cards & panels","elevated":"Raised surfaces","strong":"Emphasis","tint":"Accent background","primary":"Headings","body":"Body text","muted":"Secondary text","visualInk":"Illustration lines","mark":"Logo accent","accent":"Links","action":"Primary action","actionHover":"Action hover","onAction":"Text on buttons","api":"API visuals","subtle":"Dividers","strongBorder":"Strong borders"};
 const spaces=tokens.spaces;
 const metrics=[
-  ['Container',tokens.layout.maxWidth],
-  ['Gutter',tokens.layout.baseGutter],
-  ['Header',tokens.layout.header],
-  ['Section gap',tokens.layout.sectionSpace],
+  {name:'Content width',value:tokens.layout.maxWidth,usage:'Maximum width'},
+  {name:'Desktop gutter',value:tokens.layout.baseGutter,usage:'Standard screens'},
+  {name:'Large-screen gutter',value:tokens.layout.desktopWideGutter,usage:'1600px and wider'},
+  {name:'Mobile gutter',value:tokens.layout.mobileGutter,usage:'Phones and compact screens'},
+  {name:'Header height',value:tokens.layout.header,usage:'Responsive height'},
+  {name:'Section spacing',value:tokens.layout.sectionSpace,usage:'Vertical rhythm'},
 ];
 const anchors=[['Identity','ds-identity'],['Colors','ds-colors'],['Type','ds-type'],['Spacing','ds-spacing'],['Layout','ds-layout'],['Motion','ds-motion']] as const;
 const pxVar=(px:number)=>'--ds-space-'+px/4;
@@ -93,8 +95,8 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
             return <button className="ds-token-row" type="button" key={key} title={entry.usage+' · Click to copy '+(copyFormat==='css'?'CSS variable':'HEX value')}
               onClick={()=>void copy(copyValue,key)}>
               <span className="ds-token-swatch" style={{backgroundColor:value}}/>
-              <span className="ds-token-name">{colorLabels[key]||key}</span>
-              <code>{entry.css}</code><span className="ds-token-hex">{value.toUpperCase()}</span>
+              <span className="ds-token-label"><strong className="ds-token-name">{colorLabels[key]||key}</strong><code>{entry.css}</code></span>
+              <span className="ds-token-hex">{value.toUpperCase()}</span>
               <span className="ds-token-copy">{copied===key?'Copied':<Icon name="copy"/>}</span>
             </button>;
           })}
@@ -138,7 +140,9 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
 
     {(!jumpTo||jumpTo==='layout')&&<section className="ds-section" id="ds-layout">
       <div className="ds-section-bar">{heading('Layout','layout')}</div>
-      <div className="ds-layout-metrics">{metrics.map(([name,value])=><div key={name}><span>{name}</span><code>{value}</code></div>)}</div>
+      <div className="ds-layout-metrics">{metrics.map(item=><div key={item.name}>
+        <span>{item.name}</span><code>{item.value}</code><small>{item.usage}</small>
+       </div>)}</div>
       <div className="ds-reference-block" id="ds-breakpoints">
         <h3>Responsive breakpoints</h3>
         <div className="ds-breakpoint-list">{tokens.breakpoints.map(b=><div key={b.label}>
