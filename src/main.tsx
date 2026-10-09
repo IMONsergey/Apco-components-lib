@@ -19,5 +19,6 @@ import './styles/icons.css';
 import './styles/ux-refinements.css';
 import './styles/site-fidelity.css';
 import './styles/docs-shell.css';
+import './styles/friendly-ui.css';
 
 createRoot(document.getElementById('root')!).render(<StrictMode><MotionProvider><App /></MotionProvider></StrictMode>);
