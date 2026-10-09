@@ -65,15 +65,15 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
           <img src={base+'assets/brand/wordmark-dark.svg'} alt="APCOSYS dark wordmark"/><span>Dark SVG <Icon name="external"/></span>
         </a>
       </div>
-      <details className="ds-native-details ds-identity-details">
-        <summary>Symbols and logo usage <span>+</span></summary>
+      <div className="ds-reference-block ds-identity-details" id="ds-symbols">
+        <h3>Symbols & logo usage</h3>
         <div className="ds-identity-extra">
           <div><span>Responsive website mark</span><Logo/></div>
           <a href={base+'assets/brand/symbol-light.svg'} target="_blank" rel="noreferrer"><img src={base+'assets/brand/symbol-light.svg'} alt="Light symbol"/>Light symbol <Icon name="external"/></a>
           <a href={base+'assets/brand/symbol-dark.svg'} target="_blank" rel="noreferrer"><img src={base+'assets/brand/symbol-dark.svg'} alt="Dark symbol"/>Dark symbol <Icon name="external"/></a>
         </div>
         <p className="ds-caption">Use the supplied SVG geometry without distortion. Select the appropriate variant for the background.</p>
-      </details>
+      </div>
     </section>}
 
     {(!jumpTo||jumpTo==='colors')&&<section className="ds-section" id="ds-colors">
@@ -101,8 +101,8 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
         </div>
       </div>)}
       <a className="ds-token-download" href={base+'tokens/apcosys.tokens.json'} download="apcosys.tokens.json">Download design tokens <Icon name="down"/></a>
-      <details className="ds-native-details">
-        <summary>Contrast reference <span>+</span></summary>
+      <div className="ds-reference-block" id="ds-contrast">
+        <h3>Contrast</h3>
         <div className="ds-contrast-pair">
           <div className="ds-contrast-sample" style={{background:tokens.colors.card[tone],color:tokens.colors.primary[tone]}}>
             <span>Text / Card</span><strong>Aa</strong><small>{ratio(tokens.colors.primary[tone],tokens.colors.card[tone])}:1</small>
@@ -111,7 +111,7 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
             <span>Text / Action</span><strong>Aa</strong><small>{ratio(tokens.colors.onAction[tone],tokens.colors.action[tone])}:1</small>
           </div>
         </div>
-      </details>
+      </div>
     </section>}
 
     {(!jumpTo||jumpTo==='typography')&&<section className="ds-section" id="ds-type">
@@ -128,23 +128,23 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
       <div className="ds-spacing-grid">{spaces.map(n=><div className="ds-space-row" key={n}>
         <code>{n}px</code><span className="ds-space-bar" style={{width:n}}/><code>{pxVar(n)}</code>
       </div>)}</div>
-      <details className="ds-native-details">
-        <summary>Border radii <span>+</span></summary>
+      <div className="ds-reference-block" id="ds-radii">
+        <h3>Border radii</h3>
         <div className="ds-radii-grid">{Object.entries(tokens.radii).map(([name,size])=><div key={name}>
           <div style={{borderRadius:size}}/><strong>{name}</strong><code>{size}</code>
         </div>)}</div>
-      </details>
+      </div>
     </section>}
 
     {(!jumpTo||jumpTo==='layout')&&<section className="ds-section" id="ds-layout">
       <div className="ds-section-bar">{heading('Layout','layout')}</div>
       <div className="ds-layout-metrics">{metrics.map(([name,value])=><div key={name}><span>{name}</span><code>{value}</code></div>)}</div>
-      <details className="ds-native-details">
-        <summary>Responsive breakpoints <span>+</span></summary>
+      <div className="ds-reference-block" id="ds-breakpoints">
+        <h3>Responsive breakpoints</h3>
         <div className="ds-breakpoint-list">{tokens.breakpoints.map(b=><div key={b.label}>
           <strong>{b.label}</strong><code>{b.max===null?b.min+'px+':b.min+'–'+b.max+'px'}</code><span>{b.notes}</span>
         </div>)}</div>
-      </details>
+      </div>
     </section>}
 
     {(!jumpTo||jumpTo==='motion')&&<section className="ds-section" id="ds-motion">
