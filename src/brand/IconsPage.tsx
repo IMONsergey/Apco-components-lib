@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Menu, X, Search, Check, Plus, Minus, ArrowRight, ArrowDown } from 'lucide';
 import { MorphIcon } from 'morphicons/react';
-import { Icon as NativeIcon, type IconName } from '../components/ui/Icon';
+import type { IconName } from '../components/ui/Icon';
+import { LibraryIcon } from '../components/system/LibraryIcon';
 import registry from '../generated/icon-manifest.json';
 
 type Family = 'apcosys' | 'feather' | 'phosphor';
@@ -19,18 +20,6 @@ const families: {key:Family;label:string;notes:string}[] = [
 const all: Record<Family, readonly string[]> = {
   apcosys:native, feather:registry.feather, phosphor:registry.phosphor,
 };
-const asset = (family: Family) => import.meta.env.BASE_URL + 'icons/' + family + '.svg';
-
-export function LibraryIcon({family,name,size=24,stroke=1.5}: IconChoice & {size?:number;stroke?:number}) {
-  if (family==='apcosys')
-    return <NativeIcon name={name as IconName} width={size} height={size} strokeWidth={stroke} />;
-  return <svg className={'ds-icon ds-icon--'+family} width={size} height={size}
-    viewBox={family==='phosphor'?'0 0 256 256':'0 0 24 24'}
-    fill={family==='phosphor'?'currentColor':'none'} stroke={family==='feather'?'currentColor':'none'}
-    strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <use href={asset(family)+'#'+family+'-'+name} />
-  </svg>;
-}
 
 async function copyText(value:string) {
   try { await navigator.clipboard.writeText(value); } catch { /* clipboard permission */ }
