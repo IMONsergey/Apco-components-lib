@@ -1,0 +1,282 @@
+{
+  "version": "1.0.0",
+  "name": "APCOSYS Design Tokens",
+  "verifiedAgainst": "IMONsergey/apcoweb/main",
+  "sources": {
+    "colors": "src/styles/tokens.css + src/styles/theme.css",
+    "typography": "src/styles/tokens.css + src/styles/site.css",
+    "layout": "src/styles/tokens.css + src/styles/interface-layout.css",
+    "spacing": "normalized from production values"
+  },
+  "colors": {
+    "page": {
+      "css": "--surface-page",
+      "light": "#f6f6f6",
+      "dark": "#0d1113",
+      "usage": "Page canvas"
+    },
+    "card": {
+      "css": "--surface-card",
+      "light": "#ffffff",
+      "dark": "#151b1f",
+      "usage": "Cards and overlays"
+    },
+    "elevated": {
+      "css": "--surface-elevated",
+      "light": "#eceef1",
+      "dark": "#1c252a",
+      "usage": "Secondary controls"
+    },
+    "strong": {
+      "css": "--surface-strong",
+      "light": "#e1e4e7",
+      "dark": "#263239",
+      "usage": "Pressed / elevated state"
+    },
+    "primary": {
+      "css": "--text-primary",
+      "light": "#121314",
+      "dark": "#f4f7f8",
+      "usage": "Headings and primary icon"
+    },
+    "body": {
+      "css": "--color-text-body",
+      "light": "#3a3e43",
+      "dark": "#cbd3d6",
+      "usage": "Body copy"
+    },
+    "muted": {
+      "css": "--text-muted",
+      "light": "#62666b",
+      "dark": "#9ca8ae",
+      "usage": "Metadata and hints"
+    },
+    "mark": {
+      "css": "--brand-mark",
+      "light": "#03879f",
+      "dark": "#43c0d0",
+      "usage": "Logo accent"
+    },
+    "accent": {
+      "css": "--accent-text",
+      "light": "#037a8f",
+      "dark": "#43c0d0",
+      "usage": "Links and accents"
+    },
+    "action": {
+      "css": "--action-fill",
+      "light": "#037a8f",
+      "dark": "#04768a",
+      "usage": "Filled controls"
+    },
+    "actionHover": {
+      "css": "--action-hover-fill",
+      "light": "#036c7f",
+      "dark": "#0b778b",
+      "usage": "Filled control hover"
+    },
+    "onAction": {
+      "css": "--on-action",
+      "light": "#ffffff",
+      "dark": "#ffffff",
+      "usage": "Content on primary action"
+    },
+    "tint": {
+      "css": "--surface-tint",
+      "light": "#d3eaee",
+      "dark": "#173b42",
+      "usage": "Selection and accent backgrounds"
+    },
+    "subtle": {
+      "css": "--border-subtle",
+      "light": "#dde1e5",
+      "dark": "#344148",
+      "usage": "Dividers"
+    },
+    "strongBorder": {
+      "css": "--border-strong",
+      "light": "#828993",
+      "dark": "#617078",
+      "usage": "Emphasized borders"
+    },
+    "api": {
+      "css": "--api-surface",
+      "light": "#037a8f",
+      "dark": "#075462",
+      "usage": "API illustration surfaces"
+    },
+    "visualInk": {
+      "css": "--visual-ink",
+      "light": "#121314",
+      "dark": "#b4c2c7",
+      "usage": "Line art and diagrams"
+    }
+  },
+  "fonts": {
+    "sans": {
+      "family": "Instrument Sans",
+      "css": "--font-sans",
+      "asset": "/fonts/instrument-sans-latin.woff2",
+      "weights": [
+        400,
+        500,
+        600
+      ]
+    },
+    "mono": {
+      "family": "IBM Plex Mono",
+      "css": "--font-mono",
+      "asset": "/fonts/ibm-plex-mono-latin.woff2",
+      "weights": [
+        400,
+        500
+      ]
+    }
+  },
+  "typography": [
+    {
+      "name": "Display",
+      "size": "clamp(72px, 7.3611vw, 106px)",
+      "weight": 500,
+      "tracking": "-0.04em",
+      "origin": "site.css / hero"
+    },
+    {
+      "name": "Heading",
+      "size": "clamp(48px, 5.9722vw, 86px)",
+      "weight": 500,
+      "tracking": "-0.05em",
+      "origin": "tokens.css / h2"
+    },
+    {
+      "name": "Section body",
+      "size": "18px desktop · 16px mobile",
+      "weight": 400,
+      "tracking": "normal",
+      "origin": "tokens.css / p"
+    },
+    {
+      "name": "Controls",
+      "size": "14px",
+      "weight": 500,
+      "tracking": "normal",
+      "origin": "site.css / buttons"
+    },
+    {
+      "name": "Eyebrow",
+      "size": "13px",
+      "weight": 400,
+      "tracking": "normal",
+      "origin": "tokens.css / eyebrow",
+      "family": "IBM Plex Mono"
+    }
+  ],
+  "spaces": [
+    4,
+    8,
+    12,
+    16,
+    20,
+    24,
+    32,
+    40,
+    48,
+    64,
+    80,
+    100,
+    128,
+    160
+  ],
+  "radii": {
+    "control": "5px",
+    "panel": "7px",
+    "navigationPanel": "12px"
+  },
+  "layout": {
+    "maxWidth": "1760px",
+    "baseGutter": "clamp(32px, calc(4vw - 8px), 40px)",
+    "desktopWideGutter": "clamp(48px, calc(10vw - 112px), 80px) at 1600px+",
+    "mobileGutter": "24px at <=599px; 20px at <=375px; 16px at <=340px",
+    "header": "96px desktop · 78px mobile",
+    "sectionSpace": "100px standard · 80px <=1199px · 64px <=599px"
+  },
+  "breakpoints": [
+    {
+      "min": 0,
+      "max": 340,
+      "label": "Small mobile",
+      "notes": "16px side gutter; 36px H2"
+    },
+    {
+      "min": 341,
+      "max": 375,
+      "label": "Compact mobile",
+      "notes": "20px side gutter; 38px H2"
+    },
+    {
+      "min": 376,
+      "max": 599,
+      "label": "Mobile",
+      "notes": "24px side gutter; 40px H2"
+    },
+    {
+      "min": 600,
+      "max": 899,
+      "label": "Tablet",
+      "notes": "Mobile navigation; two-column layouts as context allows"
+    },
+    {
+      "min": 900,
+      "max": 1199,
+      "label": "Small desktop",
+      "notes": "32px gutter; two-column pricing"
+    },
+    {
+      "min": 1200,
+      "max": 1399,
+      "label": "Desktop",
+      "notes": "Full navigation, four-column pricing"
+    },
+    {
+      "min": 1400,
+      "max": 1599,
+      "label": "Wide desktop",
+      "notes": "Desktop layout and section spacing"
+    },
+    {
+      "min": 1600,
+      "max": null,
+      "label": "Large screens",
+      "notes": "Fluid gutter up to 80px; small typography may scale"
+    }
+  ],
+  "motions": {
+    "ease": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+    "hover": "160–220ms",
+    "disclosure": "280ms",
+    "theme": "220ms",
+    "reducedMotion": "Disable nonessential transitions and animation"
+  },
+  "iconography": {
+    "native": {
+      "grid": 16,
+      "stroke": 1.5
+    },
+    "feather": {
+      "grid": 24,
+      "stroke": 1.5
+    },
+    "phosphor": {
+      "grid": 256,
+      "weight": "regular"
+    },
+    "recommendedSizes": [
+      16,
+      20,
+      24,
+      32
+    ],
+    "defaultColor": "currentColor",
+    "minTouchTarget": "44px (library recommendation)"
+  }
+}
