@@ -17,6 +17,7 @@ const typeSamples=[
   {title:'Interface',spec:'14 · 500',cls:'ds-type-control',text:'Get started'},
   {title:'Data',spec:'13 · Mono',cls:'ds-type-mono',text:'93.184.216.34 · 200 OK'},
 ];
+const colorLabels:Record<string,string>={"page":"Page background","card":"Cards & panels","elevated":"Raised surfaces","strong":"Emphasis","tint":"Accent background","primary":"Headings","body":"Body text","muted":"Secondary text","visualInk":"Illustration lines","mark":"Logo accent","accent":"Links","action":"Primary action","actionHover":"Action hover","onAction":"Text on buttons","api":"API visuals","subtle":"Dividers","strongBorder":"Strong borders"};
 const spaces=tokens.spaces;
 const metrics=[
   ['Container',tokens.layout.maxWidth],
@@ -43,7 +44,7 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
    if(id)requestAnimationFrame(()=>document.getElementById(id)?.scrollIntoView({block:'start',behavior:'instant'}));
   },[jumpTo]);
   const [copied,setCopied]=useState<string|null>(null);
-  const [copyFormat,setCopyFormat]=useState<'css'|'hex'>('css');
+  const [copyFormat,setCopyFormat]=useState<'css'|'hex'>('hex');
   const copy=async(value:string)=>{
     try{await navigator.clipboard.writeText(value);setCopied(value);}catch{setCopied(null);}
   };
@@ -77,7 +78,7 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
       <div className="ds-section-bar"><h2>Colors</h2><div className="ds-color-actions">
         <span className="ds-muted-note">{tone==='dark'?'Dark':'Light'} theme · click to copy</span>
         <div className="ds-copy-format" role="group" aria-label="Copy color format">
-          {(['css','hex'] as const).map(mode=><button key={mode} type="button" aria-pressed={copyFormat===mode} onClick={()=>setCopyFormat(mode)}>{mode.toUpperCase()}</button>)}
+          {(['css','hex'] as const).map(mode=><button key={mode} type="button" aria-pressed={copyFormat===mode} onClick={()=>setCopyFormat(mode)}>{mode==='css'?'CSS variable':'HEX'}</button>)}
         </div>
       </div></div>
       {groups.map(group=><div key={group.name} className="ds-token-group" id={'ds-color-'+group.name.toLowerCase().replace(/[^a-z]+/g,'-')}>
@@ -90,7 +91,7 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
             return <button className="ds-token-row" type="button" key={key} title={entry.usage+' · Click to copy '+(copyFormat==='css'?'CSS variable':'HEX value')}
               onClick={()=>void copy(copyValue)}>
               <span className="ds-token-swatch" style={{backgroundColor:value}}/>
-              <span className="ds-token-name">{key}</span>
+              <span className="ds-token-name">{colorLabels[key]||key}</span>
               <code>{entry.css}</code><span className="ds-token-hex">{value.toUpperCase()}</span>
               <span className="ds-token-copy">{copied===copyValue?'Copied':'↗'}</span>
             </button>;

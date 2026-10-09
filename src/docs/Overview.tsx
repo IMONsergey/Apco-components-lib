@@ -3,12 +3,12 @@ import tokens from '../tokens/apcosys.tokens.json';
 import { href } from './navigation';
 
 const palette=['page','card','ink','brand','tint'];
-const swatches=[
- tokens.colors.page.light,
- tokens.colors.card.light,
- tokens.colors.primary.light,
- tokens.colors.mark.light,
- tokens.colors.tint.light,
+const swatches=(tone:'light'|'dark')=>[
+ tokens.colors.page[tone],
+ tokens.colors.card[tone],
+ tokens.colors.primary[tone],
+ tokens.colors.mark[tone],
+ tokens.colors.tint[tone],
 ];
 const cards=[
  {id:'colors',title:'Colors',caption:'Your palette, ready to use',route:href('foundations','colors')},
@@ -17,7 +17,7 @@ const cards=[
  {id:'icons',title:'Icons',caption:'Find the right symbol',route:href('icons')},
 ] as const;
 
-export default function Overview(){
+export default function Overview({tone}:{tone:'light'|'dark'}){
  return <div className="docs-overview docs-overview--friendly">
   <div className="docs-overview__top">
    <span className="docs-kicker">APCOSYS DESIGN LIBRARY</span>
@@ -30,7 +30,7 @@ export default function Overview(){
     {cards.map(card=><a className="docs-overview__card docs-overview__card--visual" href={card.route} key={card.id}>
      <div className={'docs-overview__art docs-overview__art--'+card.id} aria-hidden="true">
       {card.id==='colors'&&<div className="docs-overview__swatches">
-       {swatches.map((color,i)=><span key={palette[i]} style={{backgroundColor:color}}/>)}
+       {swatches(tone).map((color,i)=><span key={palette[i]} style={{backgroundColor:color}}/>)}
       </div>}
       {card.id==='components'&&<div className="docs-overview__ui-sample">
        <span>Explore now <Icon name="arrow"/></span><span className="docs-overview__ui-sample-secondary">Learn more</span>

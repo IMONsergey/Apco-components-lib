@@ -137,7 +137,7 @@ export default function App() {
    (item.name+' '+item.tech+' '+item.group).toLowerCase().includes(search.trim().toLowerCase())
  ),[category,search]);
  return <DocsChrome route={route} tone={tone} onTheme={()=>setTone(v=>v==='dark'?'light':'dark')}>
-  {route.section==='overview'&&<Overview/>}
+  {route.section==='overview'&&<Overview tone={tone}/>}
   {route.section==='components'&&(focused?
    <ComponentPage item={focused} tone={tone}/>:
    <>
