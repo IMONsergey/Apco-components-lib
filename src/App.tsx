@@ -46,7 +46,7 @@ function Card({ item, tone, open }: {
       <div className="lib-card__head">
         <button type="button" className="lib-card__name" onClick={() => open(item)}>{item.name}</button>
         <button type="button" className="lib-card__open" aria-label={`Inspect ${item.name}`} onClick={() => open(item)}>
-          <Icon name="external" />
+          <Icon name="focus" />
         </button>
       </div>
       <div className="lib-surface lib-card__preview" data-tone={tone}>

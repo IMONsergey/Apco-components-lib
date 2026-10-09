@@ -15,5 +15,6 @@ import './styles/interface-primitives.css';
 import './styles/brand-system.css';
 import './styles/foundations.css';
 import './styles/icons.css';
+import './styles/ux-refinements.css';
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
