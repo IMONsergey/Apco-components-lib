@@ -65,7 +65,7 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
    setFamily(family);setLimit(72);
    const valid=Boolean(requestedIcon&&all[family].includes(requestedIcon));
    setSelected(valid?{family,name:requestedIcon!}:null);
-   setCopied(null);
+   setCopied(null);setCopyFallback(null);
    setSearch(valid?requestedIcon!:'');
   },[initialFamily]);
   const [family,setFamily]=useState<Family>('apcosys');
@@ -75,6 +75,7 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
   const [limit,setLimit]=useState(72);
   const [selected,setSelected]=useState<IconChoice|null>(null);
   const [copied,setCopied]=useState<string|null>(null);
+  const [copyFallback,setCopyFallback]=useState<IconChoice|null>(null);
   const names=useMemo(()=>all[family].filter(name=>name.toLowerCase().includes(search.trim().toLowerCase())),[family,search]);
   const visible=names.slice(0,limit);
   const sourceCode=(item:IconChoice)=>{
@@ -85,7 +86,7 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
     <div id="docs-icon-library" className="ds-section-bar"><h2>Browse icons</h2><span className="ds-label" role="status" aria-live="polite">{copied?'Code copied · '+copied.split('/')[1]:'Click an icon to copy its code'}</span></div>
     <div className="ds-icon-toolbar">
       <div className="ds-toggle-row">{families.map(f=><button key={f.key} type="button" data-active={family===f.key} aria-pressed={family===f.key}
-        onClick={()=>{setFamily(f.key);setSelected(null);setCopied(null);setSearch('');setLimit(72)}}>{f.label}<small>{all[f.key].length}</small></button>)}</div>
+        onClick={()=>{setFamily(f.key);setSelected(null);setCopied(null);setCopyFallback(null);setSearch('');setLimit(72)}}>{f.label}<small>{all[f.key].length}</small></button>)}</div>
       <input type="search" aria-label="Search icons" placeholder="Find an icon..." value={search} onChange={e=>{setSearch(e.target.value);setLimit(72)}}/>
     </div>
     <details id="docs-icon-options" className="ds-icon-settings"><summary>Size & stroke <span>+</span></summary><div className="ds-icon-options">
@@ -96,15 +97,25 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
         {[1,1.5,2].map(n=><option key={n} value={n}>{n}px</option>)}</select></label>
     </div></details>
     <div className="ds-icon-catalog" role="group" aria-label={family+' icons'}>
-      {visible.map(name=><button key={name} type="button" className="ds-icon-tile" data-selected={selected?.family===family&&selected.name===name}
-        data-copied={copied===family+'/'+name} aria-label={name} title={'Copy '+name+' code'}
-        onClick={async()=>{
-          setSelected({family,name});
-          try{await navigator.clipboard.writeText(sourceCode({family,name}));setCopied(family+'/'+name)}
-          catch{setCopied(null)}
-        }}>
-        <LibraryIcon family={family} name={name} size={size} stroke={stroke} spriteBaseUrl={spriteBaseUrl}/>
-        <span>{name}</span></button>)}
+      {visible.map(name=><div className="ds-icon-cell" key={name}>
+        <button type="button" className="ds-icon-tile" data-selected={selected?.family===family&&selected.name===name}
+          data-copied={copied===family+'/'+name} aria-label={name} title={'Copy '+name+' code'}
+          onClick={async()=>{
+            setSelected({family,name});
+            try{await navigator.clipboard.writeText(sourceCode({family,name}));setCopied(family+'/'+name);setCopyFallback(null)}
+            catch{setCopied(null);setCopyFallback({family,name})}
+          }}>
+          <LibraryIcon family={family} name={name} size={size} stroke={stroke} spriteBaseUrl={spriteBaseUrl}/>
+          <span>{name}</span>
+        </button>
+        {copyFallback?.family===family&&copyFallback.name===name&&
+          <div className="ds-icon-copy-fallback" role="status">
+            <span>Clipboard unavailable. Select to copy:</span>
+            <input readOnly aria-label="Icon JSX code" value={sourceCode({family,name})}
+              onFocus={e=>e.currentTarget.select()} onClick={e=>e.currentTarget.select()}/>
+            <button type="button" onClick={()=>setCopyFallback(null)} aria-label="Close copy fallback"><Icon name="close"/></button>
+          </div>}
+      </div>)}
     </div>
     {names.length===0&&<p className="ds-caption ds-empty">No icons found</p>}
     {names.length>limit&&<button className="ds-load-more" type="button" onClick={()=>setLimit(v=>v+72)}>Show more · {names.length-limit} remaining</button>}
