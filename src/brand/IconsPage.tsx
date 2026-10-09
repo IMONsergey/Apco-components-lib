@@ -43,7 +43,7 @@ function MorphPairs(){
     <div className="ds-morph-top">
       <span className="ds-label">Spring</span>
       <div className="ds-toggle-row">{(['smooth','snappy','bouncy'] as const).map(p=>
-        <button type="button" key={p} data-active={spring===p} onClick={()=>setSpring(p)}>{p}</button>)}</div>
+        <button type="button" key={p} data-active={spring===p} aria-pressed={spring===p} onClick={()=>setSpring(p)}>{p}</button>)}</div>
     </div>
     <div className="ds-morph-grid">
       {pairs.map((pair,i)=><button type="button" className="ds-morph-card" key={pair.name}
@@ -74,7 +74,7 @@ export default function IconsPage(){
   return <div className="ds-icons-page">
     <div className="ds-section-bar"><div><h2>Icon library</h2><p>Native system + open-source extended families</p></div><span className="ds-label">All icons use currentColor</span></div>
     <div className="ds-icon-toolbar">
-      <div className="ds-toggle-row">{families.map(f=><button key={f.key} type="button" data-active={family===f.key}
+      <div className="ds-toggle-row">{families.map(f=><button key={f.key} type="button" data-active={family===f.key} aria-pressed={family===f.key}
         onClick={()=>{setFamily(f.key);setSelected(null);setLimit(72)}}>{f.label}<small>{all[f.key].length}</small></button>)}</div>
       <input type="search" aria-label="Search icons" placeholder="Search icons" value={search} onChange={e=>{setSearch(e.target.value);setLimit(72)}}/>
     </div>

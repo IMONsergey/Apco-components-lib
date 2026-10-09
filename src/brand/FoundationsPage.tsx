@@ -60,7 +60,7 @@ export default function FoundationsPage(){
    <section className="ds-section" id="foundation-colors">
     <div className="ds-section-bar"><div><h2>Color tokens</h2><p>17 semantic roles · values taken from published CSS</p></div>
       <div className="ds-toggle-row">{(['light','dark'] as const).map(mode=>
-        <button key={mode} type="button" data-active={colorMode===mode} onClick={()=>setColorMode(mode)}>{mode}</button>)}</div>
+        <button key={mode} type="button" data-active={colorMode===mode} aria-pressed={colorMode===mode} onClick={()=>setColorMode(mode)}>{mode}</button>)}</div>
     </div>
     <div className="ds-color-grid">{pairs.map(([key,entry])=>{
       const color=entry[colorMode] as string;

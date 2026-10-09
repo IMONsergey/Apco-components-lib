@@ -45,6 +45,9 @@ Original user's reference archives contain 4 SVG brand marks and 274 Feather / 1
 
 ## Licensing
 
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the exact extension packages and license references.
+
+
 Website icons and APCOSYS logo: first-party brand assets. Feather and Phosphor: MIT (third-party assets); Lucide: ISC; Morphicons: MIT. Retain license/attribution notices in redistributed work. Avoid combining stroke and fill families within a single navigation toolbar.
 
 ## Workflow
