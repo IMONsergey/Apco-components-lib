@@ -116,7 +116,7 @@ export default function App() {
  const [tone,setTone]=useState<Tone>(()=>document.documentElement.dataset.theme==='dark'?'dark':'light');
  const [selected,setSelected]=useState<Item|null>(null);
  useEffect(()=>{
-  const page=route.slug?route.slug.replace(/-/g,' '):route.section==='overview'?'Design system':route.section[0].toUpperCase()+route.section.slice(1);
+  const page=route.slug?route.slug.replace(/-/g,' '):route.section==='overview'?'Design system':route.section.charAt(0).toUpperCase()+route.section.slice(1);
   document.title=page+' — APCOSYS Design System';
  },[route.section,route.slug]);
  useEffect(()=>{
