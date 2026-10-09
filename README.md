@@ -24,6 +24,12 @@ npm run test:ux
 
 `postinstall` runs `scripts/generate-icons.mjs`, which converts pinned local npm icon data to SVG sprites and the searchable manifest. Nothing is downloaded by the browser from a third-party icon service.
 
+## Copy confirmations
+
+Icon-family names and counts have explicit spacing on desktop and mobile. Copying an icon no longer marks it as a persistent selection or updates a distant page caption. A small **Code copied** toast appears at the bottom centre for two seconds after the clipboard write succeeds; repeated clicks replace the same notification instead of stacking. It does not move the layout, take focus or intercept clicks. Reduced-motion preferences disable its movement.
+
+The same confirmation is used for component snippets and examples, with **Color copied** and **CSS copied** for their respective actions. Pending or denied clipboard writes never show success; the existing selectable manual-copy fallback remains available. Explicit icon deep links still highlight their destination independently of copying.
+
 ## Design tokens
 
 - `src/styles/tokens.css` — preserved published colors, fonts and layout; CSS source of truth.

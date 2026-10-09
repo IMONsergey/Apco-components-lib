@@ -1,6 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
+import {CopyToastProvider} from './docs/CopyToast';
+import './styles/copy-toast.css';
 import { DesignDraftProvider } from './brand/draft-store';
 import { MotionProvider } from './components/visuals/MotionProvider';
 import './styles/instrument-sans.css';
@@ -22,6 +24,6 @@ import './styles/site-fidelity.css';
 import './styles/docs-shell.css';
 import './styles/friendly-ui.css';
 
-createRoot(document.getElementById('root')!).render(<StrictMode><MotionProvider><DesignDraftProvider><App /></DesignDraftProvider></MotionProvider></StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode><CopyToastProvider><MotionProvider><DesignDraftProvider><App /></DesignDraftProvider></MotionProvider></CopyToastProvider></StrictMode>);
 import './styles/color-workbench.css';
 import './styles/foundation-edit.css';

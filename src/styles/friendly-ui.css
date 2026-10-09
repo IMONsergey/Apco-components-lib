@@ -103,8 +103,6 @@
 .docs-component__code-heading button{display:flex;gap:8px;align-items:center;border:0;background:transparent;color:var(--action);font-size:12px}
 .docs-component__code-heading button svg{width:15px;height:15px}
 .docs-component__code pre.lib-code{margin:0 19px 19px;max-height:480px}
-.docs-icons-page>.ds-section-bar .ds-label[role='status']{min-height:18px}
-.ds-icon-tile[data-copied='true']{color:var(--action);background:var(--tint)}
 @media(max-width:640px){
  .docs-content .lib-card__preview{height:255px}
  .docs-content .lib-card[data-group='Interface motion']:not(:has(.lib-preview--plancard)) .lib-card__preview{height:228px}

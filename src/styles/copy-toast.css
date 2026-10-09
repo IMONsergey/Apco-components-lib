@@ -1,0 +1,7 @@
+/* Feedback is viewport-fixed: it never takes space from the catalog or steals focus. */
+.docs-copy-toast-region{position:fixed;z-index:300;left:16px;right:16px;bottom:calc(24px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;pointer-events:none}
+.docs-copy-toast{display:flex;align-items:center;gap:9px;max-width:min(360px,100%);min-height:42px;padding:11px 16px;border:1px solid var(--ink);border-radius:7px;background:var(--ink);color:var(--white);box-shadow:0 6px 22px rgb(0 0 0 / 14%);font:500 13px/1.35 var(--font-sans);text-align:center;pointer-events:none;animation:docs-copy-confirm 2000ms ease both}
+.docs-copy-toast svg{flex:none}
+.docs-copy-toast span{overflow-wrap:anywhere}
+@keyframes docs-copy-confirm{0%{opacity:0;transform:translateY(8px)}8%,90%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(4px)}}
+@media(prefers-reduced-motion:reduce){.docs-copy-toast{animation:none}}

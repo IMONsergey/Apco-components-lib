@@ -51,7 +51,7 @@ export default function ColorWorkbench({tone,focused=false}:{tone:Theme;focused?
  const [editing,setEditing]=useFoundationMode('colors');
  const [copyFormat,setCopyFormat]=useState<'css'|'hex'>('hex');
  const [selected,setSelected]=useState<ColorRole|null>(null);
- const clipboard=useClipboard(tone+':'+editing+':'+copyFormat+':'+JSON.stringify(draft.colors));
+ const clipboard=useClipboard(tone+':'+editing+':'+copyFormat+':'+JSON.stringify(draft.colors),'Color copied');
  const changed=draftCount(draft,'colors');
  const value=(role:ColorRole)=>editing?(draft.colors[tone]?.[role]||tokens.colors[role][tone]):tokens.colors[role][tone];
  const copy=(role:ColorRole,text:string)=>{setSelected(role);void clipboard.copy(text,role);};
@@ -89,7 +89,6 @@ export default function ColorWorkbench({tone,focused=false}:{tone:Theme;focused?
     })}
    </div>
   </div>)}
-  <span className="ds-sr-only" role="status">{clipboard.copiedId?'Color copied':''}</span>
   <div className="ds-foundation-footer">
    <a className="ds-token-download" href={import.meta.env.BASE_URL+'tokens/apcosys.tokens.json'} download="apcosys.tokens.json">Download design tokens (approved) <Icon name="down"/></a>
    {changed>0&&<button type="button" className="ds-edit-reset" onClick={()=>reset('colors')}>Reset colors</button>}

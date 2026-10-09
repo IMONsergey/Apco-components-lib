@@ -82,8 +82,9 @@ export default function IconsPage({initialFamily='',state,onStateChange}:{initia
    setSelected(validSource&&name&&all[source].includes(name)?{family:source,name}:null);clear();
   },[initialFamily,onStateChange]);
   const [selected,setSelected]=useState<IconChoice|null>(null);
-  const {copiedId:copied,manualValue:manualCode,copy,clear}=useClipboard(family+':'+size+':'+stroke+':'+search);
-  const copyFallback=manualCode!==null?selected:null;
+  const [copyTarget,setCopyTarget]=useState<IconChoice|null>(null);
+  const {manualValue:manualCode,copy,clear}=useClipboard(family+':'+size+':'+stroke+':'+search);
+  const copyFallback=manualCode!==null?copyTarget:null;
   const names=useMemo(()=>all[family].filter(name=>name.toLowerCase().includes(search.trim().toLowerCase())),[family,search]);
   const visible=names.slice(0,limit);
   const sourceCode=(item:IconChoice)=>{
@@ -91,10 +92,10 @@ export default function IconsPage({initialFamily='',state,onStateChange}:{initia
     return `<LibraryIcon family="${item.family}" name="${item.name}" size={${size}}${item.family==='feather'?` stroke={${stroke}}`:""} />`;
   };
   return <div className="ds-icons-page">
-    <div id="docs-icon-library" className="ds-section-bar"><h2>Browse icons</h2><span className="ds-label" role="status" aria-live="polite">{copied?'Code copied · '+copied.split('/')[1]:'Click an icon to copy its code'}</span></div>
+    <div id="docs-icon-library" className="ds-section-bar"><h2>Browse icons</h2></div>
     <div className="ds-icon-toolbar">
-      <div className="ds-toggle-row">{families.map(f=><button key={f.key} type="button" data-active={family===f.key} aria-pressed={family===f.key}
-        onClick={()=>{setFamily(f.key);setSelected(null);clear();setSearch('');setLimit(72);window.location.hash=href('icons',f.key)}}>{f.label}<small>{all[f.key].length}</small></button>)}</div>
+      <div className="ds-toggle-row ds-icon-families" role="group" aria-label="Icon families">{families.map(f=><button key={f.key} type="button" data-active={family===f.key} aria-pressed={family===f.key} aria-label={f.label+', '+all[f.key].length+' icons'}
+        onClick={()=>{setFamily(f.key);setSelected(null);clear();setSearch('');setLimit(72);window.location.hash=href('icons',f.key)}}><span className="ds-icon-family-name">{f.label}</span><small className="ds-icon-family-count" aria-hidden="true">{all[f.key].length}</small></button>)}</div>
       <input type="search" aria-label="Search icons" placeholder="Find an icon..." value={search} onChange={e=>{setSearch(e.target.value);setLimit(72)}}/>
     </div>
     <div id="docs-icon-options" className="ds-icon-settings"><div className="ds-icon-options">
@@ -107,9 +108,9 @@ export default function IconsPage({initialFamily='',state,onStateChange}:{initia
     <div className="ds-icon-catalog" role="group" aria-label={family+' icons'}>
       {visible.map(name=><div className="ds-icon-cell" key={name}>
         <button type="button" className="ds-icon-tile" data-selected={selected?.family===family&&selected.name===name}
-          data-copied={copied===family+'/'+name} aria-label={name} title={'Copy '+name+' code'}
+          aria-label={name} title={'Copy '+name+' code'}
           onClick={async()=>{
-            setSelected({family,name});
+            setCopyTarget({family,name});
             await copy(sourceCode({family,name}),family+'/'+name);
           }}>
           <LibraryIcon family={family} name={name} size={size} stroke={stroke} spriteBaseUrl={spriteBaseUrl}/>

@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import {useCopyToast,type CopyNotice} from '../docs/CopyToast';
+
 /** Feedback belongs to a specific value and context, never to a stale route or theme. */
-export function useClipboard(contextKey = '') {
+export function useClipboard(contextKey = '', message:CopyNotice = 'Code copied') {
+ const {begin,confirm}=useCopyToast();
  const [copiedId, setCopiedId] = useState<string | null>(null);
  const [manualValue, setManualValue] = useState<string | null>(null);
  const epoch = useRef(0);
@@ -18,6 +21,7 @@ export function useClipboard(contextKey = '') {
  }, [contextKey, clear]);
  const copy = useCallback(async (value: string, id = value) => {
   const request = ++epoch.current;
+  const noticeRequest=begin();
   clearTimeout(timer.current);
   setCopiedId(null);
   setManualValue(null);
@@ -26,10 +30,11 @@ export function useClipboard(contextKey = '') {
    await navigator.clipboard.writeText(value);
    if (request !== epoch.current) return;
    setCopiedId(id);
+   confirm(noticeRequest,message);
    timer.current = setTimeout(() => setCopiedId(null), 2400);
   } catch {
    if (request === epoch.current) setManualValue(value);
   }
- }, []);
+ }, [begin,confirm,message]);
  return {copiedId, manualValue, copy, clear};
 }

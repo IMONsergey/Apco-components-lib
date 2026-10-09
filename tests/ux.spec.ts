@@ -20,15 +20,15 @@ test('sections and dark theme stay coordinated', async ({page})=>{
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
 });
 
-test('icons copy usage on one click without any floating panel',async({page})=>{
+test('icons copy usage on one click with a transient toast, not a details panel',async({page})=>{
  await page.context().grantPermissions(['clipboard-read','clipboard-write']);
  await page.goto(root+'#icons');
  await page.getByRole('button',{name:/Feather/}).click();
  const tile=page.getByRole('button',{name:'activity',exact:true});
  await tile.click();
- await expect(tile).toHaveAttribute('data-selected','true');
- await expect(tile).toHaveAttribute('data-copied','true');
- await expect(page.getByRole('status')).toContainText('Code copied · activity');
+ await expect(tile).toHaveAttribute('data-selected','false');
+ await expect(page.getByTestId('copy-toast')).toHaveText('Code copied');
+ await expect(page.locator('#docs-icon-library [role=status]')).toHaveCount(0);
  await expect(page.locator('.ds-selected-icon')).toHaveCount(0);
  const settings=page.locator('#docs-icon-options');
  await expect(settings.getByRole('combobox',{name:'Icon size'})).toBeVisible();
@@ -71,7 +71,7 @@ test('mobile icon interaction stays inline and without horizontal overflow',asyn
  await page.getByRole('button',{name:/Feather/}).click();
  const tile=page.getByRole('button',{name:'activity',exact:true});
  await tile.click();
- await expect(tile).toHaveAttribute('data-copied','true');
+ await expect(page.getByTestId('copy-toast')).toHaveText('Code copied');
  await expect(page.locator('.ds-selected-icon')).toHaveCount(0);
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
  expect(overflow).toBeLessThanOrEqual(2);
@@ -361,8 +361,8 @@ test('clipboard permissions denied still provide manually selectable icon code',
  await page.getByRole('button',{name:/Feather/}).click();
  const tile=page.getByRole('button',{name:'activity',exact:true});
  await tile.click();
- await expect(tile).toHaveAttribute('data-selected','true');
- await expect(tile).toHaveAttribute('data-copied','false');
+ await expect(tile).toHaveAttribute('data-selected','false');
+ await expect(page.getByTestId('copy-toast')).toHaveCount(0);
  const fallback=page.locator('.ds-icon-copy-fallback');
  await expect(fallback).toBeVisible();
  await expect(fallback.getByRole('textbox',{name:'Icon JSX code'})).toHaveValue(/LibraryIcon.*activity/);

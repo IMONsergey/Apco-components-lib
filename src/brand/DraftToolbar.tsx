@@ -6,7 +6,7 @@ import ManualCopy from './ManualCopy';
 export default function DraftToolbar({editing=false}:{editing?:boolean}) {
  const {count,reset,exportCss,exportJson,canUndo,canRedo,undo,redo,storageAvailable}=useDesignDraft();
  const css=exportCss();
- const clipboard=useClipboard(css);
+ const clipboard=useClipboard(css,'CSS copied');
  const root=useRef<HTMLDivElement>(null);
  const lastAction=useRef<'undo'|'redo'|'reset'|null>(null);
  useLayoutEffect(()=>{
