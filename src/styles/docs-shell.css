@@ -187,3 +187,9 @@
 }
 @media(max-width:375px){.docs-header__brand-title,.docs-header__divider{display:none}.docs-header__brand .apcosys-logo{width:104px}.docs-content-layout{padding-inline:16px}.docs-breadcrumbs,.docs-footer{padding-inline:16px}}
 @media(prefers-reduced-motion:reduce){.docs-sidebar,.docs-main-shell,.docs-overview__card,.docs-sidebar__group summary svg{transition:none}.docs-overview__card:hover{transform:none}}
+
+.docs-shell[data-collapsed='true'] .docs-sidebar{visibility:hidden;pointer-events:none}
+@media(max-width:1000px){
+ .docs-sidebar:not([data-open='true']){visibility:hidden;pointer-events:none}
+ .docs-sidebar[data-open='true']{visibility:visible;pointer-events:auto}
+}

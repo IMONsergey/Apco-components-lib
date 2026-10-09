@@ -23,6 +23,14 @@ function CommandSearch({open,onClose,onNavigate}:{open:boolean;onClose:()=>void;
   <section className="docs-command" role="dialog" aria-modal="true" aria-label="Search design system"
    onKeyDown={e=>{
     if(e.key==='Escape'){e.preventDefault();onClose();}
+   if(e.key==='Tab'){
+    const focusable=Array.from(e.currentTarget.querySelectorAll<HTMLElement>('input:not([disabled]),button:not([disabled]),a[href]'));
+    const first=focusable[0],last=focusable[focusable.length-1];
+    if(first&&last){
+     if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+     else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+    }
+   }
     if(e.key==='ArrowDown'){e.preventDefault();setActive(v=>Math.min(matches.length-1,v+1))}
     if(e.key==='ArrowUp'){e.preventDefault();setActive(v=>Math.max(0,v-1))}
     if(e.key==='Enter'&&matches.length){e.preventDefault();const target=matches[Math.min(active,matches.length-1)];if(target){window.location.hash=target.route;onClose();onNavigate();}}
@@ -73,7 +81,11 @@ function Sidebar({route,open,compact,onClose}:{route:DocRoute;open:boolean;compa
  </>;
 }
 function Toc({route}:{route:DocRoute}){
- const items=toc[route.section];
+ const items=route.section==='components'&&route.slug&&route.slug!=='visual'&&route.slug!=='product'&&route.slug!=='interface'
+  ?[{label:'Preview',id:'docs-component-preview'},{label:'Usage',id:'docs-component-usage'},{label:'Source',id:'docs-component-source'}]
+  :route.section==='foundations'&&route.slug==='colors'
+   ?[{label:'Surfaces',id:'ds-color-surfaces'},{label:'Typography',id:'ds-color-typography'},{label:'Brand & actions',id:'ds-color-brand-actions-'},{label:'Borders',id:'ds-color-borders'}]
+  :route.section==='foundations'&&route.slug?[]:toc[route.section];
  if(!items.length)return <aside className="docs-toc docs-toc--empty" aria-hidden="true"/>;
  return <aside className="docs-toc" aria-label="On this page">
   <span>ON THIS PAGE</span>
