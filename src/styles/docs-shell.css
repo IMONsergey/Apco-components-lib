@@ -201,3 +201,5 @@
  .docs-sidebar__caption{align-items:center;position:relative}
  .docs-sidebar__close{display:grid;position:absolute;top:-9px;right:-4px}
 }
+
+@media(max-width:1000px){.docs-sidebar__caption>span{display:none}}
