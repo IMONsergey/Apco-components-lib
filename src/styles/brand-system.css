@@ -16,3 +16,24 @@
 .lib-preview--modal .double-button{flex-shrink:0}
 .lib-preview--tags .use-case-tags{justify-content:center}
 @media(max-width:599px){.ds-main-nav{gap:20px;margin-bottom:30px}.ds-main-nav a{font-size:13px}.lib-preview--plancard .ds-plan-card{padding:16px}.lib-preview--plancard .plan-price{font-size:40px!important}}
+
+
+.ds-guideline-list{border-top:1px solid var(--line);margin-bottom:100px}
+.ds-guideline{display:grid;grid-template-columns:minmax(180px,.82fr) minmax(0,2fr);gap:36px;border-bottom:1px solid var(--line);padding:30px 0}
+.ds-guideline__heading{display:flex;align-items:flex-start;gap:24px}
+.ds-guideline__heading span{font:400 12px/1.5 var(--font-mono);color:var(--action)}
+.ds-guideline__heading h3{font-weight:500;font-size:22px;letter-spacing:-.03em;line-height:1.2}
+.ds-guideline__content p{display:grid;grid-template-columns:54px 1fr;gap:16px;font-size:14px;line-height:1.6;margin-bottom:12px}
+.ds-guideline__content p strong{font:500 12px/1.9 var(--font-mono);color:var(--muted)}
+.ds-guideline__content code{font:400 11px/1.6 var(--font-mono);color:var(--muted)}
+.ds-recipes{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ds-recipes>div{border:1px solid var(--line);border-radius:5px;background:var(--white);min-width:0}
+.ds-recipes>div>div{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line);font-size:13px}
+.ds-recipes button{border:0;background:none;color:var(--action);font-size:12px}
+.ds-recipes pre{padding:20px;overflow:auto;font:400 12px/1.8 var(--font-mono);min-height:140px}
+.ds-adoption{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.ds-adoption>div{display:flex;flex-direction:column;gap:10px;padding:24px;background:var(--white);border:1px solid var(--line)}
+.ds-adoption>div>.ds-label{margin-bottom:12px}
+.ds-adoption code{font:400 11px/1.6 var(--font-mono)}
+@media(max-width:899px){.ds-guideline{grid-template-columns:200px minmax(0,1fr)}.ds-adoption{grid-template-columns:1fr 1fr}}
+@media(max-width:599px){.ds-guideline{grid-template-columns:1fr;gap:16px;padding:23px 0}.ds-guideline__heading h3{font-size:18px}.ds-recipes,.ds-adoption{grid-template-columns:1fr}.ds-guideline__content p{grid-template-columns:44px 1fr;gap:10px}}
