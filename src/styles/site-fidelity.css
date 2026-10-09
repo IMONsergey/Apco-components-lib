@@ -1,0 +1,335 @@
+/* Canonical style slices from IMONsergey/apcoweb published main, 2026-10-09.
+   Standalone previews preserve production class geometry. Site-specific
+   grid containers and theme resets are scoped to the library canvas. */
+.plan-card {
+  container-type: inline-size;
+  border-radius: 5px;
+  border-top: 1px solid var(--ink);
+  background: white;
+  padding: 20px;
+  min-height: 384px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  scroll-margin-top: 32px;
+}
+.plan-card h3 {
+  font: 500 17px/20px var(--font-mono);
+  color: var(--muted);
+}
+.plan-description {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--muted);
+  min-height: 18px;
+}
+.plan-price {
+  font-size: clamp(56px, 31cqi, 70px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.plan-card dl {
+  margin-top: auto;
+  font-size: 13px;
+  line-height: 18px;
+}
+.plan-card dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 8px;
+}
+.plan-card dd {
+  font-family: var(--font-mono);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.plan-button {
+  min-height: 48px;
+  border: 1px solid var(--control-line);
+  background: white;
+  padding: 12px 16px;
+  border-radius: 5px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  text-align: center;
+}
+.plan-button:hover {
+  background: var(--surface);
+}
+.plan-card--featured {
+  border-top: 2px solid var(--brand);
+  padding-top: 19px;
+}
+.plan-card--featured .plan-button {
+  background: var(--action);
+  color: white;
+  border-color: var(--action);
+}
+.plan-card--featured .plan-button:hover {
+  background: var(--action-hover);
+}
+
+
+.nav-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  min-height: 42px;
+  padding: 12px;
+  line-height: 20px;
+  background: transparent;
+  border-radius: 12px;
+  white-space: nowrap;
+  transition: background-color 200ms var(--ease);
+}
+.nav-trigger svg {
+  width: 12px;
+  transition: transform 220ms var(--ease);
+}
+.nav-trigger[aria-expanded='true'],
+.nav-trigger:hover {
+  background: #f1f2f4;
+}
+.nav-trigger[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+.nav-panel {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  width: max-content;
+  min-width: 182px;
+  max-width: 320px;
+  padding: 6px;
+  border: 1px solid #e5e8eb;
+  border-radius: 12px;
+  background: #f1f2f4;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transform-origin: top left;
+  transition:
+    opacity 200ms var(--ease),
+    transform 240ms var(--ease),
+    visibility 0s linear 240ms;
+}
+.nav-panel[data-open='true'] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  /* Opening visibility must be immediate so keyboard focus can enter the panel. */
+  transition-property: opacity, transform;
+  transition-delay: 0s;
+}
+.nav-panel a {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 10px;
+  border-radius: 7px;
+  line-height: 20px;
+  white-space: nowrap;
+  transition:
+    background-color 180ms var(--ease),
+    color 180ms var(--ease);
+}
+.nav-panel__default {
+  background: white;
+}
+.nav-panel a:hover,
+.nav-panel a:focus {
+  background: white;
+}
+.nav-panel:has(a:not(.nav-panel__default):hover) .nav-panel__default,
+.nav-panel:has(a:not(.nav-panel__default):focus) .nav-panel__default {
+  background: transparent;
+}
+.language {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 42px;
+  padding: 10px 14px;
+  border: 1px solid #e6e9ed;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.language svg {
+  flex: 0 0 16px;
+}
+
+
+.language-control {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  border-radius: 5px;
+}
+.language-control .language {
+  display: flex;
+  height: 44px;
+  gap: 6px;
+  padding: 10px;
+  background: transparent;
+  transition: background-color 180ms var(--ease);
+}
+.language-control .language > svg:last-child {
+  flex: 0 0 10px;
+  width: 10px;
+  height: 10px;
+  transition: transform 220ms var(--ease);
+}
+.language-control .language:hover,
+.language-control .language[aria-expanded='true'] {
+  background: #f1f2f4;
+}
+.language-control .language[aria-expanded='true'] > svg:last-child {
+  transform: rotate(180deg);
+}
+.language-panel {
+  left: auto;
+  right: 0;
+}
+.language-panel button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: left;
+  white-space: nowrap;
+  transition:
+    background-color 180ms var(--ease),
+    opacity 180ms ease;
+}
+.language-flag {
+  flex: 0 0 16px;
+}
+.language-panel button[aria-checked='true'],
+.language-panel button:not(:disabled):hover,
+.language-panel button:not(:disabled):focus-visible {
+  background: white;
+}
+.language-panel button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.language-panel button:disabled .language-flag {
+  filter: saturate(0.75);
+}
+
+
+
+/* Same dark production rules (scoped within the preview theme). */
+.lib-surface[data-tone='dark'] .nav-trigger:hover,
+.lib-surface[data-tone='dark'] .nav-trigger[aria-expanded='true'],
+.lib-surface[data-tone='dark'] .language-control .language:hover,
+.lib-surface[data-tone='dark'] .language-control .language[aria-expanded='true'] {
+  background: var(--surface);
+}
+.lib-surface[data-tone='dark'] .nav-panel {
+  background: var(--surface);
+  border-color: var(--line);
+  box-shadow: 0 12px 34px rgb(0 0 0 / 24%);
+}
+.lib-surface[data-tone='dark'] .nav-panel__default,
+.lib-surface[data-tone='dark'] .nav-panel a:hover,
+.lib-surface[data-tone='dark'] .nav-panel a:focus,
+.lib-surface[data-tone='dark'] .language-panel button[aria-checked='true'],
+.lib-surface[data-tone='dark'] .language-panel button:not(:disabled):hover,
+.lib-surface[data-tone='dark'] .language-panel button:not(:disabled):focus-visible {
+  background: var(--white);
+}
+
+.lib-surface[data-tone='dark'] .plain-button:hover,
+.lib-surface[data-tone='dark'] .icon-button:hover:not(:disabled) {
+  background: var(--surface-strong);
+}
+.lib-surface[data-tone='dark'] .double-button--secondary {
+  --button-bg: var(--surface);
+  --button-hover: var(--surface-strong);
+  --button-color: var(--ink);
+}
+.lib-surface[data-tone='dark'] .double-button--inverse {
+  --button-bg: var(--white);
+  --button-hover: var(--surface-strong);
+  --button-color: var(--ink);
+}
+.lib-surface[data-tone='dark'] .double-button--dark {
+  --button-bg: var(--action-fill);
+  --button-hover: var(--action-hover-fill);
+  --button-color: var(--on-action);
+}
+
+
+
+/* Production always uses semantic ink for buttons. The previous library
+   inherited #fff from the dark parent and applied light-mode hover paint. */
+.lib-surface .plain-button { color:var(--ink); }
+.lib-surface[data-tone='dark'] .plain-button:hover,
+.lib-surface[data-tone='dark'] .icon-button:hover:not(:disabled) {
+  background:var(--surface-strong);
+}
+.lib-surface[data-tone='dark'] .language-control .language {
+  border-color:var(--border-subtle);
+}
+.lib-surface[data-tone='dark'] .language-panel button:disabled {opacity:.64}
+.lib-surface[data-tone='dark'] .plan-card {
+  background:var(--white);
+  border-top-color:var(--border-strong);
+}
+.lib-surface[data-tone='dark'] .plan-card--featured {border-top-color:var(--accent-text)}
+.lib-surface[data-tone='dark'] .plan-button:hover {background:var(--surface)}
+.lib-surface[data-tone='dark'] .plan-card--featured .plan-button {
+  background:var(--action);border-color:var(--action);color:var(--on-action)
+}
+.lib-surface[data-tone='dark'] .plan-card--featured .plan-button:hover{background:var(--action-hover)}
+.lib-surface[data-tone='dark'] .segmented {background:var(--surface);border:1px solid var(--line)}
+
+/* The demo canvas is a miniature hosting surface, not a 4-column pricing
+   table: it is permitted to constrain the width, never the source controls. */
+.lib-preview--plancard .plan-card {
+  flex:0 0 auto;
+  width:min(100%,340px);
+  min-height:384px;
+  max-height:none;
+  box-shadow:none;
+}
+.lib-card:has(.lib-preview--plancard) .lib-card__preview{height:432px}
+.lib-preview--plancard{height:100%;min-height:100%;overflow:hidden;align-items:center;justify-content:center;padding:20px}
+.lib-dialog__preview:has(.lib-preview--plancard){min-height:432px}
+.lib-preview--plancard .plan-price{font-size:clamp(56px,31cqi,70px)!important}
+
+/* Language panel alignment & availability follow the published header. */
+.lib-preview--language .language-control {align-self:center}
+.lib-preview--language .language-panel{z-index:12}
+.lib-preview--language .language{display:flex}
+.lib-preview--language .language-panel .language-soon {
+  margin-left:auto;
+  font:500 9px/1 var(--font-mono);
+  letter-spacing:.08em;
+  color:var(--muted);
+  opacity:.9;
+}
+/* A closed disclosure must not block other cards; the row lifts on open. */
+.lib-card:has(.lib-preview--language .language[aria-expanded='true']),
+.lib-card:has(.lib-preview--navmenu .nav-trigger[aria-expanded='true']){z-index:8;position:relative}
+/* Dialog previews keep the same CSS and state behavior as cards. */
+@media(max-width:599px){
+  .lib-card:has(.lib-preview--plancard) .lib-card__preview{height:422px}
+  .lib-preview--plancard{padding:14px}
+}
