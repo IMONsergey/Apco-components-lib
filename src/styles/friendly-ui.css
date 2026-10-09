@@ -1,6 +1,6 @@
 /* Editorial presentation using APCOSYS tokens — no illustrative mockups. */
 .docs-overview--friendly .docs-overview__top{padding:10px 0 44px;border-bottom:0}
-.docs-overview--friendly .docs-kicker{font:500 11px/1.4 var(--font-mono);letter-spacing:.035em;color:var(--action);margin-bottom:18px}
+.docs-overview--friendly .docs-kicker{font:500 11px/1.4 var(--font-mono);letter-spacing:.035em;color:var(--accent-text);margin-bottom:18px}
 .docs-overview--friendly .docs-overview__top h1{font-size:clamp(46px,4.3vw,67px);font-weight:500;letter-spacing:-.052em;line-height:1.04;max-width:710px}
 .docs-overview--friendly .docs-overview__top p{max-width:540px;margin-top:18px;font-size:16px;line-height:1.55;color:var(--body)}
 .docs-overview--friendly .docs-overview__section{margin-top:16px}
@@ -103,8 +103,6 @@
 .docs-component__code-heading button{display:flex;gap:8px;align-items:center;border:0;background:transparent;color:var(--action);font-size:12px}
 .docs-component__code-heading button svg{width:15px;height:15px}
 .docs-component__code pre.lib-code{margin:0 19px 19px;max-height:480px}
-.docs-icons-page>.ds-section-bar .ds-label[role='status']{min-height:18px}
-.ds-icon-tile[data-copied='true']{color:var(--action);background:var(--tint)}
 @media(max-width:640px){
  .docs-content .lib-card__preview{height:255px}
  .docs-content .lib-card[data-group='Interface motion']:not(:has(.lib-preview--plancard)) .lib-card__preview{height:228px}
@@ -139,9 +137,6 @@
 .ds-foundations--compact .ds-layout-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .ds-foundations--compact .ds-layout-metrics>div{min-width:0;min-height:112px;padding:19px;gap:12px}
 .ds-icon-settings{border:0;margin:0}
-.ds-icon-options{margin:0 0 18px}
-.ds-icon-options label{color:var(--body);font-size:13px}
-.ds-icon-options select{min-height:38px;padding:8px 12px}
 .ds-icon-reference{margin:40px 0 0;padding-top:24px;border-top:1px solid var(--line);min-width:0}
 .ds-icon-reference .ds-section-bar{margin-bottom:16px}
 .ds-icon-reference .ds-section-bar p{font-size:12px}
@@ -156,15 +151,12 @@
  .ds-foundations--compact .ds-layout-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 @media(max-width:899px){
- .ds-icon-options>span{order:0;margin-left:0;flex-basis:100%}
  .ds-reference-block .ds-breakpoint-list>div{grid-template-columns:minmax(100px,1fr) minmax(100px,1fr)}
  .ds-reference-block .ds-breakpoint-list>div span{grid-column:1/-1}
 }
 @media(max-width:640px){
  .ds-foundations--compact .ds-layout-metrics{grid-template-columns:1fr}
  .ds-reference-block{margin-top:24px;padding-top:16px}
- .ds-icon-options{gap:9px 14px}
- .ds-icon-options>span{font-size:10px}
  .ds-icon-reference .ds-morph-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
  .ds-icon-reference .ds-morph-card{min-height:120px}
 }

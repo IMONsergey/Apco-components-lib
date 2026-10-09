@@ -4,32 +4,37 @@ const IconsPage = lazy(() => import('./brand/IconsPage'));
 const GuidelinesPage = lazy(() => import('./brand/GuidelinesPage'));
 import { catalog, groups, type Item } from './catalog';
 import { DocsChrome } from './docs/DocsChrome';
-import { parseRoute, href, type DocRoute } from './docs/navigation';
+import { href, routeTitle } from './docs/navigation';
 import Overview from './docs/Overview';
+import { useClipboard } from './hooks/useClipboard';
+import ManualCopy from './brand/ManualCopy';
 import { Icon } from './components/ui/Icon';
 import Preview from './gallery/Preview';
+import {useLibraryNavigation} from './hooks/useLibraryNavigation';
+import {initialIconBrowser} from './brand/icon-browser-state';
 
 type Tone = 'light' | 'dark';
 function useInView() {
   const ref = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
+  const [seen,setSeen]=useState(false);
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
     const observer = new IntersectionObserver(
-      ([entry]) => setVisible(Boolean(entry?.isIntersecting)),
+      ([entry]) => {setVisible(Boolean(entry?.isIntersecting));if(entry?.isIntersecting)setSeen(true);},
       { rootMargin: '200px' },
     );
     observer.observe(element);
     return () => observer.disconnect();
   }, []);
-  return { ref, visible };
+  return { ref, visible,seen };
 }
 
 function Card({ item, tone }: {
   item: Item; tone: Tone;
 }) {
-  const { ref, visible } = useInView();
+  const { ref, visible,seen } = useInView();
   return (
     <article className="lib-card" ref={ref} data-testid={item.id} data-group={item.group}>
       <div className="lib-card__head">
@@ -38,17 +43,17 @@ function Card({ item, tone }: {
         </a>
       </div>
       <div className="lib-surface lib-card__preview" data-tone={tone}>
-        <Preview id={item.id} tone={tone} speed={1} active={visible} />
+        <Preview id={item.id} tone={tone} speed={1} active={visible||(seen&&item.group==='Interface motion'&&item.id!=='marquee')} />
       </div>
     </article>
   );
 }
 
-function ComponentPage({item,tone}:{item:Item;tone:Tone}){
- const [copied,setCopied]=useState(false);
+function ComponentPage({item,tone,backHref}:{item:Item;tone:Tone;backHref:string}){
+ const clipboard=useClipboard(item.code);
  return <article className="docs-component">
   <div className="docs-component__heading">
-   <a href={href('components')} className="docs-component__back">← All components</a>
+   <a href={backHref} className="docs-component__back">{backHref===href('components')?'← All components':'← Back to results'}</a>
    <h1>{item.name}</h1>
    <p>{item.description}</p>
    <div className="docs-component__tags"><span>{item.group}</span><span>{item.tech}</span></div>
@@ -62,9 +67,10 @@ function ComponentPage({item,tone}:{item:Item;tone:Tone}){
   <section className="docs-component__section" id="docs-component-usage">
    <div className="docs-component__code">
     <div className="docs-component__code-heading"><h2>Code & usage</h2>
-     <button type="button" onClick={()=>void navigator.clipboard.writeText(item.code).then(()=>setCopied(true)).catch(()=>setCopied(false))}>{copied?'Copied':'Copy code'} <Icon name="copy"/></button>
+     <button type="button" onClick={()=>void clipboard.copy(item.code)}>{clipboard.copiedId?'Copied':'Copy code'} <Icon name="copy"/></button>
     </div>
-    <pre className="lib-code"><code>{item.code}</code></pre>
+    <pre className="lib-code" tabIndex={0} aria-label="Component code"><code>{item.code}</code></pre>
+    {clipboard.manualValue!==null&&<ManualCopy value={clipboard.manualValue} label="Copy component code manually" onClose={clipboard.clear}/>}
    </div>
   </section>
   <section className="docs-component__section" id="docs-component-source">
@@ -77,18 +83,14 @@ const filterBySlug:Record<string,(typeof groups)[number]>={
  visual:'Visual engines',product:'Product motion',interface:'Interface motion'
 };
 export default function App() {
- const [route,setRoute]=useState<DocRoute>(()=>parseRoute(window.location.hash));
+ const {route,catalogReturnHref}=useLibraryNavigation();
+ const [iconState,setIconState]=useState(initialIconBrowser);
  const [search,setSearch]=useState('');
  const [tone,setTone]=useState<Tone>(()=>document.documentElement.dataset.theme==='dark'?'dark':'light');
  useEffect(()=>{
-  const page=route.slug?route.slug.replace(/-/g,' '):route.section==='overview'?'Design system':route.section.charAt(0).toUpperCase()+route.section.slice(1);
+  const page=route.section==='overview'?'Design system':routeTitle(route);
   document.title=page+' — APCOSYS Design System';
  },[route.section,route.slug]);
- useEffect(()=>{
-  const onHash=()=>{setRoute(parseRoute(window.location.hash));window.scrollTo({top:0,behavior:'instant'})};
-  window.addEventListener('hashchange',onHash);
-  return ()=>window.removeEventListener('hashchange',onHash);
- },[]);
  useEffect(()=>{
   document.documentElement.dataset.theme=tone;
   document.documentElement.style.colorScheme=tone;
@@ -99,7 +101,7 @@ export default function App() {
  const focused=route.section==='components'?catalog.find(x=>x.id===route.slug):undefined;
  const filtered=useMemo(()=>catalog.filter(item=>
    (category==='All components'||item.group===category)&&
-   (item.name+' '+item.tech+' '+item.group).toLowerCase().includes(search.trim().toLowerCase())
+   search.trim().toLowerCase().split(/\s+/).every(word=>(item.name+' '+item.tech+' '+item.group+' '+item.description).toLowerCase().includes(word))
  ).sort((a,b)=>{
    const rank:Record<string,number>={'Interface motion':0,'Product motion':1,'Visual engines':2};
    return (rank[a.group]??3)-(rank[b.group]??3);
@@ -107,9 +109,9 @@ export default function App() {
  return <DocsChrome route={route} tone={tone} onTheme={()=>setTone(v=>v==='dark'?'light':'dark')}>
   {route.section==='overview'&&<Overview/>}
   {route.section==='components'&&(focused?
-   <ComponentPage item={focused} tone={tone}/>:
+   <ComponentPage key={focused.id} item={focused} tone={tone} backHref={catalogReturnHref}/>:
    <>
-    <div className="lib-title-row docs-page-title"><div><h1>Components <span>{catalog.length}</span></h1><p>Explore the building blocks of APCOSYS.</p></div></div>
+    <div className="lib-title-row docs-page-title"><div><h1>Components <span>{filtered.length}</span></h1><p>Explore the building blocks of APCOSYS.</p></div></div>
     <div className="lib-filters">
      <div className="lib-tabs" aria-label="Component types">
       {groups.map(g=>{
@@ -135,7 +137,7 @@ export default function App() {
    </>}
    {route.section==='icons'&&<>
     <div className="docs-page-title"><h1>Icons</h1><p>Browse and copy icons for your next screen.</p></div>
-    <IconsPage initialFamily={route.slug}/>
+    <IconsPage initialFamily={route.slug} state={iconState} onStateChange={setIconState}/>
    </>}
    {route.section==='guidelines'&&<>
     <div className="docs-page-title"><h1>Guides</h1><p>Simple rules for keeping the product consistent.</p></div>

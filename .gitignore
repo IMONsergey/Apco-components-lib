@@ -10,3 +10,5 @@ test-results/
 # Generated from pinned icon source packages at npm ci
 public/icons/
 src/generated/
+
+/artifacts/

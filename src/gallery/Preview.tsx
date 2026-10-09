@@ -1,4 +1,5 @@
 import { lazy, Suspense, useState, type ReactNode } from 'react';
+import PreviewBoundary from '../docs/PreviewBoundary';
 import type { ComponentId } from '../catalog';
 import { AnimatedPrice } from '../components/ui/AnimatedPrice';
 import { DoubleButton } from '../components/ui/DoubleButton';
@@ -141,7 +142,7 @@ export default function Preview({ id, active, tone, speed, large = false }: {
       content = <ModalExample/>;
       break;
   }
-  return <Suspense fallback={<div className="lib-preview lib-preview__blank"><span className="lib-preview__loading" aria-label="Loading"/></div>}>
+  return <PreviewBoundary key={id}><Suspense fallback={<div className="lib-preview lib-preview__blank"><span className="lib-preview__loading" aria-label="Loading"/></div>}>
     <div className={`lib-preview lib-preview--${id}`}>{content}</div>
-  </Suspense>;
+  </Suspense></PreviewBoundary>;
 }

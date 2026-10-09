@@ -5,10 +5,18 @@ import iconRegistry from '../generated/icon-manifest.json';
 export type Section='overview'|'foundations'|'components'|'icons'|'guidelines';
 export type DocRoute={section:Section;slug:string};
 const allowed:Section[]=['overview','foundations','components','icons','guidelines'];
-export function parseRoute(hash:string):DocRoute{
- const [section,...rest]=hash.replace(/^#\/?/,'').split('/');
- const name=allowed.includes(section as Section)?section as Section:'overview';
- return {section:name,slug:rest.join('/')};
+export function parseRoute(hash:string):DocRoute {
+ let decoded: string;
+ try { decoded = decodeURIComponent(hash.replace(/^#\/?/,'')); } catch { return {section:'overview',slug:''}; }
+ const [section,...rest] = decoded.split('/');
+ const name = allowed.includes(section as Section) ? section as Section : 'overview';
+ const slug = rest.join('/');
+ const known = name==='overview' ? !slug :
+  name==='foundations' ? ['', 'identity','colors','typography','spacing','layout','motion'].includes(slug) :
+  name==='components' ? ['', 'visual','product','interface',...catalog.map(item=>item.id)].includes(slug) :
+  name==='guidelines' ? ['', 'usage','integration'].includes(slug) :
+  !slug || /^(apcosys|feather|phosphor)(\/[a-z0-9-]+)?$/.test(slug);
+ return {section:name, slug:known?slug:''};
 }
 export function href(section:Section,slug=''):string{return '#'+section+(slug?'/'+slug:'')}
 export type NavItem={label:string;route:string;keywords?:string};
@@ -52,11 +60,21 @@ export const sourceRoutes:NavItem[]=[
   label:name,route:href('icons',family+'/'+name),
   keywords:'icon '+family+' '+name.replace(/-/g,' ')+' symbol',
  }))),
+ ...tokens.spaces.map(n=>({label:n+'px spacing',route:href('foundations','spacing'),keywords:'spacing --ds-space-'+n/4+' gap '+n})),
+ ...Object.entries(tokens.radii).map(([key,value])=>({label:key+' radius',route:href('foundations','spacing'),keywords:'corner radii '+value+' --ds-radius-'+key.replace(/[A-Z]/g,c=>'-'+c.toLowerCase())})),
+ ...tokens.typography.map(type=>({label:type.name+' type',route:href('foundations','typography'),keywords:'font typography scale '+type.size})),
+ ...Object.entries(tokens.motions).map(([key,value])=>({label:key+' motion',route:href('foundations','motion'),keywords:'animation duration '+value+' --ds-duration-'+key})),
  ...Object.entries(tokens.colors).map(([key,v])=>({
   label:key+' color',route:href('foundations','colors'),
   keywords:'palette '+key+' '+v.css+' '+v.usage+' '+v.light+' '+v.dark,
  })),
 ];
+export function routeTitle(route:DocRoute):string {
+ if (!route.slug) return sectionTitles[route.section];
+ return sections.flatMap(section=>section.items).find(item=>item.route===href(route.section,route.slug))?.label ||
+  (route.section==='components'?catalog.find(item=>item.id===route.slug)?.name:undefined) ||
+  route.slug.split('/').map(word=>word.replace(/-/g,' ').replace(/^./,c=>c.toUpperCase())).join(' / ');
+}
 export const sectionTitles:Record<Section,string>={
  overview:'Home',foundations:'Brand styles',components:'Components',
  icons:'Icons',guidelines:'Guides'
@@ -69,5 +87,5 @@ export const toc:{[K in Section]:Array<{label:string;id:string}>}={
   {label:'Layout',id:'ds-layout'},{label:'Animations',id:'ds-motion'}
  ],
  components:[],icons:[{label:'Browse icons',id:'docs-icon-library'},{label:'Size & stroke',id:'docs-icon-options'},{label:'Icon states',id:'docs-icon-states'},{label:'Morphicons',id:'docs-icon-morph'}],
- guidelines:[{label:'Best practices',id:'docs-guideline-rules'},{label:'Examples',id:'docs-guideline-patterns'}]
+ guidelines:[{label:'Best practices',id:'docs-guideline-rules'},{label:'Examples',id:'docs-guideline-patterns'},{label:'For developers',id:'docs-guideline-integration'}]
 };

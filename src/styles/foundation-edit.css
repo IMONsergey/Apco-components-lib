@@ -1,0 +1,129 @@
+/* Scoped editing surfaces. Source components and published site rules unchanged. */
+.ds-draft-global{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;min-height:56px;padding:10px 0;margin:0 0 16px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ds-draft-global__status{font-size:12px;line-height:1.5;color:var(--muted);white-space:nowrap}
+.ds-draft-global__status strong{font-weight:500;color:var(--ink)}
+.ds-draft-global__actions{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
+.ds-draft-global__actions[data-empty=true]{visibility:hidden}
+.ds-draft-global__actions button{min-height:34px;padding:7px 9px;border:0;border-radius:4px;background:transparent;color:var(--ink);font-size:11px;white-space:nowrap}
+.ds-draft-global__actions .ds-draft-copy{min-width:80px}
+.ds-draft-global__actions button:hover:not(:disabled){background:var(--surface)}
+.ds-draft-global__actions button:disabled{color:var(--muted);opacity:.45;cursor:default}
+.ds-foundation-edit-heading{align-items:center!important;flex-wrap:wrap}
+.ds-foundation-edit-heading>h1,.ds-foundation-edit-heading>h2{font-size:clamp(28px,3.1vw,38px);line-height:1.15;font-weight:500;letter-spacing:-.04em}
+.ds-edit-description{font-size:12px;line-height:1.6;color:var(--muted);margin:5px 0 20px;max-width:860px}
+.ds-sr-only{position:absolute;clip:rect(0 0 0 0);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+.ds-scalar-control{display:inline-flex;align-items:center;gap:3px;max-width:140px;min-width:0;background:var(--page);border:1px solid var(--line);border-radius:4px;padding:0 8px;height:35px;color:var(--muted)}
+.ds-scalar-control:focus-within{outline:2px solid var(--action);outline-offset:1px}
+.ds-scalar-control>input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:var(--ink);font:400 12px/1.3 var(--font-mono);padding:5px 0}
+.ds-scalar-control>input[aria-invalid=true]{color:#be3446}
+.ds-scalar-control>span:last-child{font:400 11px/1.3 var(--font-mono);flex:none}
+.ds-edit-type-row>div:first-child{min-width:0}
+.ds-edit-type-row[data-editing=true] .ds-scalar-control{margin-top:3px;width:94px}
+.ds-edit-type-row[data-editing=true] .ds-type-display{font-size:calc(clamp(38px,5vw,72px) * var(--ds-preview-scale))}
+.ds-edit-type-row[data-editing=true] .ds-type-heading{font-size:calc(clamp(32px,4vw,58px) * var(--ds-preview-scale))}
+.ds-edit-type-row[data-editing=true] .ds-type-body{font-size:calc(18px * var(--ds-preview-scale))}
+.ds-edit-type-row[data-editing=true] .ds-type-control{font-size:calc(14px * var(--ds-preview-scale))}
+.ds-edit-type-row[data-editing=true] .ds-type-mono{font-size:calc(13px * var(--ds-preview-scale))}
+.ds-edit-type-row[data-editing=true][data-changed=true]>div:first-child{border-left:2px solid var(--action);padding-left:12px}
+.ds-edit-spacing-grid[data-editing=true] .ds-edit-space-row{grid-template-columns:90px minmax(10px,1fr) auto;gap:12px}
+.ds-edit-spacing-grid[data-editing=true] .ds-edit-space-row .ds-scalar-control{height:32px;width:84px}
+.ds-edit-spacing-grid[data-editing=true] .ds-edit-space-row[data-changed=true]{box-shadow:inset 2px 0 0 var(--action)}
+.ds-edit-inner-heading{align-items:center!important;margin-bottom:16px!important}
+.ds-edit-inner-heading h3{font-size:18px!important;line-height:1.3;font-weight:500}
+.ds-edit-radii-grid>div[data-changed=true]{border-color:var(--action)}
+.ds-edit-radii-grid .ds-scalar-control{width:110px;margin-top:auto}
+.ds-layout-metrics .ds-scalar-control{width:140px}
+.ds-max-width-preview{display:flex;flex-direction:column;gap:7px;margin:16px 0 0}
+.ds-max-width-preview>span{font-size:11px;color:var(--muted)}
+.ds-max-width-preview>div{width:100%;height:24px;background:var(--surface);padding:2px;border:1px solid var(--line);border-radius:4px}
+.ds-max-width-preview>div i{display:block;height:100%;max-width:100%;background:var(--tint);border:1px solid var(--action);border-radius:2px}
+.ds-max-width-preview code{font:400 11px var(--font-mono);color:var(--muted)}
+.ds-edit-motion-list .ds-scalar-control{height:32px;max-width:105px}
+.ds-motion-live{margin-top:22px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:15px}
+.ds-motion-live>button{border:1px solid var(--line);border-radius:4px;background:var(--white);padding:10px 12px;min-height:38px;font-size:12px}
+.ds-motion-live>button:hover{border-color:var(--control-line)}
+.ds-motion-live>code{font:400 10px var(--font-mono);color:var(--muted)}
+.ds-motion-track{min-width:0;height:16px;border-radius:8px;background:var(--surface);position:relative}
+.ds-motion-track>span{position:absolute;top:2px;left:2px;height:12px;width:24px;border-radius:6px;background:var(--action);transition-property:left,transform;transition-timing-function:var(--ease)}
+.ds-motion-track>span[data-active=true]{left:calc(100% - 26px)}
+@media(max-width:899px){
+ .ds-draft-global{align-items:flex-start}
+ .ds-edit-spacing-grid[data-editing=true] .ds-edit-space-row{grid-template-columns:84px minmax(0,1fr) auto;gap:8px}
+ .ds-motion-live{grid-template-columns:1fr}
+}
+@media(max-width:599px){
+ .ds-draft-global__actions{width:100%}
+ .ds-draft-global__actions button{flex:1 1 auto}
+ .ds-edit-type-row[data-editing=true] .ds-type-display{font-size:calc(38px * var(--ds-preview-scale))}
+ .ds-edit-type-row[data-editing=true] .ds-type-heading{font-size:calc(32px * var(--ds-preview-scale))}
+ .ds-edit-type-row[data-editing=true] .ds-type-body{font-size:calc(16px * var(--ds-preview-scale))}
+ .ds-edit-spacing-grid[data-editing=true] .ds-edit-space-row{grid-template-columns:80px minmax(0,1fr) auto}
+ .ds-edit-radii-grid{grid-template-columns:1fr}
+ .ds-edit-motion-list>div{min-width:0}
+}
+@media(prefers-reduced-motion:reduce){.ds-motion-track>span{transition:none!important}}
+
+.ds-edit-heading-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.ds-edit-reset{min-height:34px;border:0;background:transparent;color:var(--muted);padding:7px 8px;border-radius:4px;font-size:11px}
+.ds-edit-reset:hover,.ds-edit-reset:focus-visible{color:var(--ink);background:var(--surface)}
+@media(max-width:599px){
+ .ds-edit-radii-grid>div{display:grid;grid-template-columns:56px minmax(0,1fr) 96px;align-items:center;gap:10px;min-height:78px;padding:12px}
+ .ds-edit-radii-grid>div>div{width:54px;height:48px}
+ .ds-edit-radii-grid>div>strong{font-size:12px;overflow-wrap:anywhere}
+ .ds-edit-radii-grid .ds-scalar-control{width:96px;margin:0}
+ .ds-edit-radii-grid>div>code{justify-self:end}
+}
+
+.ds-manual-copy{width:100%;display:flex;flex-direction:column;gap:9px;background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:12px;margin:10px 0 14px}
+.ds-manual-copy>div{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.ds-manual-copy>div span{font-size:11px;color:var(--muted);line-height:1.4}
+.ds-manual-copy>div button{border:0;background:transparent;padding:4px 5px;color:var(--ink);font-size:11px}
+.ds-manual-copy textarea{width:100%;min-height:56px;max-height:130px;resize:vertical;border:1px solid var(--line);background:var(--white);color:var(--ink);border-radius:4px;padding:9px;font:400 11px/1.5 var(--font-mono)}
+.ds-manual-copy textarea:focus-visible{outline:2px solid var(--action);outline-offset:1px}
+
+/* R9: readable values, scoped feedback and recoverable editing. */
+.ds-storage-warning{width:100%;margin:0;font-size:12px;line-height:1.5;color:var(--ink)}
+.ds-value-origin{display:block;color:var(--muted);font:400 10px/1.4 var(--font-mono);margin-top:3px}
+.ds-token-label code{white-space:normal;overflow:visible;overflow-wrap:anywhere;text-overflow:clip}
+.ds-token-row .ds-token-name{white-space:normal;text-overflow:clip;overflow:visible}
+.ds-recipes>div>div:has(.ds-manual-copy){flex-wrap:wrap}
+.ds-manual-copy textarea{font-size:12px}
+.ds-token-swatch-picker input[type=color]:focus-visible{outline:none}
+@media(max-width:599px){
+ .ds-token-label code{font-size:10px}
+ .ds-token-editor .ds-token-label code{font-size:10px}
+ .ds-draft-global{min-height:88px;gap:4px;padding:8px 0}
+ .ds-draft-global__actions{gap:4px;justify-content:space-between}
+ .ds-token-row .ds-value-origin{font-size:9px}
+}
+:where(.docs-header,.docs-sidebar,.docs-toc,.ds-foundations,.ds-icons-page,.ds-guidelines) :where(button,a,input,select,textarea,summary):focus-visible{outline:2px solid var(--action);outline-offset:3px}
+.docs-shell .lib-code:focus-visible{outline:2px solid var(--action);outline-offset:3px}
+
+/* Documentation uses text tokens for text, action-fill only for filled controls. */
+.docs-sidebar__overview[aria-current='page'],.docs-sidebar__section-link[aria-current='page']{color:var(--ink)}
+.docs-kicker,.ds-token-download,.ds-morph-panel .ds-section-bar>a,.ds-recipes button,.docs-component__back,.docs-component__source{color:var(--accent-text)}
+.ds-icon-state--disabled{opacity:1}
+.ds-icon-state--disabled svg{opacity:.38}
+.ds-icon-state:not(.ds-icon-state--inverse)>span{color:var(--ink)}
+.ds-motion-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:1;min-width:0}
+.ds-motion-preview-grid>div{display:flex;flex-direction:column;gap:8px;min-width:0}
+.ds-motion-tone{height:16px;border-radius:8px;border:1px solid var(--line);background:#f6f6f6;transition-property:background-color;transition-timing-function:var(--ease)}
+.ds-motion-tone[data-active=true]{background:#151b1f}
+.ds-motion-live{grid-template-columns:auto minmax(0,1fr)}
+@media(max-width:899px){.ds-motion-live{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.ds-motion-tone{transition:none!important}}
+
+.ds-preview-error{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:160px;width:100%;padding:24px;color:var(--ink);text-align:center}
+.ds-preview-error strong{font-size:15px;font-weight:500}
+.ds-preview-error span{font-size:12px;color:var(--muted)}
+.ds-preview-error button{border:1px solid var(--line);border-radius:5px;padding:10px 14px;background:var(--white);color:var(--ink);font-size:12px}
+
+@media(min-width:600px) and (max-width:1150px){.ds-draft-global{min-height:86px}.ds-draft-global__actions{width:100%;justify-content:flex-start}}
+@media(min-width:600px){.ds-draft-global__actions{flex-shrink:0}}
+
+/* Stable input positions while a value is applied, undone or reset. */
+.ds-edit-type-row[data-editing=true]{align-items:start}
+.ds-edit-type-row[data-editing=true]>div:first-child{border-left:2px solid transparent;padding-left:12px}
+.ds-edit-type-row[data-editing=true][data-changed=true]>div:first-child{border-left-color:var(--action)}
+.ds-value-origin[data-changed=false]{visibility:hidden}
+.ds-token-copy-button[data-copied=true]{color:var(--accent-text)}

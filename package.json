@@ -15,7 +15,9 @@
     "generate:icons": "node scripts/generate-icons.mjs",
     "postinstall": "node scripts/generate-icons.mjs",
     "test:design-system": "node scripts/check-brand.mjs",
-    "test:ux": "playwright test"
+    "test:ux": "playwright test",
+    "audit:runtime": "node scripts/audit-runtime.mjs",
+    "audit:cross-browser": "node scripts/audit-cross-browser.mjs"
   },
   "dependencies": {
     "gsap": "3.13.0",

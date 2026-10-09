@@ -1,0 +1,195 @@
+{
+  "audit": "R10",
+  "baseline": "d80f16534c92b5918f90265a5f60c1d6962aded2",
+  "localGates": {
+    "build": "passed",
+    "designSystem": "passed",
+    "chromiumTests": {
+      "passed": 71,
+      "failed": 0,
+      "newUserFlowTests": 11
+    }
+  },
+  "measuredBaseline": [
+    {
+      "scenario": "first color edit shifts editor",
+      "before": {
+        "top": 763.0625,
+        "documentY": 763.0625,
+        "scroll": 0
+      },
+      "after": {
+        "top": 1262.390625,
+        "documentY": 1262.390625,
+        "scroll": 0
+      },
+      "pixelDelta": 499.328125,
+      "previewPanels": 2
+    },
+    {
+      "scenario": "pasted shorthand HEX rejected",
+      "actual": "#AABBCC"
+    },
+    {
+      "scenario": "undo removes focused button",
+      "focused": "BODY"
+    },
+    {
+      "scenario": "return loses editing mode",
+      "editorCount": 0
+    },
+    {
+      "scenario": "component back loses filter and position",
+      "beforeScroll": 1708,
+      "afterScroll": 0,
+      "hash": "#components"
+    },
+    {
+      "scenario": "icons reset on return",
+      "size": "24",
+      "query": ""
+    },
+    {
+      "scenario": "keyboard search active option offscreen",
+      "activeBounds": {
+        "x": 25,
+        "y": 405,
+        "width": 325,
+        "height": 42
+      },
+      "panelBounds": {
+        "x": 17,
+        "y": 103,
+        "width": 341,
+        "height": 214
+      },
+      "result": "minusIcons"
+    }
+  ],
+  "measuredCandidate": [
+    {
+      "scenario": "first color edit",
+      "before": 566,
+      "after": 566,
+      "pixelDelta": 0,
+      "previewCount": 1,
+      "firstEditorDocumentY": 566
+    },
+    {
+      "scenario": "short hex normalization",
+      "actual": "#AABBCC"
+    },
+    {
+      "scenario": "edit mode preserved",
+      "editors": 1
+    },
+    {
+      "scenario": "catalog back",
+      "before": 1708,
+      "after": 1708,
+      "hash": "#components/interface",
+      "focused": "Pricing Card"
+    },
+    {
+      "scenario": "icon browsing preserved",
+      "size": "32",
+      "query": "activity"
+    },
+    {
+      "scenario": "keyboard search visible",
+      "active": {
+        "x": 25,
+        "y": 275,
+        "width": 325,
+        "height": 42
+      },
+      "panel": {
+        "x": 17,
+        "y": 103,
+        "width": 341,
+        "height": 214
+      }
+    }
+  ],
+  "targetedCrossBrowser": [
+    {
+      "engine": "chromium",
+      "width": 375,
+      "checks": {
+        "edit-reference-undo": "passed",
+        "theme-layout": "passed",
+        "navigation": "passed",
+        "short-search": "passed",
+        "catalog-return": "passed"
+      },
+      "errors": [],
+      "firstEditShift": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "checks": {
+        "edit-reference-undo": "passed",
+        "theme-layout": "passed",
+        "navigation": "passed",
+        "short-search": "passed",
+        "catalog-return": "passed"
+      },
+      "errors": [],
+      "firstEditShift": 0
+    },
+    {
+      "engine": "firefox",
+      "width": 375,
+      "checks": {
+        "edit-reference-undo": "passed",
+        "theme-layout": "passed",
+        "navigation": "passed",
+        "short-search": "passed",
+        "catalog-return": "passed"
+      },
+      "errors": [],
+      "firstEditShift": 0
+    },
+    {
+      "engine": "firefox",
+      "width": 1440,
+      "checks": {
+        "edit-reference-undo": "passed",
+        "theme-layout": "passed",
+        "navigation": "passed",
+        "short-search": "passed",
+        "catalog-return": "passed"
+      },
+      "errors": [],
+      "firstEditShift": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 375,
+      "checks": {
+        "edit-reference-undo": "passed",
+        "theme-layout": "passed",
+        "navigation": "passed",
+        "short-search": "passed",
+        "catalog-return": "passed"
+      },
+      "errors": [],
+      "firstEditShift": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "checks": {
+        "edit-reference-undo": "passed",
+        "theme-layout": "passed",
+        "navigation": "passed",
+        "short-search": "passed",
+        "catalog-return": "passed"
+      },
+      "errors": [],
+      "firstEditShift": 0
+    }
+  ],
+  "scope": "Targeted engine smoke, not the entire Chromium suite in all engines; approved source tokens/components unchanged."
+}

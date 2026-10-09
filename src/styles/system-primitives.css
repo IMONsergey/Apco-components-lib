@@ -13,6 +13,7 @@
   --ds-font-data: var(--font-mono);
   --ds-radius-control: 5px;
   --ds-radius-panel: 7px;
+  --ds-radius-navigation-panel: 12px;
   --ds-space-1: 4px;
   --ds-space-2: 8px;
   --ds-space-3: 12px;
@@ -32,5 +33,11 @@
   --ds-duration-fast: 160ms;
   --ds-duration-standard: 220ms;
   --ds-duration-disclosure: 280ms;
+  --ds-duration-theme: 220ms;
+  --ds-type-display-scale: 1;
+  --ds-type-heading-scale: 1;
+  --ds-type-section-body-scale: 1;
+  --ds-type-controls-scale: 1;
+  --ds-type-eyebrow-scale: 1;
 }
 /* Responsive values remain in tokens.css, inherited directly from the site. */
