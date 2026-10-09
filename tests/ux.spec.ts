@@ -419,8 +419,10 @@ test('reference pages fit five breakpoints without horizontal overflow in either
    await expect(page.locator('main#docs-content')).toBeVisible();
    expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth),width+' '+route).toBeLessThanOrEqual(2);
   }
-  await page.getByRole('button',{name:'Dark theme'}).click();
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth),width+' dark').toBeLessThanOrEqual(2);
+  const originalTheme=await page.locator('html').getAttribute('data-theme');
+  await page.locator('button.docs-header__theme').click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme',originalTheme==='dark'?'light':'dark');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth),width+' toggled theme').toBeLessThanOrEqual(2);
  }
 });
 test('contextual links scroll to visible tokens and morph examples',async({page})=>{
