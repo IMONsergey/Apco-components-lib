@@ -29,7 +29,10 @@ function CommandSearch({open,onClose,onNavigate}:{open:boolean;onClose:()=>void;
    const score=!q?index<9?200-index:0:name===q?500:name.startsWith(q)?400:name.includes(q)?300:extra.includes(q)?120:0;
    return {item,score,index};
   });
-  return scored.filter(x=>x.score>0).sort((a,b)=>b.score-a.score||a.index-b.index).slice(0,12).map(x=>x.item);
+  const seen=new Set<string>();
+  return scored.filter(x=>x.score>0).sort((a,b)=>b.score-a.score||a.index-b.index)
+   .filter(({item})=>{if(seen.has(item.route))return false;seen.add(item.route);return true})
+   .slice(0,8).map(x=>x.item);
  },[query]);
  if(!open)return null;
  return <div className="docs-command-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
@@ -78,18 +81,22 @@ function Sidebar({route,open,compact,onClose,onCompact}:{route:DocRoute;open:boo
      <a className="docs-sidebar__overview" href={href('overview')} aria-current={route.section==='overview'?'page':undefined}
        onClick={onClose}><span>Home</span><Icon name="arrow"/></a>
      {sections.filter(s=>s.id!=='overview').map(section=>
-      <details className="docs-sidebar__group" key={section.id} open={route.section===section.id||(route.section==='overview'&&section.id==='foundations')?true:undefined} data-section={section.id}>
-       <summary>
-        <span>{section.label}</span><Icon name="chevron"/>
-       </summary>
-       <div className="docs-sidebar__subitems">
-        {section.items.map(item=>{
-         const active=window.location.hash===item.route||(!route.slug&&route.section===section.id&&item.route===href(section.id));
-         return <a key={item.route} href={item.route} aria-current={active?'page':undefined} title={item.label}
-           onClick={onClose}>{item.label}</a>;
-        })}
-       </div>
-      </details>)}
+      (section.id==='components'||section.id==='icons')
+       ? <a key={section.id} href={href(section.id)} className="docs-sidebar__section-link"
+         aria-current={route.section===section.id?'page':undefined} onClick={onClose}>
+          <span>{section.label}</span><Icon name="arrow"/>
+         </a>
+       : <details className="docs-sidebar__group" key={section.id}
+           open={route.section===section.id||(route.section==='overview'&&section.id==='foundations')?true:undefined} data-section={section.id}>
+          <summary><span>{section.label}</span><Icon name="chevron"/></summary>
+          <div className="docs-sidebar__subitems">
+           {section.items.map(item=>{
+            const active=window.location.hash===item.route||(!route.slug&&route.section===section.id&&item.route===href(section.id));
+            return <a key={item.route} href={item.route} aria-current={active?'page':undefined}
+              title={item.label} onClick={onClose}>{item.label}</a>;
+           })}
+          </div>
+         </details>)}
     </nav>
     <div className="docs-sidebar__links">
      <a href="https://github.com/IMONsergey/Apco-components-lib" target="_blank" rel="noreferrer">GitHub <Icon name="external"/></a>
@@ -153,10 +160,10 @@ export function DocsChrome({route,tone,onTheme,children}:{route:DocRoute;tone:To
   </header>
   <Sidebar route={route} open={open} compact={collapsed} onClose={go} onCompact={()=>setCollapsed(true)}/>
   <div className="docs-main-shell">
-   <div className="docs-breadcrumbs"><a href={href('overview')}>APCOSYS</a><span>/</span>
+   {route.section!=='overview'&&<div className="docs-breadcrumbs"><a href={href('overview')}>APCOSYS</a><span>/</span>
     <a href={href(route.section)} aria-current={!route.slug?'page':undefined}>{sectionTitles[route.section]}</a>
     {route.slug&&<><span>/</span><span>{route.slug.replace(/-/g,' ')}</span></>}
-   </div>
+   </div>}
    <div className="docs-content-layout">
     <main id="docs-content" className="docs-content" tabIndex={-1}>
      {children}

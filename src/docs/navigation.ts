@@ -24,15 +24,9 @@ export const sections:{id:Section;label:string;items:NavItem[]}[]=[
  ]},
  {id:'components',label:'Components',items:[
   {label:'All components',route:href('components')},
-  {label:'Interface & controls',route:href('components','interface'),keywords:'buttons forms navigation input'},
-  {label:'Product previews',route:href('components','product'),keywords:'motion demos'},
-  {label:'Visual effects',route:href('components','visual'),keywords:'engines canvases'},
  ]},
  {id:'icons',label:'Icons',items:[
   {label:'All icons',route:href('icons')},
-  {label:'APCOSYS icons',route:href('icons','apcosys')},
-  {label:'Feather',route:href('icons','feather')},
-  {label:'Phosphor',route:href('icons','phosphor')},
  ]},
  {id:'guidelines',label:'Guides',items:[
   {label:'Best practices',route:href('guidelines')},
