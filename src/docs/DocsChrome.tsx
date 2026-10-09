@@ -25,7 +25,7 @@ function CommandSearch({open,onClose,onNavigate}:{open:boolean;onClose:()=>void;
     if(e.key==='Escape'){e.preventDefault();onClose();}
     if(e.key==='ArrowDown'){e.preventDefault();setActive(v=>Math.min(matches.length-1,v+1))}
     if(e.key==='ArrowUp'){e.preventDefault();setActive(v=>Math.max(0,v-1))}
-    if(e.key==='Enter'&&matches.length){e.preventDefault();window.location.hash=matches[Math.min(active,matches.length-1)].route;onClose();onNavigate();}
+    if(e.key==='Enter'&&matches.length){e.preventDefault();const target=matches[Math.min(active,matches.length-1)];if(target){window.location.hash=target.route;onClose();onNavigate();}}
    }}>
    <div className="docs-command__field"><Icon name="search"/><input ref={field} type="search" placeholder="Search tokens, components, documentation..." aria-label="Search all docs" value={query}
     onChange={e=>{setQuery(e.target.value);setActive(0)}}/>
