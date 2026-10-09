@@ -60,9 +60,12 @@ function MorphPairs(){
 
 export default function IconsPage({initialFamily}:{initialFamily?:string}){
   useEffect(()=>{
-   if(initialFamily==='apcosys'||initialFamily==='feather'||initialFamily==='phosphor'){
-    setFamily(initialFamily);setSelected(null);setLimit(72);
-   }
+   const [requestedFamily,requestedIcon]=initialFamily?.split('/')??[];
+   const family=(requestedFamily==='feather'||requestedFamily==='phosphor'||requestedFamily==='apcosys')?requestedFamily:'apcosys';
+   setFamily(family);setLimit(72);
+   const valid=Boolean(requestedIcon&&all[family].includes(requestedIcon));
+   setSelected(valid?{family,name:requestedIcon!}:null);
+   setSearch(valid?requestedIcon!:'');
   },[initialFamily]);
   const [family,setFamily]=useState<Family>('apcosys');
   const [search,setSearch]=useState('');

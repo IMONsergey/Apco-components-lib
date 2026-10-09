@@ -1,5 +1,6 @@
 import { catalog } from '../catalog';
 import tokens from '../tokens/apcosys.tokens.json';
+import iconRegistry from '../generated/icon-manifest.json';
 
 export type Section='overview'|'foundations'|'components'|'icons'|'guidelines';
 export type DocRoute={section:Section;slug:string};
@@ -49,6 +50,14 @@ export const sourceRoutes:NavItem[]=[
   label:item.name,route:href('components',item.id),
   keywords:item.group+' '+item.tech+' '+item.description,
  })),
+ ...Object.entries({
+  apcosys:['arrow','down','chevron','search','plus','minus','close','menu','previous','external','focus','database','scanner','cube','book','bookmark','appearance','play','pause','copy'],
+  feather:iconRegistry.feather,
+  phosphor:iconRegistry.phosphor,
+ }).flatMap(([family,names])=>names.map(name=>({
+  label:name,route:href('icons',family+'/'+name),
+  keywords:'icon '+family+' '+name.replace(/-/g,' ')+' symbol',
+ }))),
  ...Object.entries(tokens.colors).map(([key,v])=>({
   label:key+' color',route:href('foundations','colors'),
   keywords:'palette '+key+' '+v.css+' '+v.usage+' '+v.light+' '+v.dark,

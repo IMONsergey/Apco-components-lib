@@ -4,7 +4,7 @@ const root='/Apco-components-lib/';
 
 test('sections and dark theme stay coordinated', async ({page})=>{
   await page.goto(root+'#foundations');
-  await expect(page.getByRole('heading',{name:'Foundations',exact:true})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Brand styles',exact:true})).toBeVisible();
   await expect(page.locator('.ds-token-row')).toHaveCount(17);
   const first=page.locator('.ds-token-row').first();
   await expect(first).toContainText('#F6F6F6');
@@ -189,9 +189,9 @@ test('docs home exposes a persistent hierarchy and deep-linked color tokens',asy
  await expect(page.getByRole('heading',{name:'Design system',exact:true})).toBeVisible();
  const nav=page.getByRole('navigation',{name:'Design system',exact:true});
  await expect(nav.getByRole('link',{name:'Overview'})).toBeVisible();
- await nav.getByRole('link',{name:'Color tokens'}).click();
+ await nav.getByRole('link',{name:'Colors'}).click();
  await expect(page).toHaveURL(/#foundations\/colors$/);
- await expect(page.getByRole('heading',{name:'Foundations',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Brand styles',exact:true})).toBeVisible();
  await expect(page.locator('.ds-token-row')).toHaveCount(17);
  await expect(page.locator('#ds-colors')).toBeInViewport();
 });
@@ -239,4 +239,32 @@ test('wide layout retains on-page toc without replacing sidebar',async({page})=>
  await expect(page.locator('.docs-shell')).toHaveAttribute('data-collapsed','true');
  await page.getByRole('button',{name:'Expand navigation'}).click();
  await expect(page.locator('.docs-shell')).toHaveAttribute('data-collapsed','false');
+});
+
+test('homepage is visual and favicon matches published APCOSYS source',async({page})=>{
+ await page.goto(root);
+ await expect(page.getByRole('heading',{name:'Everything in one place.'})).toBeVisible();
+ await expect(page.locator('.docs-overview__card--visual')).toHaveCount(4);
+ await expect(page.locator('.docs-overview__swatches span')).toHaveCount(5);
+ const favicon=page.locator('link[rel="icon"]');
+ await expect(favicon).toHaveAttribute('href','/Apco-components-lib/assets/brand/favicon.svg');
+ const url=await favicon.getAttribute('href');
+ const source=await page.request.get(url!);
+ expect(source.ok()).toBeTruthy();
+ const body=await source.text();
+ expect(body).toContain('viewBox="0 0 26 25.7738"');
+ expect(body).toContain('Group 2087326226');
+});
+
+test('search finds an individual icon and opens it',async({page})=>{
+ await page.goto(root);
+ await page.keyboard.press('ControlOrMeta+k');
+ const command=page.getByRole('dialog',{name:'Search design system'});
+ await command.getByRole('combobox',{name:'Search all docs'}).fill('activity');
+ await expect(command.getByRole('option',{name:/activity/i}).first()).toBeVisible();
+ await command.getByRole('option',{name:/activity/i}).first().click();
+ await expect(page).toHaveURL(/#icons\/feather\/activity$/);
+ const detail=page.getByRole('region',{name:'Selected icon'});
+ await expect(detail).toBeVisible();
+ await expect(detail).toContainText('activity');
 });
