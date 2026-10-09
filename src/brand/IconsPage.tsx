@@ -85,10 +85,9 @@ export default function IconsPage(){
         {[16,20,24,32].map(n=><option key={n} value={n}>{n}px</option>)}</select></label>
       <label>Stroke <select aria-label="Icon stroke width" value={stroke} onChange={e=>setStroke(Number(e.target.value))} disabled={family==='phosphor'}>
         {[1,1.5,2].map(n=><option key={n} value={n}>{n}px</option>)}</select></label>
-    </div>
     </div></details>
-    <div className="ds-icon-catalog" role="list" aria-label={family+' icons'}>
-      {visible.map(name=><button role="listitem" key={name} type="button" className="ds-icon-tile" data-selected={selected?.family===family&&selected.name===name}
+    <div className="ds-icon-catalog" role="group" aria-label={family+' icons'}>
+      {visible.map(name=><button key={name} type="button" className="ds-icon-tile" data-selected={selected?.family===family&&selected.name===name}
         onClick={()=>{setSelected({family,name});setCopied(false)}} title={name}>
         <LibraryIcon family={family} name={name} size={size} stroke={stroke} spriteBaseUrl={spriteBaseUrl}/>
         <span>{name}</span></button>)}
