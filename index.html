@@ -4,6 +4,17 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="theme-color" content="#f6f6f6"/>
+  <script>
+    try {
+      const saved = localStorage.getItem('apcosys-components-theme');
+      const theme = saved === 'dark' ? 'dark' : 'light';
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
+      document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#0d1113' : '#f6f6f6';
+    } catch {
+      document.documentElement.dataset.theme = 'light';
+    }
+  </script>
   <meta name="description" content="APCOSYS component library"/>
   <title>APCOSYS — Components</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%2303879f'/%3E%3Ccircle cx='24' cy='24' r='10' fill='none' stroke='%23fff' stroke-width='4'/%3E%3C/svg%3E"/>

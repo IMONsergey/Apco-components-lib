@@ -79,7 +79,13 @@ function Detail({ item, tone, onClose }: { item: Item; tone: Tone; onClose: () =
 export default function App() {
   const [category, setCategory] = useState<(typeof groups)[number]>('All components');
   const [search, setSearch] = useState('');
-  const [tone, setTone] = useState<Tone>('light');
+  const [tone, setTone] = useState<Tone>(() => document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+  useEffect(() => {
+    document.documentElement.dataset.theme = tone;
+    document.documentElement.style.colorScheme = tone;
+    document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.setAttribute('content', tone === 'dark' ? '#0d1113' : '#f6f6f6');
+    try { window.localStorage.setItem('apcosys-components-theme', tone); } catch { /* Storage may be unavailable */ }
+  }, [tone]);
   const [paused, setPaused] = useState(false);
   const [selected, setSelected] = useState<Item | null>(null);
   const filtered = useMemo(() =>
@@ -102,7 +108,7 @@ export default function App() {
         <div className="lib-title-row">
           <h1>Components <span>{catalog.length}</span></h1>
           <div className="lib-tools">
-            <button className="lib-icon-button" type="button" aria-label={tone === 'light' ? 'Dark preview' : 'Light preview'} aria-pressed={tone === 'dark'}
+            <button className="lib-icon-button" type="button" aria-label={tone === 'light' ? 'Dark theme' : 'Light theme'} aria-pressed={tone === 'dark'}
               onClick={() => setTone(tone === 'light' ? 'dark' : 'light')}><Icon name="appearance"/></button>
             <button className="lib-icon-button" type="button" aria-label={paused ? 'Resume animations' : 'Pause animations'}
               aria-pressed={paused} onClick={() => setPaused(!paused)}><Icon name={paused ? 'play' : 'pause'} /></button>

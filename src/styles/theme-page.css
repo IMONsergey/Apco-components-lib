@@ -1,0 +1,42 @@
+/* Theme tokens copied from the published apcoweb theme. The gallery uses
+   the same semantic variables for the document, overlays and live previews. */
+html[data-theme='light'] { color-scheme: light; }
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --surface-page: #0d1113;
+  --surface-card: #151b1f;
+  --surface-elevated: #1c252a;
+  --surface-strong: #263239;
+  --text-primary: #f4f7f8;
+  --color-text-body: #cbd3d6;
+  --text-muted: #9ca8ae;
+  --brand-mark: #43c0d0;
+  --accent-text: #43c0d0;
+  --focus: #43c0d0;
+  --action-fill: #04768a;
+  --action-hover-fill: #0b778b;
+  --on-action: #ffffff;
+  --surface-tint: #173b42;
+  --border-subtle: #344148;
+  --border-strong: #617078;
+  --api-surface: #075462;
+  --visual-ink: #b4c2c7;
+}
+html, body { background: var(--page); color: var(--ink); }
+html[data-theme='dark'] .lib-dialog { box-shadow: 0 22px 90px rgb(0 0 0 / 48%); }
+html[data-theme='dark'] .lib-dialog::backdrop { background: rgb(1 11 14 / 72%); }
+@media (prefers-reduced-motion: no-preference) {
+  .lib-app,
+  .lib-header,
+  .lib-card,
+  .lib-footer,
+  .lib-dialog,
+  .lib-icon-button,
+  .lib-code,
+  .lib-search input,
+  .lib-card__preview {
+    transition: background-color 220ms var(--ease),
+                color 220ms var(--ease),
+                border-color 220ms var(--ease);
+  }
+}
