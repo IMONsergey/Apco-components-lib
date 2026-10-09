@@ -160,3 +160,25 @@ test('source parity: site modal traps focus, closes and restores scroll',async({
   await expect(dialog).not.toBeVisible();
   await expect.poll(()=>page.evaluate(()=>document.body.style.overflow)).toBe('');
 });
+
+test('14 interface previews retain content in light/dark desktop and mobile',async({page})=>{
+ const names=['price','button','accordion','marquee','billing','planbutton','plain','iconaction','searchfield','navmenu','language','tags','plancard','modal'];
+ for(const width of [390,1440]){
+  await page.setViewportSize({width,height:920});
+  await page.goto(root+'#components');
+  for(const theme of ['light','dark'] as const){
+   const current=await page.locator('html').getAttribute('data-theme');
+   if(current!==theme)await page.getByRole('button',{name:theme==='dark'?'Dark theme':'Light theme'}).click();
+   for(const id of names){
+    const card=page.locator('.lib-card[data-testid="'+id+'"]');
+    await card.scrollIntoViewIfNeeded();
+    const inner=card.locator('.lib-preview--'+id);
+    await expect(inner).toBeVisible();
+    const b=await inner.boundingBox();
+    expect(b,id+' preview absent at '+width).not.toBeNull();
+    expect(b!.width,id+' preview zero width at '+width).toBeGreaterThan(120);
+    expect(b!.height,id+' preview zero height at '+width).toBeGreaterThan(90);
+   }
+  }
+ }
+});
