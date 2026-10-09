@@ -112,3 +112,6 @@
  .docs-content .lib-card[data-group='Interface motion']:not(:has(.lib-preview--plancard)) .lib-card__preview{height:228px}
  .docs-content .lib-card:has(.lib-preview--plancard) .lib-card__preview{height:422px}
 }
+
+/* Focused token pages use their own H1, without a duplicate brand-styles heading. */
+.ds-foundations .ds-section-bar .ds-focused-title{font-size:clamp(28px,3.1vw,38px);font-weight:500;letter-spacing:-.04em;line-height:1.1}

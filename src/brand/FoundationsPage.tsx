@@ -44,6 +44,7 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
    const id=key[jumpTo];
    if(id)requestAnimationFrame(()=>document.getElementById(id)?.scrollIntoView({block:'start',behavior:'instant'}));
   },[jumpTo]);
+  const heading=(title:string,slug:string)=>jumpTo===slug?<h1 className="ds-focused-title">{title}</h1>:<h2>{title}</h2>;
   const [copied,setCopied]=useState<string|null>(null);
   const [copyFormat,setCopyFormat]=useState<'css'|'hex'>('hex');
   const copy=async(value:string)=>{
@@ -55,7 +56,7 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
     </nav>
 
     {(!jumpTo||jumpTo==='identity')&&<section className="ds-section" id="ds-identity">
-      <div className="ds-section-bar"><h2>Identity</h2></div>
+      <div className="ds-section-bar">{heading('Logo','identity')}</div>
       <div className="ds-brand-grid">
         <a className="ds-brand-sample ds-brand-sample--light" href={base+'assets/brand/wordmark-light.svg'} target="_blank" rel="noreferrer" title="Open light logo SVG">
           <img src={base+'assets/brand/wordmark-light.svg'} alt="APCOSYS light wordmark"/><span>Light SVG <Icon name="external"/></span>
@@ -76,7 +77,7 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
     </section>}
 
     {(!jumpTo||jumpTo==='colors')&&<section className="ds-section" id="ds-colors">
-      <div className="ds-section-bar"><h2>Colors</h2><div className="ds-color-actions">
+      <div className="ds-section-bar">{heading('Colors','colors')}<div className="ds-color-actions">
         <span className="ds-muted-note">{tone==='dark'?'Dark':'Light'} theme · click to copy</span>
         <div className="ds-copy-format" role="group" aria-label="Copy color format">
           {(['css','hex'] as const).map(mode=><button key={mode} type="button" aria-pressed={copyFormat===mode} onClick={()=>setCopyFormat(mode)}>{mode==='css'?'CSS variable':'HEX'}</button>)}
@@ -114,7 +115,7 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
     </section>}
 
     {(!jumpTo||jumpTo==='typography')&&<section className="ds-section" id="ds-type">
-      <div className="ds-section-bar"><h2>Typography</h2></div>
+      <div className="ds-section-bar">{heading('Typography','typography')}</div>
       <p className="ds-muted-note ds-section-subtitle">Instrument Sans · IBM Plex Mono</p>
       <div className="ds-type-list">{typeSamples.map(t=><div className="ds-type-row" key={t.title}>
         <div><span className="ds-label">{t.title}</span><code>{t.spec}</code></div>
@@ -123,7 +124,7 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
     </section>}
 
     {(!jumpTo||jumpTo==='spacing')&&<section className="ds-section" id="ds-spacing">
-      <div className="ds-section-bar"><h2>Spacing</h2><span className="ds-muted-note">4px base</span></div>
+      <div className="ds-section-bar">{heading('Spacing','spacing')}<span className="ds-muted-note">4px base</span></div>
       <div className="ds-spacing-grid">{spaces.map(n=><div className="ds-space-row" key={n}>
         <code>{n}px</code><span className="ds-space-bar" style={{width:n}}/><code>{pxVar(n)}</code>
       </div>)}</div>
@@ -136,7 +137,7 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
     </section>}
 
     {(!jumpTo||jumpTo==='layout')&&<section className="ds-section" id="ds-layout">
-      <div className="ds-section-bar"><h2>Layout</h2></div>
+      <div className="ds-section-bar">{heading('Layout','layout')}</div>
       <div className="ds-layout-metrics">{metrics.map(([name,value])=><div key={name}><span>{name}</span><code>{value}</code></div>)}</div>
       <details className="ds-native-details">
         <summary>Responsive breakpoints <span>+</span></summary>
@@ -147,7 +148,7 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
     </section>}
 
     {(!jumpTo||jumpTo==='motion')&&<section className="ds-section" id="ds-motion">
-      <div className="ds-section-bar"><h2>Motion</h2></div>
+      <div className="ds-section-bar">{heading('Animations','motion')}</div>
       <div className="ds-motion-simple">{Object.entries(tokens.motions).map(([name,value])=><div key={name}>
         <span>{name}</span><code>{value}</code>
       </div>)}</div>
