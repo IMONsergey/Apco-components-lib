@@ -87,6 +87,17 @@
 .lib-marquee-demo{width:100%;overflow:hidden}
 .lib-marquee-demo .trust{padding-top:0}
 .lib-marquee-demo .trust-viewport{width:100%}
+/* Original apcoweb dark-theme brand treatment, scoped to gallery previews.
+   Most partner SVGs have black artwork and become invisible on dark surfaces
+   without the published site's monochrome inverse. */
+.lib-surface[data-tone='dark'] .trust-mark img{
+  filter:brightness(0) invert(1);
+  opacity:.78;
+}
+.lib-surface[data-tone='light'] .trust-mark img{
+  filter:none;
+  opacity:1;
+}
 .lib-segment-demo{display:grid;place-items:center}
 .lib-plan-demo{display:grid;place-items:center}
 .lib-plan-demo .plan-button{min-width:170px}

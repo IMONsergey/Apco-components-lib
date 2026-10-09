@@ -22,8 +22,8 @@ function useInView() {
   return { ref, visible };
 }
 
-function Card({ item, tone, paused, open }: {
-  item: Item; tone: Tone; paused: boolean; open: (item: Item) => void;
+function Card({ item, tone, open }: {
+  item: Item; tone: Tone; open: (item: Item) => void;
 }) {
   const { ref, visible } = useInView();
   return (
@@ -35,7 +35,7 @@ function Card({ item, tone, paused, open }: {
         </button>
       </div>
       <div className="lib-surface lib-card__preview" data-tone={tone}>
-        <Preview id={item.id} tone={tone} speed={1} active={visible && !paused} />
+        <Preview id={item.id} tone={tone} speed={1} active={visible} />
       </div>
       <div className="lib-card__foot"><span>{item.tech}</span><span>{item.group}</span></div>
     </article>
@@ -86,7 +86,6 @@ export default function App() {
     document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.setAttribute('content', tone === 'dark' ? '#0d1113' : '#f6f6f6');
     try { window.localStorage.setItem('apcosys-components-theme', tone); } catch { /* Storage may be unavailable */ }
   }, [tone]);
-  const [paused, setPaused] = useState(false);
   const [selected, setSelected] = useState<Item | null>(null);
   const filtered = useMemo(() =>
     catalog.filter(item =>
@@ -110,8 +109,6 @@ export default function App() {
           <div className="lib-tools">
             <button className="lib-icon-button" type="button" aria-label={tone === 'light' ? 'Dark theme' : 'Light theme'} aria-pressed={tone === 'dark'}
               onClick={() => setTone(tone === 'light' ? 'dark' : 'light')}><Icon name="appearance"/></button>
-            <button className="lib-icon-button" type="button" aria-label={paused ? 'Resume animations' : 'Pause animations'}
-              aria-pressed={paused} onClick={() => setPaused(!paused)}><Icon name={paused ? 'play' : 'pause'} /></button>
           </div>
         </div>
         <div className="lib-filters">
@@ -126,7 +123,7 @@ export default function App() {
             value={search} onChange={e => setSearch(e.target.value)}/></label>
         </div>
         {filtered.length > 0
-          ? <div className="lib-grid">{filtered.map(item => <Card key={item.id} item={item} tone={tone} paused={paused} open={setSelected}/>)}</div>
+          ? <div className="lib-grid">{filtered.map(item => <Card key={item.id} item={item} tone={tone} open={setSelected}/>)}</div>
           : <p className="lib-empty">No components found.</p>}
       </main>
       <footer className="lib-footer"><div className="container">APCOSYS <span> / </span> Components</div></footer>
