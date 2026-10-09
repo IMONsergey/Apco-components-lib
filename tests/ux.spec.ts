@@ -81,3 +81,65 @@ test('small screens have no horizontal overflow and inspector fits viewport',asy
   const overflows=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+2);
   expect(overflows).toBe(false);
 });
+
+
+test('source parity: dark Plain Button retains readable colors and hover',async({page})=>{
+  await page.goto(root+'#components');
+  await page.getByRole('button',{name:'Dark theme'}).click();
+  const card=page.locator('.lib-card[data-testid="plain"]');
+  await card.scrollIntoViewIfNeeded();
+  const button=card.locator('.plain-button');
+  await expect(button).toBeVisible();
+  const initial=await button.evaluate(el=>{
+    const style=getComputedStyle(el);return {color:style.color,background:style.backgroundColor};
+  });
+  expect(initial.color).toBe('rgb(244, 247, 248)');
+  expect(initial.background).toBe('rgb(28, 37, 42)');
+  await button.hover();
+  await expect.poll(()=>button.evaluate(el=>getComputedStyle(el).backgroundColor)).toBe('rgb(38, 50, 57)');
+});
+
+test('source parity: Plus plan values and elements stay inside preview',async({page})=>{
+  await page.goto(root+'#components');
+  const card=page.locator('.lib-card[data-testid="plancard"]');
+  await card.scrollIntoViewIfNeeded();
+  const plan=card.locator('.plan-card');
+  const button=plan.locator('.plan-button');
+  await expect(plan).toBeVisible();
+  await expect(plan).toContainText('PLUS');
+  await expect(plan).toContainText('25');
+  await expect(plan).toContainText('Research with API access');
+  await expect(button).toHaveText('View Plus');
+  const cardBox=await card.locator('.lib-card__preview').boundingBox();
+  const planBox=await plan.boundingBox();
+  const ctaBox=await button.boundingBox();
+  expect(cardBox&&planBox&&ctaBox).toBeTruthy();
+  expect(planBox!.y).toBeGreaterThanOrEqual(cardBox!.y-1);
+  expect(planBox!.y+planBox!.height).toBeLessThanOrEqual(cardBox!.y+cardBox!.height+1);
+  expect(ctaBox!.y+ctaBox!.height).toBeLessThanOrEqual(planBox!.y+planBox!.height+1);
+  await page.getByRole('button',{name:'Dark theme'}).click();
+  await expect(plan).toBeVisible();
+});
+
+test('source parity: language menu uses original flags and anchored panel',async({page})=>{
+  await page.goto(root+'#components');
+  const card=page.locator('.lib-card[data-testid="language"]');
+  await card.scrollIntoViewIfNeeded();
+  const trigger=card.locator('.language-control .language');
+  await expect(trigger).toContainText('EN');
+  await expect(card.locator('svg.language-flag')).toHaveCount(4);
+  await trigger.click();
+  const panel=card.locator('.language-panel');
+  await expect(panel).toHaveAttribute('data-open','true');
+  await expect(panel.getByRole('menuitemradio')).toHaveCount(3);
+  await expect(panel.getByRole('menuitemradio',{name:/Russian/i})).toBeDisabled({timeout:2000}).catch(async()=>{
+    await expect(panel.locator('button[lang="ru"]')).toBeDisabled();
+  });
+  const triggerBox=await trigger.boundingBox();
+  const panelBox=await panel.boundingBox();
+  expect(triggerBox&&panelBox).toBeTruthy();
+  expect(Math.abs((panelBox!.x+panelBox!.width)-(triggerBox!.x+triggerBox!.width))).toBeLessThanOrEqual(3);
+  expect(panelBox!.y).toBeGreaterThanOrEqual(triggerBox!.y+triggerBox!.height);
+  await page.keyboard.press('Escape');
+  await expect(panel).toHaveAttribute('data-open','false');
+});
