@@ -1,6 +1,6 @@
 /* Editorial presentation using APCOSYS tokens — no illustrative mockups. */
 .docs-overview--friendly .docs-overview__top{padding:10px 0 44px;border-bottom:0}
-.docs-overview--friendly .docs-kicker{font:500 11px/1.4 var(--font-mono);letter-spacing:.035em;color:var(--action);margin-bottom:18px}
+.docs-overview--friendly .docs-kicker{font:500 11px/1.4 var(--font-mono);letter-spacing:.035em;color:var(--accent-text);margin-bottom:18px}
 .docs-overview--friendly .docs-overview__top h1{font-size:clamp(46px,4.3vw,67px);font-weight:500;letter-spacing:-.052em;line-height:1.04;max-width:710px}
 .docs-overview--friendly .docs-overview__top p{max-width:540px;margin-top:18px;font-size:16px;line-height:1.55;color:var(--body)}
 .docs-overview--friendly .docs-overview__section{margin-top:16px}

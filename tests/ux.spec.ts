@@ -210,7 +210,7 @@ test('mobile docs drawer navigates without horizontal overflow',async({page})=>{
  const opener=page.getByRole('button',{name:'Open navigation'});
  await expect(opener).toBeVisible();
  await opener.click();
- const drawer=page.getByRole('complementary',{name:'Documentation navigation'});
+ const drawer=page.getByRole('dialog',{name:'Documentation navigation'});
  await expect(drawer).toHaveAttribute('data-open','true');
  await expect(page.getByRole('button',{name:'Close navigation'})).toBeVisible();
  await drawer.getByRole('link',{name:'Typography'}).click();
@@ -555,7 +555,8 @@ test('unified token draft spans type, spacing, radii, layout and motion', async 
   expect(draft.draftExtensions.typographySizeScalePercent.Display).toBe(110);
 
   await page.getByRole('button',{name:'Reset all'}).click();
-  await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toHaveCount(0);
+  await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toContainText('All values match');
+  await expect(page.getByRole('button',{name:'Undo',exact:true})).toBeVisible();
   await page.reload();
   await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toHaveCount(0);
 });
@@ -611,7 +612,8 @@ test('resetting a foundation does not erase unrelated draft sections',async({pag
  await page.getByRole('button',{name:'Try type changes'}).click();
  await expect(page.getByRole('spinbutton',{name:'Display size scale'})).toHaveValue('115');
  await page.getByRole('button',{name:'Reset type'}).click();
- await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toHaveCount(0);
+ await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toContainText('All values match');
+ await expect(page.getByRole('spinbutton',{name:'Display size scale'})).toHaveValue('100');
 });
 
 test('CSS export has manual copy fallback if clipboard permission is denied',async({page})=>{

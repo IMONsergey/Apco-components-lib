@@ -1,0 +1,616 @@
+{
+  "audit": "R9",
+  "baselineCommit": "18292f8016ecda4e669f4d9b4cbcb500f70fad1c",
+  "browser": "Playwright bundled Chromium on macOS",
+  "localGates": {
+    "build": "passed",
+    "designSystem": "passed",
+    "playwright": {
+      "passed": 60,
+      "failed": 0,
+      "newRegressionCases": 24
+    }
+  },
+  "responsiveWidths": [
+    320,
+    340,
+    375,
+    599,
+    899,
+    1000,
+    1001,
+    1440,
+    1920
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "accessibility": [
+    {
+      "theme": "light",
+      "route": "overview",
+      "violationCount": 0
+    },
+    {
+      "theme": "light",
+      "route": "foundations/colors",
+      "violationCount": 0
+    },
+    {
+      "theme": "light",
+      "route": "foundations/typography",
+      "violationCount": 0
+    },
+    {
+      "theme": "light",
+      "route": "foundations/spacing",
+      "violationCount": 0
+    },
+    {
+      "theme": "light",
+      "route": "icons",
+      "violationCount": 0
+    },
+    {
+      "theme": "light",
+      "route": "guidelines",
+      "violationCount": 0
+    },
+    {
+      "theme": "dark",
+      "route": "overview",
+      "violationCount": 0
+    },
+    {
+      "theme": "dark",
+      "route": "foundations/colors",
+      "violationCount": 0
+    },
+    {
+      "theme": "dark",
+      "route": "foundations/typography",
+      "violationCount": 0
+    },
+    {
+      "theme": "dark",
+      "route": "foundations/spacing",
+      "violationCount": 0
+    },
+    {
+      "theme": "dark",
+      "route": "icons",
+      "violationCount": 0
+    },
+    {
+      "theme": "dark",
+      "route": "guidelines",
+      "violationCount": 0
+    }
+  ],
+  "visualComparison": {
+    "comparisons": 32,
+    "exactMatches": 20,
+    "results": [
+      {
+        "file": "1440-dark-billing.png",
+        "sourceSize": [
+          1118,
+          431
+        ],
+        "resultSize": [
+          1118,
+          431
+        ],
+        "changedPixels": 47,
+        "exactMatch": false,
+        "maxChannelDelta": 2,
+        "diffBounds": [
+          0,
+          192,
+          1118,
+          430
+        ],
+        "changedFraction": 9.75391090321215e-05
+      },
+      {
+        "file": "1440-dark-button.png",
+        "sourceSize": [
+          1118,
+          431
+        ],
+        "resultSize": [
+          1118,
+          431
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "1440-dark-iconaction.png",
+        "sourceSize": [
+          1118,
+          431
+        ],
+        "resultSize": [
+          1118,
+          431
+        ],
+        "changedPixels": 35,
+        "exactMatch": false,
+        "maxChannelDelta": 7,
+        "diffBounds": [
+          0,
+          195,
+          611,
+          429
+        ],
+        "changedFraction": 7.263550672604792e-05
+      },
+      {
+        "file": "1440-dark-plain.png",
+        "sourceSize": [
+          1118,
+          431
+        ],
+        "resultSize": [
+          1118,
+          431
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "1440-dark-planbutton.png",
+        "sourceSize": [
+          1118,
+          431
+        ],
+        "resultSize": [
+          1118,
+          431
+        ],
+        "changedPixels": 4,
+        "exactMatch": false,
+        "maxChannelDelta": 1,
+        "diffBounds": [
+          0,
+          428,
+          1118,
+          430
+        ],
+        "changedFraction": 8.301200768691191e-06
+      },
+      {
+        "file": "1440-dark-plancard.png",
+        "sourceSize": [
+          1118,
+          431
+        ],
+        "resultSize": [
+          1118,
+          431
+        ],
+        "changedPixels": 4,
+        "exactMatch": false,
+        "maxChannelDelta": 1,
+        "diffBounds": [
+          0,
+          428,
+          1118,
+          430
+        ],
+        "changedFraction": 8.301200768691191e-06
+      },
+      {
+        "file": "1440-dark-searchfield.png",
+        "sourceSize": [
+          1118,
+          431
+        ],
+        "resultSize": [
+          1118,
+          431
+        ],
+        "changedPixels": 21,
+        "exactMatch": false,
+        "maxChannelDelta": 6,
+        "diffBounds": [
+          0,
+          206,
+          728,
+          429
+        ],
+        "changedFraction": 4.3581304035628754e-05
+      },
+      {
+        "file": "1440-dark-tags.png",
+        "sourceSize": [
+          1118,
+          431
+        ],
+        "resultSize": [
+          1118,
+          431
+        ],
+        "changedPixels": 4,
+        "exactMatch": false,
+        "maxChannelDelta": 1,
+        "diffBounds": [
+          0,
+          428,
+          1118,
+          430
+        ],
+        "changedFraction": 8.301200768691191e-06
+      },
+      {
+        "file": "1440-light-billing.png",
+        "sourceSize": [
+          1118,
+          431
+        ],
+        "resultSize": [
+          1118,
+          431
+        ],
+        "changedPixels": 9,
+        "exactMatch": false,
+        "maxChannelDelta": 1,
+        "diffBounds": [
+          0,
+          194,
+          1118,
+          430
+        ],
+        "changedFraction": 1.867770172955518e-05
+      },
+      {
+        "file": "1440-light-button.png",
+        "sourceSize": [
+          1118,
+          431
+        ],
+        "resultSize": [
+          1118,
+          431
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "1440-light-iconaction.png",
+        "sourceSize": [
+          1118,
+          431
+        ],
+        "resultSize": [
+          1118,
+          431
+        ],
+        "changedPixels": 41,
+        "exactMatch": false,
+        "maxChannelDelta": 6,
+        "diffBounds": [
+          0,
+          195,
+          611,
+          430
+        ],
+        "changedFraction": 8.508730787908471e-05
+      },
+      {
+        "file": "1440-light-plain.png",
+        "sourceSize": [
+          1118,
+          431
+        ],
+        "resultSize": [
+          1118,
+          431
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "1440-light-planbutton.png",
+        "sourceSize": [
+          1118,
+          431
+        ],
+        "resultSize": [
+          1118,
+          431
+        ],
+        "changedPixels": 4,
+        "exactMatch": false,
+        "maxChannelDelta": 1,
+        "diffBounds": [
+          0,
+          427,
+          1118,
+          430
+        ],
+        "changedFraction": 8.301200768691191e-06
+      },
+      {
+        "file": "1440-light-plancard.png",
+        "sourceSize": [
+          1118,
+          431
+        ],
+        "resultSize": [
+          1118,
+          431
+        ],
+        "changedPixels": 4,
+        "exactMatch": false,
+        "maxChannelDelta": 1,
+        "diffBounds": [
+          0,
+          427,
+          1118,
+          430
+        ],
+        "changedFraction": 8.301200768691191e-06
+      },
+      {
+        "file": "1440-light-searchfield.png",
+        "sourceSize": [
+          1118,
+          431
+        ],
+        "resultSize": [
+          1118,
+          431
+        ],
+        "changedPixels": 23,
+        "exactMatch": false,
+        "maxChannelDelta": 6,
+        "diffBounds": [
+          0,
+          206,
+          728,
+          430
+        ],
+        "changedFraction": 4.773190441997435e-05
+      },
+      {
+        "file": "1440-light-tags.png",
+        "sourceSize": [
+          1118,
+          431
+        ],
+        "resultSize": [
+          1118,
+          431
+        ],
+        "changedPixels": 4,
+        "exactMatch": false,
+        "maxChannelDelta": 1,
+        "diffBounds": [
+          0,
+          427,
+          1118,
+          430
+        ],
+        "changedFraction": 8.301200768691191e-06
+      },
+      {
+        "file": "375-dark-billing.png",
+        "sourceSize": [
+          341,
+          341
+        ],
+        "resultSize": [
+          341,
+          341
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "375-dark-button.png",
+        "sourceSize": [
+          341,
+          341
+        ],
+        "resultSize": [
+          341,
+          341
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "375-dark-iconaction.png",
+        "sourceSize": [
+          341,
+          341
+        ],
+        "resultSize": [
+          341,
+          341
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "375-dark-plain.png",
+        "sourceSize": [
+          341,
+          341
+        ],
+        "resultSize": [
+          341,
+          341
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "375-dark-planbutton.png",
+        "sourceSize": [
+          341,
+          341
+        ],
+        "resultSize": [
+          341,
+          341
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "375-dark-plancard.png",
+        "sourceSize": [
+          341,
+          341
+        ],
+        "resultSize": [
+          341,
+          341
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "375-dark-searchfield.png",
+        "sourceSize": [
+          341,
+          341
+        ],
+        "resultSize": [
+          341,
+          341
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "375-dark-tags.png",
+        "sourceSize": [
+          341,
+          341
+        ],
+        "resultSize": [
+          341,
+          341
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "375-light-billing.png",
+        "sourceSize": [
+          341,
+          341
+        ],
+        "resultSize": [
+          341,
+          341
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "375-light-button.png",
+        "sourceSize": [
+          341,
+          341
+        ],
+        "resultSize": [
+          341,
+          341
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "375-light-iconaction.png",
+        "sourceSize": [
+          341,
+          341
+        ],
+        "resultSize": [
+          341,
+          341
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "375-light-plain.png",
+        "sourceSize": [
+          341,
+          341
+        ],
+        "resultSize": [
+          341,
+          341
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "375-light-planbutton.png",
+        "sourceSize": [
+          341,
+          341
+        ],
+        "resultSize": [
+          341,
+          341
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "375-light-plancard.png",
+        "sourceSize": [
+          341,
+          341
+        ],
+        "resultSize": [
+          341,
+          341
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "375-light-searchfield.png",
+        "sourceSize": [
+          341,
+          341
+        ],
+        "resultSize": [
+          341,
+          341
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      },
+      {
+        "file": "375-light-tags.png",
+        "sourceSize": [
+          341,
+          341
+        ],
+        "resultSize": [
+          341,
+          341
+        ],
+        "changedPixels": 0,
+        "exactMatch": true
+      }
+    ]
+  },
+  "scopeLimitations": [
+    "No manual screen-reader certification",
+    "No exhaustive Firefox/WebKit/device sweep",
+    "Eight representative interface components, not all animation frames",
+    "Draft aliases require explicit integration",
+    "Remote CI verified independently of this local evidence"
+  ]
+}

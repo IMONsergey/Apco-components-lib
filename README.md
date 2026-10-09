@@ -17,6 +17,8 @@ React + TypeScript + Vite. The production APCOSYS website at https://imonsergey.
 npm ci
 npm run dev
 npm run build
+npx playwright install chromium
+npm run test:design-system
 npm run test:ux
 ```
 
@@ -33,31 +35,60 @@ npm run test:ux
 
 Do not casually replace approved page geometry with new primitives. The spacing normalization and minimum 44px touch target are **system recommendations**, not claims that the published site already enforced all of them.
 
-## Trying color changes without modifying the brand source
+## Foundation drafts: inspect → try → export
 
-Open **Brand styles → Colors** and select **Try color changes**. This switches the semantic color list from a read-only reference to a separate local draft:
+**Brand styles** opens the approved reference. Essential values, code and examples are visible without expanding panels. **Try … changes** activates a separate local draft; **View reference** returns both labels and specimens to approved values. Reference copy always copies what is displayed, never an inactive draft.
 
-- Pick a color or type a complete 6-digit HEX value. Invalid fields revert on blur instead of corrupting the draft.
-- Compare the approved and draft interface samples, including body-text and button-text contrast indicators (4.5:1 threshold for normal text).
-- Switch the site's light/dark theme to edit and inspect each palette independently.
-- Use **Copy CSS** for changed semantic CSS variables only, or **Download draft JSON** for a complete draft manifest. **Reset all** removes the draft.
-- Browser local storage preserves the draft for later inspection on that browser only. There is no backend, auto-publishing or change to the approved product tokens.
+| Foundation | Editable draft | Preserved reference |
+| --- | --- | --- |
+| Colors | 17 semantic roles, separately for light and dark | Source colors and logo assets |
+| Typography | Five specimen size scales, 70–130%, 5% increments | Published responsive size expressions and font families |
+| Spacing | 14 stable token names, 4–240px on a 4px grid | Original token identities and approved values |
+| Corner radii | Three roles, 0–32px | Approved radii |
+| Layout | Maximum content width, 960–2400px, 8px increments | Compound gutter, header and breakpoint rules |
+| Motion | Disclosure and theme duration, 80–800ms, 20ms increments | Easing and hover range; reduced-motion behaviour |
 
-The **Download design tokens (approved)** link remains the original unedited manifest. A draft export is explicitly marked as a draft; review it before applying it to production. The preview illustrates a small interface sample and does not claim to validate every component against accessibility requirements.
+**Enter or blur applies a valid input; Escape cancels the pending edit.** Invalid inputs revert rather than corrupting the draft. Changed values show their approved origin. Both motion durations have live examples. Color contrast readings concern only the two demonstrated text/background pairs, not the entire design system.
 
-## Unified foundation drafts (R8)
+### Recovery and storage
 
-The design library now has one local, unpublished draft shared across **Colors, Typography, Spacing / Radii, Layout and Animations**. Visit **Brand styles** and choose **Try ... changes** in a foundation section. Reference values are visible without activating edit mode.
+The shared draft survives navigation between all application pages. It is saved to this browser when local storage is available. Valid R7 color drafts migrate from `apcosys-palette-draft-v1` into `apcosys-design-draft-v2`; migration removes the legacy entry only after a successful write.
 
-- **Colors:** edit semantic values per theme. Approved light/dark variables remain unchanged until explicitly applied elsewhere.
-- **Typography:** scale the five responsive font specimens in 5% increments from 70–130%. This is a *preview extension*, not a claim that the source font-size rules have changed. Responsive values such as `clamp()` are kept intact.
-- **Spacing:** edit the existing 14 spacing values on a 4px grid (4–240px) and the three radii in 1px steps (0–32px).
-- **Layout:** only the single maximum content width can be edited (960–2400px, 8px steps). Published breakpoint, gutter and responsive height expressions remain read-only.
-- **Animations:** edit the disclosure and theme durations (80–800ms, 20ms steps). Test disclosure motion in the live sample; `prefers-reduced-motion` is respected.
-- **Recovery:** invalid numeric/HEX values revert; changes survive route/theme switches and reloads. A section-level reset leaves other sections intact. **Reset all** clears the complete local draft.
-- **Export:** one global toolbar, shown when edits exist, copies changed CSS only or downloads one marked draft JSON. A selectable manual-copy field appears when clipboard permissions are denied. CSS includes the published color roles and portable `--ds-*` aliases for other foundations; consuming components must explicitly adopt these aliases.
+**Undo / Redo** retain up to 30 changes during the current app session, including section resets and **Reset all**. A combined Spacing / Radii reset is one undoable change. History is not persisted across reloads. When browser storage is blocked, the editor remains usable in memory and explicitly warns that a reload will lose the draft; download the JSON to preserve it. This is not a collaborative or cross-tab synchronized editor.
 
-Storage migrates valid R7 color drafts once from `apcosys-palette-draft-v1` to `apcosys-design-draft-v2`. No backend sync, npm release or published-site mutation occurs. The approved `src/tokens/apcosys.tokens.json` and CSS source files remain the source of truth. Edits to typography, breakpoint-dependent layout or transitions are not assumed pixel-equivalent to production until integrated and manually reviewed.
+### CSS and JSON exports
+
+A shared toolbar exports all edited sections. Clipboard feedback is bound to the actual value and expires; if permission is denied, selectable code is displayed instead. The approved JSON download always remains unchanged.
+
+- **CSS:** edited color variables are scoped to the correct theme. Light overrides use `:root:not([data-theme="dark"])`, so adding them after the original theme stylesheet cannot leak a light value into dark mode. Non-color values use portable `--ds-*` aliases; components must explicitly adopt them.
+- **JSON:** includes `draft: true`, `verificationStatus: "unverified-draft"`, `draftSchema: "apcosys-draft-v3"`, the source reference and sanitized `overrides`. The original verification label is not applied to edited values. `draftExtensions.spacingTokens` preserves stable CSS names even when spacing values change. Typography scales stay in explicit preview-extension metadata rather than silently rewriting published `clamp()` rules.
+
+```css
+/* Load source styles first, then the reviewed draft CSS. */
+.example-panel {
+  padding: var(--ds-space-4, 16px);
+  border-radius: var(--ds-radius-panel, 7px);
+}
+```
+
+There is no backend write, auto-publishing, font download or silent change to the approved product. Review an exported draft in the consuming interface before adopting it.
+
+## Quality checks
+
+The current audit is [R9: findings, fixes and evidence](docs/AUDIT_R9.md); [verification metadata](docs/verification-r9.json) records the tested scope. Earlier audits remain as history, not a claim that every subsequent state has been independently verified.
+
+Pull requests to `main` run an isolated build, complete token consistency checks and browser tests in `.github/workflows/quality.yml`. Playwright uses its installed Chromium and a dedicated server on port 4276, never another agent's development server. The Pages workflow only publishes `main` and separately installs the required browser.
+
+For reproducible accessibility reports and representative component screenshots, start `npm run dev` in another terminal, then run:
+
+```sh
+npm run audit:runtime
+# Other server / comparison directory:
+AUDIT_URL=http://127.0.0.1:5187/Apco-components-lib/ \
+AUDIT_PHASE=after AUDIT_OUTPUT=artifacts/audit npm run audit:runtime
+```
+
+The runtime audit examines six documentation routes in both themes and captures eight interface components at mobile and desktop widths. Generated evidence stays in ignored `artifacts/`; it is not included in the shipped application.
 
 ## Source boundaries
 
@@ -111,11 +142,11 @@ The original APCOSYS PLUS plan is $40 / month (not a placeholder $89).
 The published site is a responsive design-system documentation portal. Navigation is built into React and does not depend on an external docs/CMS platform.
 
 - **Desktop:** fixed left navigation, a focused reading column, and a contextual table of contents on extra-wide screens. The sidebar can be collapsed.
-- **Mobile:** an accessible off-canvas navigation menu; documentation contents have a single readable column.
-- **Search:** `⌘K` on macOS / `Ctrl+K` on other platforms or the search control in the header. The indexed items include routes, 28 components and 17 color tokens. Arrow keys select and Enter opens a result.
+- **Mobile:** modal off-canvas navigation with focus containment, background scroll locking and focus restoration; documentation contents have a single readable column.
+- **Search:** `⌘K` on macOS / `Ctrl+K` on other platforms or the search control in the header. The index includes routes, 28 components, icon names, colors and scalar token names for spacing, radius, type and motion. Arrow keys select and Enter opens a result.
 - **Deep links:** `#overview`, `#foundations/colors`, `#foundations/typography`, `#components/button`, `#icons/phosphor`, `#guidelines/usage`.
 - **Source of navigation:** `src/docs/navigation.ts` defines the hierarchy, section URLs, search index and the contextual table of contents. `src/docs/DocsChrome.tsx` contains only the shell interaction/accessible navigation, not design components.
 - **Adding a page:** register its address and label in `src/docs/navigation.ts`, route it through `src/App.tsx`, and author page content under `src/brand/` or `src/docs/`. Keep implementation source code under `src/components/` and `src/visuals/`.
 
-Legacy `#components`, `#foundations`, `#icons`, and `#guidelines` anchors still work. React demos, tokens and asset source remain separate from the docs UI.
+Legacy `#components`, `#foundations`, `#icons`, and `#guidelines` anchors still work. Invalid child routes return to a usable section reference rather than an empty page. A failed lazy demo shows a reload action while keeping the component code and navigation available. React demos, tokens and asset source remain separate from the docs UI.
 

@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { Logo } from '../components/ui/Logo';
 import { Icon } from '../components/ui/Icon';
 import ColorWorkbench from './ColorWorkbench';
-import { DesignDraftProvider } from './draft-store';
 import DraftToolbar from './DraftToolbar';
 import { TypographyReference, SpacingReference, LayoutReference, MotionReference } from './FoundationEditable';
 
@@ -20,7 +19,7 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
    if(id)requestAnimationFrame(()=>document.getElementById(id)?.scrollIntoView({block:'start',behavior:'instant'}));
   },[jumpTo]);
   const heading=(title:string,slug:string)=>jumpTo===slug?<h1 className="ds-focused-title">{title}</h1>:<h2>{title}</h2>;
-  return <DesignDraftProvider><div className="ds-foundations ds-foundations--compact" data-focus={jumpTo||undefined}>
+  return <div className="ds-foundations ds-foundations--compact" data-focus={jumpTo||undefined}>
     <nav className="ds-local-nav" aria-label="Foundation sections">
       {anchors.map(([label,id])=><button type="button" key={id} onClick={()=>document.getElementById(id)?.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'})}>{label}</button>)}
     </nav>
@@ -73,5 +72,5 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
       {jumpTo==='motion'&&<DraftToolbar/>}
       <MotionReference focused={jumpTo==='motion'}/>
     </section>}
-  </div></DesignDraftProvider>;
+  </div>;
 }

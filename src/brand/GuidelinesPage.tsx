@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useClipboard } from '../hooks/useClipboard';
+import ManualCopy from './ManualCopy';
 const rules=[
  {id:'01',name:'Choose colors by purpose',source:'src/styles/tokens.css · src/styles/theme-page.css',required:'Use --page, --white, --ink, --muted, --action, --line. Resolve through the active HTML data-theme.',avoid:'Do not hardcode a teal hex in components or invert logo assets with a general-purpose filter.'},
  {id:'02',name:'Keep typography consistent',source:'src/styles/instrument-sans.css · src/styles/ibm-plex-mono.css',required:'Instrument Sans for interface and headings; IBM Plex Mono for numeric/data metadata. 500 headings, 400 body.',avoid:'No substitute fonts, fabricated weights, global all-caps, or arbitrary tracking.'},
@@ -18,8 +20,8 @@ const snippets=[
  {label:'Morph a state change',code:'import { MorphIcon } from "morphicons/react";\nimport { Menu, X } from "lucide";\n\n<MorphIcon icon={open ? X : Menu} strokeWidth={1.5} reducedMotion="user" />'},
 ];
 function Copy({code}:{code:string}){
- const [copied,setCopied]=useState(false);
- return <button type="button" onClick={()=>{void navigator.clipboard?.writeText(code).then(()=>setCopied(true)).catch(()=>setCopied(false))}}>{copied?'Copied':'Copy'}</button>;
+ const clipboard=useClipboard(code);
+ return <><button type="button" onClick={()=>void clipboard.copy(code)}>{clipboard.copiedId?'Copied':'Copy'}</button>{clipboard.manualValue!==null&&<ManualCopy value={clipboard.manualValue} label="Copy example code manually" onClose={clipboard.clear}/>}</>;
 }
 export default function GuidelinesPage({focus}:{focus?:string}){
  useEffect(()=>{
@@ -41,13 +43,18 @@ export default function GuidelinesPage({focus}:{focus?:string}){
    </article>)}</div>
   <section id="docs-guideline-patterns" className="ds-section ds-guide-section">
    <div className="ds-section-bar"><h2>Examples</h2></div>
-   <div className="ds-recipes">{snippets.map(s=><div key={s.label}><div><span>{s.label}</span><Copy code={s.code}/></div><pre><code>{s.code}</code></pre></div>)}</div>
+   <div className="ds-recipes">{snippets.map(s=><div key={s.label}><div><span>{s.label}</span><Copy code={s.code}/></div><pre tabIndex={0} aria-label={s.label+' code'}><code>{s.code}</code></pre></div>)}</div>
   </section>
   <section id="docs-guideline-integration" className="ds-section ds-guide-section">
    <div className="ds-section-bar"><h2>For developers</h2></div>
    <div className="ds-adoption"><div><span className="ds-label">01 / Install</span><code>npm ci</code><code>npm run build</code></div>
     <div><span className="ds-label">02 / Reuse</span><code>src/components/ui</code><code>src/components/system</code><code>src/visuals</code></div>
     <div><span className="ds-label">03 / Theme</span><code>src/styles/tokens.css</code><code>src/styles/theme-page.css</code><code>src/styles/system-primitives.css</code></div>
+   </div>
+   <div className="ds-reference-block" id="docs-draft-integration">
+    <h3>Using an exported draft</h3>
+    <p className="ds-caption">The JSON is an unverified draft, not a new approved brand version. Color overrides are isolated by theme. Spacing, radii, layout and motion use portable --ds-* variables: components must opt in. Typography exports a preview scale, not replacement font sizes. Stable spacing names are included in draftExtensions.spacingTokens and overrides.</p>
+    <pre className="lib-code" tabIndex={0} aria-label="Draft integration example"><code>{'.example-panel {\n  padding: var(--ds-space-4, 16px);\n  border-radius: var(--ds-radius-panel, 7px);\n}\n/* Import the source styles before the reviewed draft CSS. */'}</code></pre>
    </div>
    <p className="ds-caption">Core APCOSYS icons are proprietary artwork from the site; Feather (MIT) and Phosphor (MIT) come from maintained Iconify JSON packages. Morphicons is MIT; Lucide is ISC. Preserve upstream license notices when distributing the library. Product GSAP scenes are inert previews, not finished product workflows.</p>
   </section>

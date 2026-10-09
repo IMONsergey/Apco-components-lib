@@ -4,8 +4,10 @@ const IconsPage = lazy(() => import('./brand/IconsPage'));
 const GuidelinesPage = lazy(() => import('./brand/GuidelinesPage'));
 import { catalog, groups, type Item } from './catalog';
 import { DocsChrome } from './docs/DocsChrome';
-import { parseRoute, href, type DocRoute } from './docs/navigation';
+import { parseRoute, href, routeTitle, type DocRoute } from './docs/navigation';
 import Overview from './docs/Overview';
+import { useClipboard } from './hooks/useClipboard';
+import ManualCopy from './brand/ManualCopy';
 import { Icon } from './components/ui/Icon';
 import Preview from './gallery/Preview';
 
@@ -45,7 +47,7 @@ function Card({ item, tone }: {
 }
 
 function ComponentPage({item,tone}:{item:Item;tone:Tone}){
- const [copied,setCopied]=useState(false);
+ const clipboard=useClipboard(item.code);
  return <article className="docs-component">
   <div className="docs-component__heading">
    <a href={href('components')} className="docs-component__back">← All components</a>
@@ -62,9 +64,10 @@ function ComponentPage({item,tone}:{item:Item;tone:Tone}){
   <section className="docs-component__section" id="docs-component-usage">
    <div className="docs-component__code">
     <div className="docs-component__code-heading"><h2>Code & usage</h2>
-     <button type="button" onClick={()=>void navigator.clipboard.writeText(item.code).then(()=>setCopied(true)).catch(()=>setCopied(false))}>{copied?'Copied':'Copy code'} <Icon name="copy"/></button>
+     <button type="button" onClick={()=>void clipboard.copy(item.code)}>{clipboard.copiedId?'Copied':'Copy code'} <Icon name="copy"/></button>
     </div>
-    <pre className="lib-code"><code>{item.code}</code></pre>
+    <pre className="lib-code" tabIndex={0} aria-label="Component code"><code>{item.code}</code></pre>
+    {clipboard.manualValue!==null&&<ManualCopy value={clipboard.manualValue} label="Copy component code manually" onClose={clipboard.clear}/>}
    </div>
   </section>
   <section className="docs-component__section" id="docs-component-source">
@@ -81,7 +84,7 @@ export default function App() {
  const [search,setSearch]=useState('');
  const [tone,setTone]=useState<Tone>(()=>document.documentElement.dataset.theme==='dark'?'dark':'light');
  useEffect(()=>{
-  const page=route.slug?route.slug.replace(/-/g,' '):route.section==='overview'?'Design system':route.section.charAt(0).toUpperCase()+route.section.slice(1);
+  const page=route.section==='overview'?'Design system':routeTitle(route);
   document.title=page+' — APCOSYS Design System';
  },[route.section,route.slug]);
  useEffect(()=>{
@@ -99,7 +102,7 @@ export default function App() {
  const focused=route.section==='components'?catalog.find(x=>x.id===route.slug):undefined;
  const filtered=useMemo(()=>catalog.filter(item=>
    (category==='All components'||item.group===category)&&
-   (item.name+' '+item.tech+' '+item.group).toLowerCase().includes(search.trim().toLowerCase())
+   (item.name+' '+item.tech+' '+item.group+' '+item.description).toLowerCase().includes(search.trim().toLowerCase())
  ).sort((a,b)=>{
    const rank:Record<string,number>={'Interface motion':0,'Product motion':1,'Visual engines':2};
    return (rank[a.group]??3)-(rank[b.group]??3);
@@ -107,7 +110,7 @@ export default function App() {
  return <DocsChrome route={route} tone={tone} onTheme={()=>setTone(v=>v==='dark'?'light':'dark')}>
   {route.section==='overview'&&<Overview/>}
   {route.section==='components'&&(focused?
-   <ComponentPage item={focused} tone={tone}/>:
+   <ComponentPage key={focused.id} item={focused} tone={tone}/>:
    <>
     <div className="lib-title-row docs-page-title"><div><h1>Components <span>{catalog.length}</span></h1><p>Explore the building blocks of APCOSYS.</p></div></div>
     <div className="lib-filters">

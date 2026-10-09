@@ -1,6 +1,6 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import tokens from '../tokens/apcosys.tokens.json';
-import { useDesignDraft, draftCount, type ScalarKind, type TypeRole } from './draft-store';
+import { useDesignDraft, draftCount, scalarSpecs, type ScalarKind, type TypeRole } from './draft-store';
 
 const samples: Record<TypeRole, { cls:string; text:string; spec:string }> = {
  'Display': {cls:'ds-type-display', text:'Internet, understood.', spec:'72–106 · 500'},
@@ -12,13 +12,7 @@ const samples: Record<TypeRole, { cls:string; text:string; spec:string }> = {
 const typeNames=Object.keys(samples) as TypeRole[];
 const radii=Object.keys(tokens.radii) as (keyof typeof tokens.radii)[];
 const spacingVar=(n:number)=>'--ds-space-'+n/4;
-const originalValue=(kind:ScalarKind,id:string):number=>{
- if(kind==='typography')return 100;
- if(kind==='spacing')return Number(id);
- if(kind==='radii')return parseInt(tokens.radii[id as keyof typeof tokens.radii],10);
- if(kind==='layout')return 1760;
- return parseInt(tokens.motions[id as 'disclosure'|'theme'],10);
-};
+const originalValue=(kind:ScalarKind,id:string)=>scalarSpecs[kind][id]!.original;
 
 export function ScalarInput({kind,id,name,min,max,step,unit}:{
  kind:ScalarKind;id:string;name:string;min:number;max:number;step:number;unit:string;
@@ -27,17 +21,18 @@ export function ScalarInput({kind,id,name,min,max,step,unit}:{
  const value=(draft[kind] as Record<string,number>)[id] ?? originalValue(kind,id);
  const [raw,setRaw]=useState(String(value));
  useEffect(()=>setRaw(String(value)),[value]);
+ const cancelled=useRef(false);
  const parsed=Number(raw);
  const valid=raw.trim()!=='' && Number.isFinite(parsed) && parsed>=min && parsed<=max &&
   Math.abs(parsed/step-Math.round(parsed/step))<0.00001;
- const commit=()=>{if(valid)setScalar(kind,id,parsed);else setRaw(String(value));};
+ const commit=()=>{if(cancelled.current){cancelled.current=false;setRaw(String(value));return;}if(valid)setScalar(kind,id,parsed);else setRaw(String(value));};
  return <label className="ds-scalar-control">
   <span className="ds-sr-only">{name}</span>
   <input type="number" inputMode="numeric" aria-label={name} aria-invalid={!valid}
    value={raw} min={min} max={max} step={step}
-   onChange={e=>setRaw(e.target.value)} onBlur={commit} onKeyDown={e=>{
+   title={min+'–'+max+' '+unit+'; step '+step+'. Enter to apply, Escape to cancel.'} onFocus={()=>{cancelled.current=false;}} onChange={e=>setRaw(e.target.value)} onBlur={commit} onKeyDown={e=>{
     if(e.key==='Enter')e.currentTarget.blur();
-    if(e.key==='Escape'){setRaw(String(value));e.currentTarget.blur();}
+    if(e.key==='Escape'){e.preventDefault();e.stopPropagation();cancelled.current=true;setRaw(String(value));e.currentTarget.blur();}
    }}/>
   <span aria-hidden="true">{unit}</span>
  </label>;
@@ -55,7 +50,7 @@ export function TypographyReference({focused}:{focused:boolean}){
      onClick={()=>setEditing(!editing)}>{editing?'View reference':'Try type changes'}</button>
    </div>
   </div>
-  <p className="ds-muted-note ds-section-subtitle">Instrument Sans · IBM Plex Mono</p>
+  <p className="ds-muted-note ds-section-subtitle">Instrument Sans · IBM Plex Mono. Source sizes below; specimens scale to fit this page.</p>
   {editing&&<p className="ds-edit-description">Scale type specimens without destroying responsive clamp values. A size-scale experiment is exported separately and requires explicit integration.</p>}
   <div className="ds-type-list">
    {typeNames.map(id=>{
@@ -64,7 +59,7 @@ export function TypographyReference({focused}:{focused:boolean}){
       style={{'--ds-preview-scale':percent/100} as CSSProperties}>
      <div>
       <span className="ds-label">{id==='Eyebrow'?'Data / Eyebrow':id==='Section body'?'Body':id}</span>
-      <code>{spec.spec}</code>
+      <code>{spec.spec}</code>{editing && percent!==100 && <small className="ds-value-origin">Approved scale 100%</small>}
       {editing&&<ScalarInput kind="typography" id={id} name={id+' size scale'} min={70} max={130} step={5} unit="%"/>}
      </div>
      <div className={spec.cls}>{spec.text}</div>
@@ -82,19 +77,19 @@ export function SpacingReference({focused}:{focused:boolean}){
    {focused?<h1 className="ds-focused-title">Spacing</h1>:<h2>Spacing</h2>}
    <div className="ds-color-actions">
     <span className="ds-muted-note">4px base</span>
-    {draftCount(draft,'spacing')+draftCount(draft,'radii')>0&&<button type="button" className="ds-edit-reset" onClick={()=>{reset('spacing');reset('radii')}}>Reset spacing & radii</button>}
+    {draftCount(draft,'spacing')+draftCount(draft,'radii')>0&&<button type="button" className="ds-edit-reset" onClick={()=>{reset(['spacing','radii'])}}>Reset spacing & radii</button>}
     <button type="button" className="ds-workbench__mode" aria-pressed={editing}
      onClick={()=>setEditing(!editing)}>{editing?'View reference':'Try spacing changes'}</button>
    </div>
   </div>
-  {editing&&<p className="ds-edit-description">Spacing changes keep the original token names. Values remain on the 4px grid. Radius values below are independently editable.</p>}
+  {editing&&<p className="ds-edit-description">Keep the token names; change values on the 4px grid. Enter applies a value, Escape cancels. Corner radii are below.</p>}
   <div className="ds-spacing-grid ds-edit-spacing-grid" data-editing={editing} id="ds-spacing-values">
    {tokens.spaces.map(n=>{
-    const px=draft.spacing[String(n)]??n;
-    return <div className="ds-space-row ds-edit-space-row" key={n} data-changed={Boolean(draft.spacing[String(n)])}>
+    const px=editing?(draft.spacing[String(n)]??n):n;
+    return <div className="ds-space-row ds-edit-space-row" key={n} title={'Approved '+n+'px'} data-changed={Boolean(draft.spacing[String(n)])}>
      {editing?<ScalarInput kind="spacing" id={String(n)} name={'Spacing token '+n+' value'} min={4} max={240} step={4} unit="px"/>:<code>{n}px</code>}
      <span className="ds-space-bar" style={{width:Math.min(px,240)}}/>
-     <code>{spacingVar(n)}</code>
+     <code>{spacingVar(n)}{editing&&px!==n&&<small className="ds-value-origin">Approved {n}px</small>}</code>
     </div>;
    })}
   </div>
@@ -104,8 +99,8 @@ export function SpacingReference({focused}:{focused:boolean}){
    </div>
    <div className="ds-radii-grid ds-edit-radii-grid">
     {radii.map(id=>{
-     const px=draft.radii[id]??parseInt(tokens.radii[id],10);
-     return <div key={id} data-changed={draft.radii[id]!==undefined}>
+     const px=editing?(draft.radii[id]??parseInt(tokens.radii[id],10)):parseInt(tokens.radii[id],10);
+     return <div key={id} data-changed={editing&&draft.radii[id]!==undefined}>
       <div style={{borderRadius:px+'px'}}/><strong>{id.replace(/([A-Z])/g,' $1').replace(/^./, c=>c.toUpperCase())}</strong>
       {editing?<ScalarInput kind="radii" id={id} name={id+' radius'} min={0} max={32} step={1} unit="px"/>:<code>{tokens.radii[id]}</code>}
      </div>;
@@ -141,7 +136,7 @@ export function LayoutReference({focused}:{focused:boolean}){
    {metrics.map((item,index)=><div key={item.name}>
     <span>{item.name}</span>
     {index===0&&editing?<ScalarInput kind="layout" id="maxWidth" name="Maximum content width" min={960} max={2400} step={8} unit="px"/>:
-     <code>{index===0&&draft.layout.maxWidth!==undefined&&editing?draft.layout.maxWidth+'px':item.value}</code>}
+     <code>{item.value}</code>}
     <small>{item.usage}</small>
    </div>)}
   </div>
@@ -182,9 +177,10 @@ export function MotionReference({focused}:{focused:boolean}){
   </div>
   {editing&&<div className="ds-motion-live">
    <button type="button" aria-pressed={toggle} onClick={()=>setToggle(v=>!v)}>Toggle motion preview</button>
-   <div className="ds-motion-track"><span data-active={toggle}
-    style={{transitionDuration:(draft.motion.disclosure??280)+'ms'}}/></div>
-   <code>{draft.motion.disclosure??280}ms · disclosure</code>
+   <div className="ds-motion-preview-grid">
+    <div><div className="ds-motion-track"><span data-active={toggle} style={{transitionDuration:(draft.motion.disclosure??280)+'ms'}}/></div><code>{draft.motion.disclosure??280}ms · disclosure</code></div>
+    <div><div className="ds-motion-tone" data-active={toggle} style={{transitionDuration:(draft.motion.theme??220)+'ms'}}/><code>{draft.motion.theme??220}ms · theme</code></div>
+   </div>
   </div>}
  </>;
 }

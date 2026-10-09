@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Menu, X, Search, Check, Plus, Minus, ArrowRight, ArrowDown } from 'lucide';
 import { MorphIcon } from 'morphicons/react';
+import { useClipboard } from '../hooks/useClipboard';
+import ManualCopy from './ManualCopy';
+import { href } from '../docs/navigation';
 import { Icon, type IconName } from '../components/ui/Icon';
 import { LibraryIcon } from '../components/system/LibraryIcon';
 import registry from '../generated/icon-manifest.json';
@@ -22,11 +25,9 @@ const all: Record<Family, readonly string[]> = {
   apcosys:native, feather:registry.feather, phosphor:registry.phosphor,
 };
 
-async function copyText(value:string) {
-  try { await navigator.clipboard.writeText(value); } catch { /* clipboard permission */ }
-}
-
 function MorphPairs(){
+  const clipboard=useClipboard();
+  const code='import { MorphIcon } from "morphicons/react";\nimport { Menu, X } from "lucide";\n<MorphIcon icon={open ? X : Menu} size={24} strokeWidth={1.5} reducedMotion="user" />';
   const pairs=[
     {name:'Navigation',a:Menu,b:X},
     {name:'Search / done',a:Search,b:Check},
@@ -53,7 +54,8 @@ function MorphPairs(){
         <span>{pair.name}</span>
       </button>)}
     </div>
-    <div className="ds-code-line"><code>{'import { MorphIcon } from "morphicons/react";'}</code><button onClick={()=>void copyText('import { MorphIcon } from "morphicons/react";\nimport { Menu, X } from "lucide";\n<MorphIcon icon={open ? X : Menu} size={24} strokeWidth={1.5} reducedMotion="user" />')}>Copy</button></div>
+    <div className="ds-code-line"><code>{'import { MorphIcon } from "morphicons/react";'}</code><button type="button" onClick={()=>void clipboard.copy(code)}>{clipboard.copiedId?'Copied':'Copy'}</button></div>
+    {clipboard.manualValue!==null&&<ManualCopy value={clipboard.manualValue} label="Copy Morphicons code manually" onClose={clipboard.clear}/>}
     <p className="ds-caption">Morphicons is a transition engine, not a replacement for the icon assets. Lucide supplies stroke geometry; transitions respect reduced motion.</p>
   </section>;
 }
@@ -65,7 +67,7 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
    setFamily(family);setLimit(72);
    const valid=Boolean(requestedIcon&&all[family].includes(requestedIcon));
    setSelected(valid?{family,name:requestedIcon!}:null);
-   setCopied(null);setCopyFallback(null);
+   clear();
    setSearch(valid?requestedIcon!:'');
   },[initialFamily]);
   const [family,setFamily]=useState<Family>('apcosys');
@@ -74,19 +76,19 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
   const [stroke,setStroke]=useState(1.5);
   const [limit,setLimit]=useState(72);
   const [selected,setSelected]=useState<IconChoice|null>(null);
-  const [copied,setCopied]=useState<string|null>(null);
-  const [copyFallback,setCopyFallback]=useState<IconChoice|null>(null);
+  const {copiedId:copied,manualValue:manualCode,copy,clear}=useClipboard(family+':'+size+':'+stroke+':'+search);
+  const copyFallback=manualCode!==null?selected:null;
   const names=useMemo(()=>all[family].filter(name=>name.toLowerCase().includes(search.trim().toLowerCase())),[family,search]);
   const visible=names.slice(0,limit);
   const sourceCode=(item:IconChoice)=>{
-    if(item.family==='apcosys')return `<Icon name="${item.name}" width={${size}} height={${size}} />`;
-    return `<LibraryIcon family="${item.family}" name="${item.name}" size={${size}} />`;
+    if(item.family==='apcosys')return `<Icon name="${item.name}" width={${size}} height={${size}} strokeWidth={${stroke}} />`;
+    return `<LibraryIcon family="${item.family}" name="${item.name}" size={${size}}${item.family==='feather'?` stroke={${stroke}}`:""} />`;
   };
   return <div className="ds-icons-page">
     <div id="docs-icon-library" className="ds-section-bar"><h2>Browse icons</h2><span className="ds-label" role="status" aria-live="polite">{copied?'Code copied · '+copied.split('/')[1]:'Click an icon to copy its code'}</span></div>
     <div className="ds-icon-toolbar">
       <div className="ds-toggle-row">{families.map(f=><button key={f.key} type="button" data-active={family===f.key} aria-pressed={family===f.key}
-        onClick={()=>{setFamily(f.key);setSelected(null);setCopied(null);setCopyFallback(null);setSearch('');setLimit(72)}}>{f.label}<small>{all[f.key].length}</small></button>)}</div>
+        onClick={()=>{setFamily(f.key);setSelected(null);clear();setSearch('');setLimit(72);window.location.hash=href('icons',f.key)}}>{f.label}<small>{all[f.key].length}</small></button>)}</div>
       <input type="search" aria-label="Search icons" placeholder="Find an icon..." value={search} onChange={e=>{setSearch(e.target.value);setLimit(72)}}/>
     </div>
     <div id="docs-icon-options" className="ds-icon-settings"><div className="ds-icon-options">
@@ -102,8 +104,7 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
           data-copied={copied===family+'/'+name} aria-label={name} title={'Copy '+name+' code'}
           onClick={async()=>{
             setSelected({family,name});
-            try{await navigator.clipboard.writeText(sourceCode({family,name}));setCopied(family+'/'+name);setCopyFallback(null)}
-            catch{setCopied(null);setCopyFallback({family,name})}
+            await copy(sourceCode({family,name}),family+'/'+name);
           }}>
           <LibraryIcon family={family} name={name} size={size} stroke={stroke} spriteBaseUrl={spriteBaseUrl}/>
           <span>{name}</span>
@@ -113,7 +114,7 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
             <span>Clipboard unavailable. Select to copy:</span>
             <input readOnly aria-label="Icon JSX code" value={sourceCode({family,name})}
               onFocus={e=>e.currentTarget.select()} onClick={e=>e.currentTarget.select()}/>
-            <button type="button" onClick={()=>setCopyFallback(null)} aria-label="Close copy fallback"><Icon name="close"/></button>
+            <button type="button" onClick={clear} aria-label="Close copy fallback"><Icon name="close"/></button>
           </div>}
       </div>)}
     </div>
@@ -127,7 +128,7 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
         {(['Default','Hover','Active','Disabled','Inverse'] as const).map((state,i)=>
           <div className={'ds-icon-state ds-icon-state--'+state.toLowerCase()} key={state}>
             <LibraryIcon family={family} name={family==='phosphor'?'magnifying-glass':'search'} size={24} stroke={1.5} spriteBaseUrl={spriteBaseUrl}/>
-            <span>{state}</span><code>{['--ink','--action-hover','--action','--muted','--white'][i]}</code>
+            <span>{state}</span><code>{['--ink','--action-hover','--action','--muted','--on-action'][i]}</code>
           </div>)}
       </div>
       <p className="ds-caption">Phosphor is fill-based: stroke weight does not apply. Use native APCOSYS for navigation and Feather for new stroke-based product icons. Reserve Phosphor for clearly defined alternative families.</p>

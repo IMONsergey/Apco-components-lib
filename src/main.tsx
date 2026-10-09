@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
+import { DesignDraftProvider } from './brand/draft-store';
 import { MotionProvider } from './components/visuals/MotionProvider';
 import './styles/instrument-sans.css';
 import './styles/ibm-plex-mono.css';
@@ -21,6 +22,6 @@ import './styles/site-fidelity.css';
 import './styles/docs-shell.css';
 import './styles/friendly-ui.css';
 
-createRoot(document.getElementById('root')!).render(<StrictMode><MotionProvider><App /></MotionProvider></StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode><MotionProvider><DesignDraftProvider><App /></DesignDraftProvider></MotionProvider></StrictMode>);
 import './styles/color-workbench.css';
 import './styles/foundation-edit.css';
