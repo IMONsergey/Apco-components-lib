@@ -17,6 +17,8 @@ export const catalog = [
   {id:'button',name:'Double Button',group:'Interface motion',tech:'React / CSS',source:'src/components/ui/DoubleButton.tsx',description:'Two visual button shapes with a single semantic action.',code:"import { DoubleButton } from './components/ui/DoubleButton';\n<DoubleButton variant='primary'>Get started</DoubleButton>"},
   {id:'accordion',name:'Animated Details',group:'Interface motion',tech:'React / WAAPI',source:'src/components/ui/AnimatedDetails.tsx',description:'Native details/summary keyboard behavior with cancellable height transitions.',code:"import { AnimatedDetails } from './components/ui/AnimatedDetails';\n<AnimatedDetails title='How does it work?'>Answer</AnimatedDetails>"},
   {id:'marquee',name:'Partner Marquee',group:'Interface motion',tech:'React / CSS',source:'src/visuals/marquee/PartnerMarquee.tsx',description:'Seamless repeated partner row with visibility and focus pause.',code:"import PartnerMarquee from './visuals/marquee/PartnerMarquee';\n<PartnerMarquee />"}
+  {id:'billing',name:'Billing switch',group:'Interface motion',tech:'React / CSS',source:'src/components/ui/BillingSwitch.tsx',description:'The original two-position billing control.',code:"import { BillingSwitch } from './components/ui/BillingSwitch';\n<BillingSwitch value={period} onChange={setPeriod} />"},
+  {id:'planbutton',name:'Plan button',group:'Interface motion',tech:'CSS',source:'src/styles/source-components.css',description:'Original pricing CTA.',code:'<button type="button" className="plan-button">Get started</button>'},
 ] as const;
 export type Item = typeof catalog[number];
 export type ComponentId = Item['id'];
