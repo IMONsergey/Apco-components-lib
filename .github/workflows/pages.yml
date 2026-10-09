@@ -34,6 +34,7 @@ jobs:
           fi
       - run: npm ci
       - run: npm run build
+      - run: npm run test:design-system
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

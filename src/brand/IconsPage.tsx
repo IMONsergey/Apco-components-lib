@@ -114,7 +114,7 @@ export default function IconsPage(){
       <div className="ds-state-grid">
         {(['Default','Hover','Active','Disabled','Inverse'] as const).map((state,i)=>
           <div className={'ds-icon-state ds-icon-state--'+state.toLowerCase()} key={state}>
-            <LibraryIcon family={family} name={family==='apcosys'?'search':'search'} size={24} stroke={1.5}/>
+            <LibraryIcon family={family} name={family==='phosphor'?'magnifying-glass':'search'} size={24} stroke={1.5}/>
             <span>{state}</span><code>{['--ink','--action-hover','--action','--muted','--white'][i]}</code>
           </div>)}
       </div>

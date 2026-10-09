@@ -28,7 +28,14 @@
 .use-case-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .use-case-tags li{background:var(--tint);padding:6px 8px;font-size:13px;line-height:18px;color:var(--ink)}
 html[data-theme='dark'] .use-case-tags li{color:#cbe8ec}
-.ds-plan-card{width:min(100%,280px);min-height:290px;max-height:100%;gap:22px;padding:20px;box-shadow:0 0 0 1px var(--line)}
+.ds-plan-card{container-type:inline-size;display:flex;flex-direction:column;width:min(100%,280px);min-height:290px;max-height:100%;gap:22px;padding:20px;background:var(--white);color:var(--ink);border-top:1px solid var(--ink);border-radius:5px;box-shadow:0 0 0 1px var(--line)}
+.ds-plan-card h3{font:500 17px/20px var(--font-mono);color:var(--muted)}
+.ds-plan-card .plan-description{font-size:13px;line-height:18px;color:var(--muted);margin-top:8px}
+.ds-plan-card .plan-price-block{min-height:65px}
+.ds-plan-card .plan-price{display:flex;align-items:baseline;gap:6px;line-height:1;letter-spacing:-.03em;font-weight:400}
+.ds-plan-card .price-unit{font-weight:400;color:var(--muted);letter-spacing:0}
+.ds-plan-card .plan-button{margin-top:auto;padding:12px 16px;min-height:48px;font-size:14px;font-weight:500}
+
 .ds-plan-card .plan-price{font-size:46px!important}
 .ds-plan-card .price-unit{font-size:12px}
 .ds-plan-card dl{font-size:12px}

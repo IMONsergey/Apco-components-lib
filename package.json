@@ -13,7 +13,8 @@
     "typecheck": "tsc -b --pretty false",
     "check": "npm run build",
     "generate:icons": "node scripts/generate-icons.mjs",
-    "postinstall": "node scripts/generate-icons.mjs"
+    "postinstall": "node scripts/generate-icons.mjs",
+    "test:design-system": "node scripts/check-brand.mjs"
   },
   "dependencies": {
     "gsap": "3.13.0",
