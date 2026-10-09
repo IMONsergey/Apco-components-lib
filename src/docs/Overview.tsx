@@ -11,9 +11,9 @@ const sections=[
 export default function Overview(){
  return <div className="docs-overview docs-overview--friendly">
   <div className="docs-overview__top">
-   <span className="docs-kicker">APCOSYS DESIGN LIBRARY</span>
-   <h1>Everything in one place.</h1>
-   <p>Colors, type, components and guidelines for APCOSYS products.</p>
+   <span className="docs-kicker">APCOSYS</span>
+   <h1>Design library</h1>
+   <p>Colors, typography, components and icons.</p>
   </div>
   <section id="docs-explore" className="docs-overview__section">
    <h2>Explore the library</h2>
@@ -24,13 +24,6 @@ export default function Overview(){
       <Icon name="arrow"/>
      </div>
     </a>)}
-   </div>
-  </section>
-  <section id="docs-principles" className="docs-overview__section docs-overview__more">
-   <h2>More to explore</h2>
-   <div className="docs-overview__more-links">
-    <a href={href('foundations','layout')}><span>Layout & spacing</span><small>Responsive grids and spacing</small><Icon name="arrow"/></a>
-    <a href={href('guidelines')}><span>Guides</span><small>How to use the design system</small><Icon name="arrow"/></a>
    </div>
   </section>
  </div>;

@@ -47,8 +47,8 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
   const heading=(title:string,slug:string)=>jumpTo===slug?<h1 className="ds-focused-title">{title}</h1>:<h2>{title}</h2>;
   const [copied,setCopied]=useState<string|null>(null);
   const [copyFormat,setCopyFormat]=useState<'css'|'hex'>('hex');
-  const copy=async(value:string)=>{
-    try{await navigator.clipboard.writeText(value);setCopied(value);}catch{setCopied(null);}
+  const copy=async(value:string,key:string)=>{
+    try{await navigator.clipboard.writeText(value);setCopied(key);}catch{setCopied(null);}
   };
   return <div className="ds-foundations ds-foundations--compact" data-focus={jumpTo||undefined}>
     <nav className="ds-local-nav" aria-label="Foundation sections">
@@ -91,11 +91,11 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
             const value=entry[tone];
             const copyValue=copyFormat==='css'?'var('+entry.css+')':value.toUpperCase();
             return <button className="ds-token-row" type="button" key={key} title={entry.usage+' · Click to copy '+(copyFormat==='css'?'CSS variable':'HEX value')}
-              onClick={()=>void copy(copyValue)}>
+              onClick={()=>void copy(copyValue,key)}>
               <span className="ds-token-swatch" style={{backgroundColor:value}}/>
               <span className="ds-token-name">{colorLabels[key]||key}</span>
               <code>{entry.css}</code><span className="ds-token-hex">{value.toUpperCase()}</span>
-              <span className="ds-token-copy">{copied===copyValue?'Copied':<Icon name="copy"/>}</span>
+              <span className="ds-token-copy">{copied===key?'Copied':<Icon name="copy"/>}</span>
             </button>;
           })}
         </div>

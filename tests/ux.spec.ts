@@ -185,7 +185,7 @@ test('14 interface previews retain content in light/dark desktop and mobile',asy
 
 test('docs home exposes a persistent hierarchy and deep-linked color tokens',async({page})=>{
  await page.goto(root);
- await expect(page.getByRole('heading',{name:'Everything in one place.',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Design library',exact:true})).toBeVisible();
  const nav=page.getByRole('navigation',{name:'Design system',exact:true});
  await expect(nav.getByRole('link',{name:'Home'})).toBeVisible();
  await nav.getByRole('link',{name:'Colors'}).click();
@@ -242,7 +242,7 @@ test('wide layout retains on-page toc without replacing sidebar',async({page})=>
 
 test('clean homepage and favicon match published APCOSYS source',async({page})=>{
  await page.goto(root);
- await expect(page.getByRole('heading',{name:'Everything in one place.'})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Design library'})).toBeVisible();
  await expect(page.locator('.docs-overview__card--visual')).toHaveCount(4);
  await expect(page.locator('.docs-overview__art')).toHaveCount(0);
  await expect(page.locator('.docs-overview__card--visual .docs-overview__card-bottom svg')).toHaveCount(4);
@@ -373,4 +373,17 @@ test('clipboard permissions denied still provide manually selectable icon code',
  await expect(fallback.getByRole('textbox',{name:'Icon JSX code'})).toHaveValue(/LibraryIcon.*activity/);
  await fallback.getByRole('button',{name:'Close copy fallback'}).click();
  await expect(fallback).toHaveCount(0);
+});
+
+test('empty catalog states offer a clear way back to results',async({page})=>{
+ await page.goto(root+'#components');
+ await page.getByRole('searchbox',{name:'Search components'}).fill('zz_nonexistent_component');
+ await expect(page.getByText('No components found.')).toBeVisible();
+ await page.getByRole('button',{name:'Clear filters'}).click();
+ await expect(page.locator('.lib-card')).toHaveCount(28);
+ await page.goto(root+'#icons');
+ await page.getByRole('searchbox',{name:'Search icons'}).fill('zz_nonexistent_icon');
+ await expect(page.getByText('No icons found.')).toBeVisible();
+ await page.getByRole('button',{name:'Clear search'}).click();
+ await expect(page.getByRole('searchbox',{name:'Search icons'})).toHaveValue('');
 });

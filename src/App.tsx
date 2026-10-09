@@ -124,7 +124,9 @@ export default function App() {
       value={search} onChange={e=>setSearch(e.target.value)}/></label>
     </div>
     {filtered.length>0?<div className="lib-grid">{filtered.map(item=><Card key={item.id} item={item} tone={tone}/>)}</div>:
-     <p className="lib-empty">No components found.</p>}
+     <div className="lib-empty">No components found.
+      <button type="button" onClick={()=>{setSearch('');window.location.hash=href('components')}}>Clear filters</button>
+     </div>}
    </>
   )}
   <Suspense fallback={<p className="lib-empty">Loading…</p>}>

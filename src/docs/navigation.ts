@@ -62,7 +62,7 @@ export const sectionTitles:Record<Section,string>={
  icons:'Icons',guidelines:'Guides'
 };
 export const toc:{[K in Section]:Array<{label:string;id:string}>}={
- overview:[{label:'Explore',id:'docs-explore'},{label:'More',id:'docs-principles'}],
+ overview:[],
  foundations:[
   {label:'Logo',id:'ds-identity'},{label:'Colors',id:'ds-colors'},
   {label:'Typography',id:'ds-type'},{label:'Spacing',id:'ds-spacing'},

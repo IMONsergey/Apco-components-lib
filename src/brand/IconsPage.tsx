@@ -117,7 +117,9 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
           </div>}
       </div>)}
     </div>
-    {names.length===0&&<p className="ds-caption ds-empty">No icons found</p>}
+    {names.length===0&&<div className="ds-caption ds-empty">No icons found.
+      <button type="button" onClick={()=>setSearch('')}>Clear search</button>
+    </div>}
     {names.length>limit&&<button className="ds-load-more" type="button" onClick={()=>setLimit(v=>v+72)}>Show more · {names.length-limit} remaining</button>}
     <details className="ds-native-details ds-extra-section"><summary>Icon states & usage <span>+</span></summary><div className="ds-icon-states">
       <div className="ds-section-bar"><div><h2>States</h2><p>Color is semantic. Stroke and icon silhouette stay consistent.</p></div></div>

@@ -125,3 +125,7 @@
 .ds-icon-copy-fallback input{min-width:0;width:100%;border:1px solid var(--line);background:var(--page);color:var(--ink);border-radius:3px;padding:7px;font:400 10px/1.4 var(--font-mono)}
 .ds-icon-copy-fallback button{border:0;background:transparent;color:var(--muted);display:grid;place-items:center}
 .ds-icon-copy-fallback button svg{width:15px;height:15px}
+
+/* Empty results offer one clear recovery action instead of another filter panel. */
+.lib-empty button,.ds-empty button{display:block;margin:12px auto 0;border:0;background:none;color:var(--action);font-size:13px;cursor:pointer}
+.ds-empty button{margin-top:8px}
