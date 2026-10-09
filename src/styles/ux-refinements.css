@@ -169,3 +169,12 @@
  .ds-guideline__content p{grid-template-columns:40px 1fr}
 }
 @media(prefers-reduced-motion:reduce){.ds-native-details>summary>span:last-child,.ds-token-row{transition:none}}
+
+.ds-color-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:flex-end}
+.ds-copy-format{display:inline-flex;gap:2px;border:1px solid var(--line);padding:2px;border-radius:5px}
+.ds-copy-format button{border:0;background:transparent;color:var(--muted);padding:5px 8px;font:400 11px/1.4 var(--font-mono);border-radius:3px}
+.ds-copy-format button[aria-pressed='true']{background:var(--surface);color:var(--ink)}
+.ds-token-row{grid-template-columns:34px minmax(65px,1fr) minmax(118px,1.35fr) 76px 44px}
+@media(max-width:1199px){.ds-token-row{grid-template-columns:30px minmax(0,1fr) 80px 44px}}
+@media(max-width:799px){.ds-token-row{grid-template-columns:30px minmax(0,1fr) minmax(110px,auto) 84px 44px}}
+@media(max-width:599px){.ds-token-row{grid-template-columns:30px minmax(0,1fr) 78px 44px}}

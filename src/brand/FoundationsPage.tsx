@@ -34,6 +34,7 @@ const ratio=(a:string,b:string)=>((Math.max(luminance(a),luminance(b))+.05)/(Mat
 
 export default function FoundationsPage({tone}:{tone:Theme}){
   const [copied,setCopied]=useState<string|null>(null);
+  const [copyFormat,setCopyFormat]=useState<'css'|'hex'>('css');
   const copy=async(value:string)=>{
     try{await navigator.clipboard.writeText(value);setCopied(value);}catch{setCopied(null);}
   };
@@ -64,19 +65,25 @@ export default function FoundationsPage({tone}:{tone:Theme}){
     </section>
 
     <section className="ds-section" id="ds-colors">
-      <div className="ds-section-bar"><h2>Colors</h2><span className="ds-muted-note">{tone==='dark'?'Dark':'Light'} theme · select a token to copy its CSS variable</span></div>
+      <div className="ds-section-bar"><h2>Colors</h2><div className="ds-color-actions">
+        <span className="ds-muted-note">{tone==='dark'?'Dark':'Light'} theme · click to copy</span>
+        <div className="ds-copy-format" role="group" aria-label="Copy color format">
+          {(['css','hex'] as const).map(mode=><button key={mode} type="button" aria-pressed={copyFormat===mode} onClick={()=>setCopyFormat(mode)}>{mode.toUpperCase()}</button>)}
+        </div>
+      </div></div>
       {groups.map(group=><div key={group.name} className="ds-token-group">
         <h3>{group.name}</h3>
         <div className="ds-token-list">
           {group.keys.map(key=>{
             const entry=tokens.colors[key] as {css:string;light:string;dark:string;usage:string};
             const value=entry[tone];
-            return <button className="ds-token-row" type="button" key={key} title={entry.usage+' · Click to copy CSS variable'}
-              onClick={()=>void copy('var('+entry.css+')')}>
+            const copyValue=copyFormat==='css'?'var('+entry.css+')':value.toUpperCase();
+            return <button className="ds-token-row" type="button" key={key} title={entry.usage+' · Click to copy '+(copyFormat==='css'?'CSS variable':'HEX value')}
+              onClick={()=>void copy(copyValue)}>
               <span className="ds-token-swatch" style={{backgroundColor:value}}/>
               <span className="ds-token-name">{key}</span>
               <code>{entry.css}</code><span className="ds-token-hex">{value.toUpperCase()}</span>
-              <span className="ds-token-copy">{copied==='var('+entry.css+')'?'Copied':'↗'}</span>
+              <span className="ds-token-copy">{copied===copyValue?'Copied':'↗'}</span>
             </button>;
           })}
         </div>
