@@ -24,34 +24,32 @@ function Copy({code}:{code:string}){
 export default function GuidelinesPage({focus}:{focus?:string}){
  useEffect(()=>{
   if(focus==='usage'||focus==='integration'){
-   const target=document.getElementById(focus==='usage'?'docs-guideline-patterns':'docs-guideline-integration') as HTMLDetailsElement|null;
-   if(target){target.open=true;requestAnimationFrame(()=>target.scrollIntoView({block:'start',behavior:'instant'}))}
+   const target=document.getElementById(focus==='usage'?'docs-guideline-patterns':'docs-guideline-integration');
+   if(target)requestAnimationFrame(()=>target.scrollIntoView({block:'start',behavior:'instant'}))
   }
  },[focus]);
  return <div className="ds-guidelines">
   <div className="ds-section-bar"><div><h2>Best practices</h2><p>Keep every screen consistent</p></div><span className="ds-label">10 rules</span></div>
   <div id="docs-guideline-rules" className="ds-guideline-list">{rules.map(rule=>
-   <details key={rule.id} className="ds-guideline">
-    <summary className="ds-guideline__heading"><span>{rule.id}</span><h3>{rule.name}</h3><span className="ds-rule-caret">+</span></summary>
+   <article key={rule.id} className="ds-guideline">
+    <div className="ds-guideline__heading"><span>{rule.id}</span><h3>{rule.name}</h3></div>
     <div className="ds-guideline__content">
      <p><strong>Use</strong>{rule.required}</p>
      <p><strong>Avoid</strong>{rule.avoid}</p>
      <code>{rule.source}</code>
     </div>
-   </details>)}</div>
-  <details id="docs-guideline-patterns" className="ds-native-details ds-doc-details"><summary>Examples <span>+</span></summary>
-  <section className="ds-section">
-   <div className="ds-section-bar"><h2>Usage</h2></div>
+   </article>)}</div>
+  <section id="docs-guideline-patterns" className="ds-section ds-guide-section">
+   <div className="ds-section-bar"><h2>Examples</h2></div>
    <div className="ds-recipes">{snippets.map(s=><div key={s.label}><div><span>{s.label}</span><Copy code={s.code}/></div><pre><code>{s.code}</code></pre></div>)}</div>
-  </section></details>
-  <details id="docs-guideline-integration" className="ds-native-details ds-doc-details"><summary>For developers <span>+</span></summary>
-  <section className="ds-section">
-   <div className="ds-section-bar"><h2>Adoption</h2></div>
+  </section>
+  <section id="docs-guideline-integration" className="ds-section ds-guide-section">
+   <div className="ds-section-bar"><h2>For developers</h2></div>
    <div className="ds-adoption"><div><span className="ds-label">01 / Install</span><code>npm ci</code><code>npm run build</code></div>
     <div><span className="ds-label">02 / Reuse</span><code>src/components/ui</code><code>src/components/system</code><code>src/visuals</code></div>
     <div><span className="ds-label">03 / Theme</span><code>src/styles/tokens.css</code><code>src/styles/theme-page.css</code><code>src/styles/system-primitives.css</code></div>
    </div>
    <p className="ds-caption">Core APCOSYS icons are proprietary artwork from the site; Feather (MIT) and Phosphor (MIT) come from maintained Iconify JSON packages. Morphicons is MIT; Lucide is ISC. Preserve upstream license notices when distributing the library. Product GSAP scenes are inert previews, not finished product workflows.</p>
-  </section></details>
+  </section>
  </div>;
 }
