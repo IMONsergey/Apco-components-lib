@@ -1,6 +1,10 @@
 import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { Icon, type IconName } from '../ui/Icon';
 import { DoubleButton } from '../ui/DoubleButton';
+import { LanguageBadge } from './LanguageBadge';
+import { AnimatedPrice } from '../ui/AnimatedPrice';
+import { plans } from '../../content/site-plans';
+import { calculatePrice, formatPrice, type BillingPeriod } from '../../content/pricing';
 
 /** Exact published class and surface tokens. No app-specific navigation required. */
 export function PlainButton({ children, ...props }: ButtonHTMLAttributes<HTMLButtonElement>){
@@ -19,40 +23,71 @@ export function SearchField({onSearch,placeholder='Search by IP, domain, host or
   <button className="search-submit" type="submit" aria-label="Search"><Icon name="search"/></button>
  </form>;
 }
-export function NavDisclosure({label='Explore',children}:{label?:string;children?:ReactNode}){
+export function NavDisclosure({label='Platform'}:{label?:string}){
  const [open,setOpen]=useState(false);
  const ref=useRef<HTMLDivElement>(null),id=useId();
+ const links=['Search & Investigation','Monitoring','Data & Methodology'];
  useEffect(()=>{
+  if(!open)return;
   function down(e:PointerEvent){if(e.target instanceof Node&&!ref.current?.contains(e.target))setOpen(false)}
-  function key(e:KeyboardEvent){if(e.key==='Escape')setOpen(false)}
-  document.addEventListener('pointerdown',down);
-  document.addEventListener('keydown',key);
+  function key(e:globalThis.KeyboardEvent){if(e.key==='Escape'){setOpen(false);ref.current?.querySelector<HTMLButtonElement>('button.nav-trigger')?.focus()}}
+  document.addEventListener('pointerdown',down);document.addEventListener('keydown',key);
   return ()=>{document.removeEventListener('pointerdown',down);document.removeEventListener('keydown',key)};
- },[]);
- return <div className="ds-nav-disclosure" ref={ref}>
-  <button className="nav-trigger" type="button" aria-controls={id} aria-expanded={open} onClick={()=>setOpen(v=>!v)}>{label}<Icon name="chevron"/></button>
-  <div id={id} className="nav-panel" data-open={open} inert={!open}>
-   {children??['Platform','Developers','Pricing'].map(x=><button key={x} className="ds-nav-item" type="button" onClick={()=>setOpen(false)}>{x}</button>)}
+ },[open]);
+ return <div className="ds-nav-disclosure nav-group" ref={ref}
+  onBlur={e=>{if(!e.currentTarget.contains(e.relatedTarget))setOpen(false)}}
+  onKeyDown={e=>{
+   if(!['ArrowDown','ArrowUp','Home','End'].includes(e.key))return;
+   e.preventDefault();
+   setOpen(true);
+   const anchors=Array.from(e.currentTarget.querySelectorAll<HTMLAnchorElement>('.nav-panel a'));
+   const at=anchors.findIndex(x=>x===document.activeElement);
+   const next=e.key==='Home'?0:e.key==='End'?anchors.length-1:at<0?0:(at+(e.key==='ArrowUp'?-1:1)+anchors.length)%anchors.length;
+   requestAnimationFrame(()=>anchors[next]?.focus());
+  }}>
+  <button className="nav-trigger" type="button" aria-controls={id} aria-expanded={open}
+   onClick={()=>setOpen(v=>!v)}>{label}<Icon name="chevron"/></button>
+  <div id={id} className="nav-panel" data-open={open} aria-hidden={!open} inert={!open}>
+   {links.map((x,i)=><a key={x} className={i===0?'nav-panel__default':undefined}
+     href="#navigation-demo" onClick={e=>{e.preventDefault();setOpen(false)}}>{x}</a>)}
   </div>
  </div>;
 }
+/** The exact published LanguageBadge is reused; this wrapper owns only local state. */
 export function LanguageButton(){
  const [open,setOpen]=useState(false);
- return <div className="ds-language-container">
-  <button type="button" className="language" aria-expanded={open} onClick={()=>setOpen(v=>!v)}>EN <Icon name="chevron"/></button>
-  {open&&<div className="ds-language-menu"><button type="button" onClick={()=>setOpen(false)}>English</button><button type="button" disabled>Russian · soon</button></div>}
+ const ref=useRef<HTMLDivElement>(null);
+ useEffect(()=>{
+  if(!open)return;
+  const close=(e:PointerEvent)=>{if(e.target instanceof Node&&!ref.current?.contains(e.target))setOpen(false)};
+  document.addEventListener('pointerdown',close);
+  return ()=>document.removeEventListener('pointerdown',close);
+ },[open]);
+ return <div ref={ref} className="ds-language-preview">
+  <LanguageBadge open={open} onOpenChange={setOpen}/>
  </div>;
 }
 export function UseCaseTags({items=['Asset discovery','Exposure','Risk intelligence']}:{items?:string[]}){
  return <ul className="use-case-tags">{items.map(x=><li key={x}>{x}</li>)}</ul>;
 }
-export function PlanCard(){
- return <div className="plan-card ds-plan-card">
-  <div><h3>Plus</h3><p className="plan-description">For deeper investigations</p></div>
-  <div className="plan-price-block"><p className="plan-price">$89 <span className="price-unit">/ mo</span></p></div>
-  <dl><div><dt>API access</dt><dd>Included</dd></div><div><dt>Search history</dt><dd>Available</dd></div></dl>
-  <button type="button" className="plan-button">Get started</button>
- </div>;
+/** Pricing markup and data follow src/components/sections/PricingSection.tsx. */
+export function PlanCard({id='plus',period='monthly'}:{
+ id?:typeof plans[number]['id'];period?:BillingPeriod;
+}){
+ const plan=plans.find(p=>p.id===id)??plans[1];
+ const price=calculatePrice(plan.price,period);
+ return <article className={`plan-card${plan.id==='plus'?' plan-card--featured':''}`}>
+   <div><h3>{plan.name}</h3><p className="plan-description">{plan.description}</p></div>
+   <div className="plan-price-block">
+    <p className="plan-price"><AnimatedPrice amount={price.monthly}/>{plan.price>0&&<span className="price-unit">/mo</span>}</p>
+    <p className="plan-billing-note">{plan.price>0?(period==='annually'?formatPrice(price.total)+' billed annually':'Billed monthly'):'\u00a0'}</p>
+   </div>
+   <dl>
+    <div><dt>Credits</dt><dd>{plan.credits.replace(/ /g,'\u00a0')}</dd></div>
+    <div><dt>Users</dt><dd>{plan.users}</dd></div>
+   </dl>
+   <button type="button" className="plan-button">{plan.action}</button>
+ </article>;
 }
 export function ModalExample(){
  const ref=useRef<HTMLDialogElement>(null);
