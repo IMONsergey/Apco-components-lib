@@ -17,6 +17,7 @@ React + TypeScript + Vite. The production APCOSYS website at https://imonsergey.
 npm ci
 npm run dev
 npm run build
+npm run test:ux
 ```
 
 `postinstall` runs `scripts/generate-icons.mjs`, which converts pinned local npm icon data to SVG sprites and the searchable manifest. Nothing is downloaded by the browser from a third-party icon service.
