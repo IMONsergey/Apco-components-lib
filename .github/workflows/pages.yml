@@ -1,7 +1,7 @@
 name: Build and publish APCOSYS brand system
 on:
   push:
-    branches: [main, fix/layout-cleanup-r4]
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -29,7 +29,6 @@ jobs:
         with:
           path: ./dist
   deploy:
-    if: github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
