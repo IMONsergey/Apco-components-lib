@@ -4,6 +4,13 @@ import { Logo } from '../components/ui/Logo';
 import { sections, sectionTitles, sourceRoutes, toc, href, type DocRoute } from './navigation';
 
 type Tone='light'|'dark';
+function resultCategory(route:string){
+ if(route.startsWith('#components/'))return 'Component';
+ if(route.startsWith('#foundations/colors'))return 'Colors';
+ const section=route.split('/')[0]?.replace('#','')??'';
+ const names:Record<string,string>={overview:'Home',foundations:'Brand styles',components:'Components',icons:'Icons',guidelines:'Guides'};
+ return names[section]||'Library';
+}
 function CommandSearch({open,onClose,onNavigate}:{open:boolean;onClose:()=>void;onNavigate:()=>void}){
  const [query,setQuery]=useState('');
  const [active,setActive]=useState(0);
@@ -43,26 +50,28 @@ function CommandSearch({open,onClose,onNavigate}:{open:boolean;onClose:()=>void;
    }}>
    <div className="docs-command__field"><Icon name="search"/><input ref={field} type="search" role="combobox" aria-expanded="true" aria-controls="docs-search-results"
     aria-activedescendant={matches.length?'docs-search-option-'+Math.min(active,matches.length-1):undefined}
-    placeholder="Search tokens, components, documentation..." aria-label="Search all docs" value={query}
+    placeholder="Search colors, components, icons..." aria-label="Search all docs" value={query}
     onChange={e=>{setQuery(e.target.value);setActive(0)}}/>
     <button type="button" onClick={onClose} aria-label="Close search">ESC</button></div>
    <div className="docs-command__results" id="docs-search-results" role="listbox" aria-label="Search results">
     {matches.length?matches.map((x,i)=><a key={x.route+x.label} id={'docs-search-option-'+i} href={x.route} role="option" aria-selected={i===active}
      onMouseEnter={()=>setActive(i)} onClick={()=>{onClose();onNavigate()}}>
      <span className="docs-command__result-main">{x.label}</span>
-     <span className="docs-command__path">{x.route.replace('#','')}</span>
-     <Icon name="arrow"/></a>):<p>No results. Try “colors”, “button” or “grid”.</p>}
+     <span className="docs-command__path">{resultCategory(x.route)}</span>
+     <Icon name="arrow"/></a>):<p>Nothing found. Try a color, button or icon name.</p>}
    </div>
-   <div className="docs-command__footer"><span>↑↓ Navigate</span><span>↵ Open</span><span>Esc Close</span></div>
+   <div className="docs-command__footer"><span>↑↓ Select</span><span>↵ Open</span><span>Esc Close</span></div>
   </section>
  </div>;
 }
-function Sidebar({route,open,compact,onClose}:{route:DocRoute;open:boolean;compact:boolean;onClose:()=>void}){
+function Sidebar({route,open,compact,onClose,onCompact}:{route:DocRoute;open:boolean;compact:boolean;onClose:()=>void;onCompact:()=>void}){
  return <>
   {open&&<div className="docs-mobile-shade" onClick={onClose} aria-hidden="true"/>}
   <aside className="docs-sidebar" data-open={open} data-compact={compact} aria-label="Documentation navigation">
    <div className="docs-sidebar__scroll">
-    <div className="docs-sidebar__caption">DOCUMENTATION <span>V2.0</span>
+    <div className="docs-sidebar__caption">LIBRARY
+      <button type="button" className="docs-sidebar__desktop-collapse" onClick={onCompact}
+       aria-label="Collapse navigation" title="Collapse navigation"><Icon name="menu"/></button>
       <button type="button" className="docs-sidebar__close" onClick={onClose} aria-label="Close navigation"><Icon name="close"/></button>
     </div>
     <nav className="docs-sidebar__nav" aria-label="Design system">
@@ -83,8 +92,8 @@ function Sidebar({route,open,compact,onClose}:{route:DocRoute;open:boolean;compa
       </details>)}
     </nav>
     <div className="docs-sidebar__links">
-     <a href="https://imonsergey.github.io/apcoweb/" target="_blank" rel="noreferrer">Live website <Icon name="external"/></a>
-     <a href="https://github.com/IMONsergey/Apco-components-lib" target="_blank" rel="noreferrer">Source repository <Icon name="external"/></a>
+     <a href="https://imonsergey.github.io/apcoweb/" target="_blank" rel="noreferrer">APCOSYS website <Icon name="external"/></a>
+     <a href="https://github.com/IMONsergey/Apco-components-lib" target="_blank" rel="noreferrer">GitHub <Icon name="external"/></a>
     </div>
    </div>
   </aside>
@@ -98,7 +107,7 @@ function Toc({route}:{route:DocRoute}){
   :route.section==='foundations'&&route.slug?[]:toc[route.section];
  if(!items.length)return <aside className="docs-toc docs-toc--empty" aria-hidden="true"/>;
  return <aside className="docs-toc" aria-label="On this page">
-  <span>ON THIS PAGE</span>
+  <span>On this page</span>
   <nav>{items.map(item=><a key={item.id} href={href(route.section,route.slug)} onClick={e=>{
    e.preventDefault();document.getElementById(item.id)?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
   }}>{item.label}</a>)}</nav>
@@ -128,22 +137,22 @@ export function DocsChrome({route,tone,onTheme,children}:{route:DocRoute;tone:To
   <header className="docs-header">
    <div className="docs-header__brand">
     <button type="button" className="docs-header__menu" aria-label="Open navigation" aria-expanded={open} onClick={()=>setOpen(true)}><Icon name="menu"/></button>
-    <button type="button" className="docs-header__collapse" aria-label={collapsed?'Expand navigation':'Collapse navigation'} aria-pressed={collapsed}
+    <button type="button" className="docs-header__collapse" aria-label="Expand navigation" aria-pressed={collapsed}
      onClick={()=>setCollapsed(v=>!v)}><Icon name="menu"/></button>
     <a href={href('overview')} aria-label="APCOSYS design system home" onClick={go}><Logo/></a>
     <span className="docs-header__divider"/>
-    <span className="docs-header__brand-title">Design system</span>
+    <span className="docs-header__brand-title">Design library</span>
    </div>
    <div className="docs-header__actions">
     <button className="docs-header__search" type="button" onClick={openSearch} aria-label="Search documentation">
-     <Icon name="search"/><span>Search documentation</span><kbd>⌘ K</kbd>
+     <Icon name="search"/><span>Search anything</span><kbd>⌘ K</kbd>
     </button>
     <button type="button" className="docs-header__theme" onClick={onTheme} aria-label={tone==='light'?'Dark theme':'Light theme'}
      aria-pressed={tone==='dark'}><Icon name="appearance"/></button>
-    <a className="docs-header__github" href="https://github.com/IMONsergey/Apco-components-lib" target="_blank" rel="noreferrer" aria-label="GitHub repository"><Icon name="external"/></a>
+
    </div>
   </header>
-  <Sidebar route={route} open={open} compact={collapsed} onClose={go}/>
+  <Sidebar route={route} open={open} compact={collapsed} onClose={go} onCompact={()=>setCollapsed(true)}/>
   <div className="docs-main-shell">
    <div className="docs-breadcrumbs"><a href={href('overview')}>APCOSYS</a><span>/</span>
     <a href={href(route.section)} aria-current={!route.slug?'page':undefined}>{sectionTitles[route.section]}</a>
@@ -155,7 +164,7 @@ export function DocsChrome({route,tone,onTheme,children}:{route:DocRoute;tone:To
     </main>
     <Toc route={route}/>
    </div>
-   <footer className="docs-footer"><span>APCOSYS / DESIGN SYSTEM</span><a href="https://github.com/IMONsergey/Apco-components-lib" target="_blank" rel="noreferrer">Source ↗</a></footer>
+   <footer className="docs-footer"><span>APCOSYS LIBRARY</span><a href="https://github.com/IMONsergey/Apco-components-lib" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
   </div>
   <CommandSearch open={search} onClose={()=>setSearch(false)} onNavigate={go}/>
  </div>;

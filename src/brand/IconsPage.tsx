@@ -78,11 +78,11 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
     return `<LibraryIcon family="${item.family}" name="${item.name}" size={24} />`;
   };
   return <div className="ds-icons-page">
-    <div id="docs-icon-library" className="ds-section-bar"><h2>Browse icons</h2><span className="ds-label">Select an icon for code</span></div>
+    <div id="docs-icon-library" className="ds-section-bar"><h2>Browse icons</h2><span className="ds-label">Click an icon to see how to use it</span></div>
     <div className="ds-icon-toolbar">
       <div className="ds-toggle-row">{families.map(f=><button key={f.key} type="button" data-active={family===f.key} aria-pressed={family===f.key}
         onClick={()=>{setFamily(f.key);setSelected(null);setLimit(72)}}>{f.label}<small>{all[f.key].length}</small></button>)}</div>
-      <input type="search" aria-label="Search icons" placeholder="Search icons" value={search} onChange={e=>{setSearch(e.target.value);setLimit(72)}}/>
+      <input type="search" aria-label="Search icons" placeholder="Find an icon..." value={search} onChange={e=>{setSearch(e.target.value);setLimit(72)}}/>
     </div>
     <details id="docs-icon-options" className="ds-icon-settings"><summary>Size & stroke <span>+</span></summary><div className="ds-icon-options">
       <span>{families.find(f=>f.key===family)?.notes}</span>

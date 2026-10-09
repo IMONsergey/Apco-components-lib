@@ -41,7 +41,7 @@ function Card({ item, tone, open }: {
       <div className="lib-surface lib-card__preview" data-tone={tone}>
         <Preview id={item.id} tone={tone} speed={1} active={visible} />
       </div>
-      <div className="lib-card__foot"><span>{item.tech}</span><span>{item.group}</span></div>
+      <div className="lib-card__foot"><span>{item.group==='Visual engines'?'Visual effect':item.group==='Product motion'?'Product preview':'Interface'}</span></div>
     </article>
   );
 }
@@ -92,13 +92,13 @@ function ComponentPage({item,tone}:{item:Item;tone:Tone}){
    <div className="docs-component__tags"><span>{item.group}</span><span>{item.tech}</span></div>
   </div>
   <div className="docs-component__example" id="docs-component-preview">
-   <div className="docs-component__example-head"><span>Preview</span><span>Live React component</span></div>
+   <div className="docs-component__example-head"><span>Preview</span><span>Try it out</span></div>
    <div className="docs-component__stage lib-surface" data-tone={tone}>
     <Preview id={item.id} tone={tone} speed={1} active large/>
    </div>
   </div>
   <section className="docs-component__section" id="docs-component-usage">
-   <div className="docs-component__section-head"><h2>Usage</h2><button type="button" onClick={()=>void navigator.clipboard.writeText(item.code).then(()=>setCopied(true)).catch(()=>setCopied(false))}>{copied?'Copied':'Copy code'} <Icon name="copy"/></button></div>
+   <div className="docs-component__section-head"><h2>For developers</h2><button type="button" onClick={()=>void navigator.clipboard.writeText(item.code).then(()=>setCopied(true)).catch(()=>setCopied(false))}>{copied?'Copied':'Copy code'} <Icon name="copy"/></button></div>
    <pre className="lib-code"><code>{item.code}</code></pre>
   </section>
   <section className="docs-component__section" id="docs-component-source">
@@ -141,17 +141,17 @@ export default function App() {
   {route.section==='components'&&(focused?
    <ComponentPage item={focused} tone={tone}/>:
    <>
-    <div className="lib-title-row docs-page-title"><div><h1>Components <span>{catalog.length}</span></h1><p>React components and motion patterns, sourced from APCOSYS.</p></div></div>
+    <div className="lib-title-row docs-page-title"><div><h1>Components <span>{catalog.length}</span></h1><p>Explore the building blocks of APCOSYS.</p></div></div>
     <div className="lib-filters">
      <div className="lib-tabs" aria-label="Component types">
       {groups.map(g=>{
        const slug=g==='Visual engines'?'visual':g==='Product motion'?'product':g==='Interface motion'?'interface':'';
        return <a key={g} href={href('components',slug)} data-active={category===g} aria-current={category===g?'page':undefined}>
-        {g==='All components'?'All':g==='Visual engines'?'Visual':g==='Product motion'?'Product':'Interface'}
+        {g==='All components'?'All':g==='Visual engines'?'Visual effects':g==='Product motion'?'Product previews':'Interface'}
        </a>;
       })}
      </div>
-     <label className="lib-search"><Icon name="search"/><input type="search" aria-label="Search components" placeholder="Filter components"
+     <label className="lib-search"><Icon name="search"/><input type="search" aria-label="Search components" placeholder="Find a component..."
       value={search} onChange={e=>setSearch(e.target.value)}/></label>
     </div>
     {filtered.length>0?<div className="lib-grid">{filtered.map(item=><Card key={item.id} item={item} tone={tone} open={setSelected}/>)}</div>:
@@ -160,15 +160,15 @@ export default function App() {
   )}
   <Suspense fallback={<p className="lib-empty">Loading…</p>}>
    {route.section==='foundations'&&<>
-    <div className="docs-page-title"><h1>Foundations</h1><p>Identity, semantics and responsive foundations.</p></div>
+    <div className="docs-page-title"><h1>Brand styles</h1><p>Colors, fonts, logos and layouts — all in one place.</p></div>
     <FoundationsPage tone={tone} jumpTo={route.slug}/>
    </>}
    {route.section==='icons'&&<>
-    <div className="docs-page-title"><h1>Icons</h1><p>Consistent visual language across product interfaces.</p></div>
+    <div className="docs-page-title"><h1>Icons</h1><p>Browse and copy icons for your next screen.</p></div>
     <IconsPage initialFamily={route.slug}/>
    </>}
    {route.section==='guidelines'&&<>
-    <div className="docs-page-title"><h1>Guidelines</h1><p>Source-first implementation rules and integration patterns.</p></div>
+    <div className="docs-page-title"><h1>Guides</h1><p>Simple rules for keeping the product consistent.</p></div>
     <GuidelinesPage focus={route.slug}/>
    </>}
   </Suspense>
