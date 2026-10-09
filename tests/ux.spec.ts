@@ -118,6 +118,9 @@ test('source parity: Plus plan values and elements stay inside preview',async({p
   expect(planBox!.y+planBox!.height).toBeLessThanOrEqual(cardBox!.y+cardBox!.height+1);
   expect(ctaBox!.y+ctaBox!.height).toBeLessThanOrEqual(planBox!.y+planBox!.height+1);
   await page.getByRole('button',{name:'Dark theme'}).click();
+  // Opening the header theme switch scrolls away; the gallery intentionally
+  // unmounts heavy previews outside the IntersectionObserver viewport.
+  await card.scrollIntoViewIfNeeded();
   await expect(plan).toBeVisible();
 });
 
@@ -142,4 +145,18 @@ test('source parity: language menu uses original flags and anchored panel',async
   expect(panelBox!.y).toBeGreaterThanOrEqual(triggerBox!.y+triggerBox!.height);
   await page.keyboard.press('Escape');
   await expect(panel).toHaveAttribute('data-open','false');
+});
+
+test('source parity: site modal traps focus, closes and restores scroll',async({page})=>{
+  await page.goto(root+'#components');
+  const card=page.locator('.lib-card[data-testid="modal"]');
+  await card.scrollIntoViewIfNeeded();
+  await card.getByRole('button',{name:'Open modal'}).click();
+  const dialog=page.locator('dialog.modal');
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toHaveAttribute('aria-labelledby',/./);
+  await expect(dialog).toContainText('APCOSYS workspace');
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toBeVisible();
+  await expect.poll(()=>page.evaluate(()=>document.body.style.overflow)).toBe('');
 });
