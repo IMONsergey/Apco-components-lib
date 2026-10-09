@@ -1,38 +1,121 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useState, type ReactNode } from 'react';
 import type { ComponentId } from '../catalog';
-const ProductScene=lazy(()=>import('../visuals/product/ProductScene'));
-const ApiScene=lazy(()=>import('../visuals/api/ApiScene'));
 import { AnimatedPrice } from '../components/ui/AnimatedPrice';
 import { DoubleButton } from '../components/ui/DoubleButton';
 import { AnimatedDetails } from '../components/ui/AnimatedDetails';
+import { BillingSwitch } from '../components/ui/BillingSwitch';
+import type { BillingPeriod } from '../content/pricing';
 import PartnerMarquee from '../visuals/marquee/PartnerMarquee';
-const Flow=lazy(()=>import('../visuals/flow/TurquoiseFlow'));
-const Dots=lazy(()=>import('../visuals/dots/DotCascade'));
-const Globe=lazy(()=>import('../visuals/globe/SignalGlobe'));
-const Waves=lazy(()=>import('../visuals/waves/IceSphereWaves'));
-const Shape=lazy(()=>import('../visuals/shapes/AnimatedShape'));
-const ChatOrb=lazy(()=>import('../visuals/uploads/ai-chat/AIChatOrb'));
-const OrbCube=lazy(()=>import('../visuals/uploads/orb-cube/OrbCubeLoader'));
-export default function Preview({id,active,tone,speed,large=false}:{id:ComponentId;active:boolean;tone:'light'|'dark';speed:number;large?:boolean}){
- const [chatState,setChatState]=useState<'idle'|'thinking'|'answer'>('idle');
- const [price,setPrice]=useState(49);
- if (!active) return <div className="preview-idle" aria-hidden="true"><span className="idle-cross"/>INTERSECTION-PAUSED</div>;
- const dark=tone==='dark';
- let visual:React.ReactNode;
- switch(id){
-  case 'flow': visual=<Flow theme={tone} speed={speed} fps={30}/>;break;
-  case 'dots': visual=<Dots color={dark?'#A9DCE2':'#0C8694'} startOpacity={0.55} endOpacity={0.04} fps={30}/>;break;
-  case 'globe': visual=<Globe speed={speed} fps={30} renderer="canvas2d" interactive pixelRatio={1.3} landColor={dark?'#5FAFBC':'#4E9EA9'} shellColor={dark?'#26383f':'#dce6e8'} signalColor={dark?'#42C0CF':'#008FA3'}/>;break;
-  case 'waves': visual=<Waves theme={tone} speed={speed}/>;break;
-  case 'rosette':case 'echo':visual=<Shape kind={id==='echo'?'echo':'rosette'} speed={speed} size={large?'78%':'72%'} opacity={dark?0.7:0.75} color={dark?'#B9D0D4':'#273237'} strokeWidth={1.4}/>;break;
-  case 'orb-cube': visual=<OrbCube size={large?210:145} color={dark?'#F6FAFB':'#243A40'} speed={speed} fps={30} label="Orb cube animation"/>;break;
-  case 'ai-orb':visual=<div className="orb-demo"><ChatOrb state={chatState} size={large?210:148}/><div className="orb-states">{(['idle','thinking','answer'] as const).map(m=><button type="button" key={m} className={chatState===m?'is-selected':''} onClick={()=>setChatState(m)}>{m}</button>)}</div></div>;break;
-  case 'query':case 'results':case 'host':case 'evidence':case 'suggestions':visual=<ProductScene scene={id}/>;break;
-  case 'api':visual=<ApiScene/>;break;
-  case 'price':visual=<div className="price-showcase"><AnimatedPrice amount={price}/><div className="price-choices"><button type="button" onClick={()=>setPrice(49)}>$49</button><button type="button" onClick={()=>setPrice(89)}>$89</button><button type="button" onClick={()=>setPrice(129)}>$129</button></div></div>;break;
-  case 'button':visual=<div className="button-showcase"><DoubleButton onClick={()=>{}} variant="primary">Get started</DoubleButton><DoubleButton onClick={()=>{}} variant="secondary">Explore more</DoubleButton></div>;break;
-  case 'accordion':visual=<div className="accordion-showcase faq-list"><AnimatedDetails title="How is the data collected?" initialOpen><p>Explore infrastructure through a unified query and inspect the technical evidence.</p></AnimatedDetails><AnimatedDetails title="Is the API available?"><p>Access the API through your workspace and use it in your own tools.</p></AnimatedDetails></div>;break;
-  case 'marquee':visual=<PartnerMarquee/>;break;
- }
- return <Suspense fallback={<div className="preview-idle">LOADING COMPONENT</div>}><div className={`preview-scene preview-scene--${id}`} data-tone={tone}>{visual}</div></Suspense>;
+
+const Flow = lazy(() => import('../visuals/flow/TurquoiseFlow'));
+const Dots = lazy(() => import('../visuals/dots/DotCascade'));
+const Globe = lazy(() => import('../visuals/globe/SignalGlobe'));
+const Waves = lazy(() => import('../visuals/waves/IceSphereWaves'));
+const Shape = lazy(() => import('../visuals/shapes/AnimatedShape'));
+const ChatOrb = lazy(() => import('../visuals/uploads/ai-chat/AIChatOrb'));
+const OrbCube = lazy(() => import('../visuals/uploads/orb-cube/OrbCubeLoader'));
+const ProductScene = lazy(() => import('../visuals/product/ProductScene'));
+const ApiScene = lazy(() => import('../visuals/api/ApiScene'));
+
+export default function Preview({ id, active, tone, speed, large = false }: {
+  id: ComponentId; active: boolean; tone: 'light' | 'dark'; speed: number; large?: boolean;
+}) {
+  const [chat, setChat] = useState<'idle' | 'thinking' | 'answer'>('idle');
+  const [price, setPrice] = useState(89);
+  const [period, setPeriod] = useState<BillingPeriod>('monthly');
+
+  if (!active) return <div className="lib-preview__blank" aria-hidden="true" />;
+  const dark = tone === 'dark';
+  let content: ReactNode;
+
+  switch (id) {
+    case 'flow':
+      content = <Flow theme={tone} speed={speed} fps={30}/>;
+      break;
+    case 'dots':
+      content = <Dots fps={30} startOpacity={0.55} endOpacity={0.02}
+        color={dark ? '#A9DCE2' : '#03879f'} />;
+      break;
+    case 'globe':
+      content = <Globe speed={0.85 * speed} fps={30} renderer="canvas2d"
+        interactive pixelRatio={1.5} landColor={dark ? '#5FAFBC' : '#6AB6C2'}
+        shellColor={dark ? '#2E3B40' : '#FFFFFF'}
+        signalColor={dark ? '#42C0CF' : '#269CAD'}/>;
+      break;
+    case 'waves':
+      content = <Waves theme={tone} speed={0.7 * speed}/>;
+      break;
+    case 'rosette':
+    case 'echo':
+      content = <Shape kind={id === 'echo' ? 'echo' : 'rosette'} speed={0.75 * speed}
+        strength={0.65} fps={30} opacity={0.42} strokeWidth={1.35}
+        color={dark ? '#A8B5BA' : '#121314'}/>;
+      break;
+    case 'ai-orb':
+      content = <div className="lib-orb-demo">
+        <ChatOrb state={chat} size={large ? 170 : 130}/>
+        <div className="lib-orb-states">
+          {(['idle', 'thinking', 'answer'] as const).map(state =>
+            <button key={state} type="button" data-active={chat === state}
+              onClick={() => setChat(state)}>{state}</button>)}
+        </div>
+      </div>;
+      break;
+    case 'orb-cube':
+      content = <OrbCube size={large ? 185 : 145} speed={speed} fps={30}
+        color={dark ? '#F6FAFB' : '#121314'} label="Loading"/>;
+      break;
+    case 'query': case 'results': case 'host': case 'evidence': case 'suggestions':
+      content = <ProductScene scene={id}/>;
+      break;
+    case 'api':
+      content = <ApiScene/>;
+      break;
+    case 'price':
+      content = <div className="lib-price-demo">
+        <AnimatedPrice amount={price}/>
+        <div className="lib-price-options">
+          {[49, 89, 129].map(amount =>
+            <button key={amount} type="button" data-active={amount === price}
+              onClick={() => setPrice(amount)}>${amount}</button>)}
+        </div>
+      </div>;
+      break;
+    case 'button':
+      content = <div className="lib-button-demo">
+        <DoubleButton variant="primary">Get started</DoubleButton>
+        <DoubleButton variant="secondary">Learn more</DoubleButton>
+        <DoubleButton variant="inverse">Explore</DoubleButton>
+        <DoubleButton variant="dark">Contact us</DoubleButton>
+      </div>;
+      break;
+    case 'accordion':
+      content = <div className="lib-accordion-demo">
+        <div className="faq-list">
+          <AnimatedDetails title="Can I use the API?" initialOpen>
+            <p>API access is available on Plus, Expert and Business plans.</p>
+          </AnimatedDetails>
+          <AnimatedDetails title="How does the Free plan work?">
+            <p>The Free plan introduces APCOSYS for personal use.</p>
+          </AnimatedDetails>
+        </div>
+      </div>;
+      break;
+    case 'marquee':
+      content = <div className="lib-marquee-demo"><PartnerMarquee/></div>;
+      break;
+    case 'billing':
+      content = <div className="lib-segment-demo">
+        <BillingSwitch value={period} onChange={setPeriod}/>
+      </div>;
+      break;
+    case 'planbutton':
+      content = <div className="lib-plan-demo">
+        <button className="plan-button" type="button">Get started</button>
+      </div>;
+      break;
+  }
+  return <Suspense fallback={<div className="lib-preview lib-preview__blank"><span className="lib-preview__loading" aria-label="Loading"/></div>}>
+    <div className={`lib-preview lib-preview--${id}`}>{content}</div>
+  </Suspense>;
 }
