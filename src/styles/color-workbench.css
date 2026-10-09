@@ -1,0 +1,56 @@
+/* Isolated palette draft controls. Production design tokens remain unchanged. */
+.ds-workbench__heading{margin-bottom:12px!important}
+.ds-workbench__heading h1,.ds-workbench__heading h2{font-size:clamp(28px,3.1vw,38px);font-weight:500;letter-spacing:-.04em;line-height:1.1}
+.ds-workbench__explanation{font-size:13px;line-height:1.55;color:var(--muted);max-width:750px;margin-bottom:19px}
+.ds-workbench__mode{background:var(--ink);border:1px solid var(--ink);border-radius:5px;color:var(--page);font-size:12px;min-height:36px;padding:8px 13px}
+.ds-workbench__mode[aria-pressed=true]{background:transparent;color:var(--ink)}
+.ds-workbench__copy-settings{justify-content:flex-start;margin:14px 0 22px}
+.ds-workbench{padding:17px 0 10px;margin-bottom:12px;border-top:1px solid var(--line);min-width:0}
+.ds-workbench__toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:16px}
+.ds-workbench__toolbar>span{font-size:12px;color:var(--muted)}
+.ds-workbench__toolbar>div{display:flex;flex-wrap:wrap;gap:7px}
+.ds-workbench__toolbar button{min-height:34px;padding:7px 10px;border:1px solid var(--line);border-radius:5px;background:var(--white);color:var(--ink);font-size:11px}
+.ds-workbench__toolbar button:disabled{opacity:.4;cursor:not-allowed}
+.ds-workbench__toolbar button:not(:disabled):hover{border-color:var(--control-line)}
+.ds-workbench__previews{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ds-workbench__previews[data-single=true]{grid-template-columns:minmax(0,1fr)}
+.ds-workbench__preview{min-width:0;border:1px solid;border-radius:6px;padding:15px}
+.ds-workbench__preview-caption{display:block;font:400 11px/1.3 var(--font-mono);margin-bottom:12px}
+.ds-workbench__demo{min-width:0;border:1px solid;border-radius:6px;padding:19px;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.ds-workbench__eyebrow{font:500 10px/1.3 var(--font-mono);letter-spacing:.035em}
+.ds-workbench__demo strong{font-size:clamp(18px,2vw,26px);font-weight:500;letter-spacing:-.035em;line-height:1.15}
+.ds-workbench__demo p{font-size:12px;line-height:1.4;margin:0}
+.ds-workbench__demo-cta{display:inline-flex;align-items:center;border:0;border-radius:5px;padding:10px 12px;min-height:39px;font-size:12px;cursor:default;pointer-events:none}
+.ds-workbench__demo-cta span{margin-left:12px}
+.ds-workbench__demo-detail{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;width:100%;font:400 10px/1.3 var(--font-mono);border-top:1px solid;padding-top:12px;margin-top:5px}
+.ds-workbench__demo-detail span:first-child{padding:5px 7px;border-radius:3px}
+.ds-workbench__ratios{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+.ds-workbench__ratios>span{display:flex;gap:6px;font-size:10px;line-height:1.4}
+.ds-workbench__ratios strong{font:500 10px/1.4 var(--font-mono)}
+.ds-workbench__ratios strong[data-pass=false]{text-decoration:underline;text-decoration-style:wavy;text-underline-offset:3px}
+.ds-workbench__note{font-size:11px;line-height:1.5;color:var(--muted);margin:14px 0 4px}
+.ds-workbench__change-count{display:block;font:400 10px/1.5 var(--font-mono);color:var(--muted);margin-top:10px}
+.ds-token-list>.ds-token-row.ds-token-editor{grid-template-columns:34px minmax(0,1fr) minmax(80px,96px) 34px;gap:9px;min-width:0;min-height:70px;background:var(--white)}
+.ds-token-row.ds-token-editor[data-changed=true]{box-shadow:inset 3px 0 0 var(--action)}
+.ds-token-row.ds-token-editor .ds-token-label code{display:block}
+.ds-token-swatch-picker{display:grid;place-items:center;position:relative;width:34px;height:34px;cursor:pointer}
+.ds-token-swatch-picker .ds-token-swatch{width:34px;height:34px}
+.ds-token-swatch-picker input[type=color]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;padding:0}
+.ds-token-swatch-picker:focus-within{outline:2px solid var(--action);outline-offset:3px}
+.ds-token-hex-input{min-width:0;width:100%;height:34px;background:var(--page);border:1px solid var(--line);border-radius:4px;padding:7px;font:400 11px/1.4 var(--font-mono);color:var(--ink)}
+.ds-token-hex-input:focus{outline:2px solid var(--action);outline-offset:1px}
+.ds-token-hex-input[aria-invalid=true]{border-color:#cb3540}
+.ds-token-copy-button{border:0;background:transparent;color:var(--muted);display:grid;place-items:center;min-width:34px;min-height:34px;border-radius:4px;font:400 10px var(--font-mono)}
+.ds-token-copy-button svg{width:16px;height:16px}
+.ds-token-copy-button:hover,.ds-token-copy-button:focus-visible{color:var(--action);background:var(--surface)}
+@media(max-width:800px){.ds-workbench__previews{grid-template-columns:1fr}.ds-workbench__demo{padding:16px}}
+@media(max-width:599px){
+ .ds-workbench__heading{align-items:flex-start;flex-wrap:wrap}
+ .ds-workbench__copy-settings{align-items:flex-start}
+ .ds-token-list>.ds-token-row.ds-token-editor{grid-template-columns:28px minmax(0,1fr) 82px 32px;gap:6px;padding:9px}
+ .ds-token-swatch-picker,.ds-token-swatch-picker .ds-token-swatch{width:28px;height:28px}
+ .ds-token-hex-input{padding:5px;font-size:10px}
+ .ds-token-copy-button{min-width:32px;min-height:32px}
+ .ds-workbench__toolbar>div{width:100%}
+}
+@media(prefers-reduced-motion:reduce){.ds-workbench__mode,.ds-workbench__toolbar button{transition:none}}

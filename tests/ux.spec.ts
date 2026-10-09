@@ -435,3 +435,64 @@ test('contextual links scroll to visible tokens and morph examples',async({page}
  await toc.getByRole('link',{name:'Morphicons'}).click();
  await expect(page.locator('#docs-icon-morph')).toBeInViewport();
 });
+
+test('palette draft is separate from approved tokens, persists and resets', async ({ page }) => {
+  await page.goto(root + '#foundations/colors');
+  await expect(page.locator('.ds-token-row')).toHaveCount(17);
+  await expect(page.getByText('Page background').first()).toBeVisible();
+  await page.getByRole('button', { name: 'Try color changes' }).click();
+  await expect(page.getByLabel('Preview · matches approved palette preview')).toBeVisible();
+  const edit = page.getByRole('textbox', { name: 'HEX for Cards & panels' });
+  await edit.fill('#E0EEFA');
+  await edit.press('Enter');
+  await expect(edit).toHaveValue('#E0EEFA');
+  await expect(page.getByLabel('Approved preview')).toBeVisible();
+  await expect(page.getByLabel('Your draft preview').locator('.ds-workbench__demo')).toHaveCSS('background-color', 'rgb(224, 238, 250)');
+  await expect(page.getByLabel('Approved preview').locator('.ds-workbench__demo')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await page.getByRole('button', { name: 'Dark theme' }).click();
+  await expect(edit).toHaveValue('#151B1F');
+  await page.getByRole('button', { name: 'Light theme' }).click();
+  await expect(edit).toHaveValue('#E0EEFA');
+  await page.reload();
+  await page.getByRole('button', { name: 'Try color changes' }).click();
+  await expect(page.getByRole('textbox', { name: 'HEX for Cards & panels' })).toHaveValue('#E0EEFA');
+  await page.getByRole('button', { name: 'Reset all' }).click();
+  await expect(page.getByRole('textbox', { name: 'HEX for Cards & panels' })).toHaveValue('#FFFFFF');
+  await page.getByRole('button', { name: 'View reference' }).click();
+  await expect(page.locator('.ds-token-row')).toHaveCount(17);
+  await expect(page.locator('.ds-token-row').nth(1)).toContainText('#FFFFFF');
+});
+
+test('palette draft validates input and exports changed semantic values', async ({ page }) => {
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.goto(root + '#foundations/colors');
+  await page.getByRole('button', { name: 'Try color changes' }).click();
+  const edit = page.getByRole('textbox', { name: 'HEX for Primary action' });
+  await edit.fill('#ZZZZZZ');
+  await expect(edit).toHaveAttribute('aria-invalid', 'true');
+  await edit.press('Enter');
+  await expect(edit).toHaveValue('#037A8F');
+  await edit.fill('#004466');
+  await edit.press('Enter');
+  await page.getByRole('button', { name: 'Copy CSS' }).click();
+  await expect(page.getByRole('button', { name: 'Copied CSS' })).toBeVisible();
+  const text = await page.evaluate(() => navigator.clipboard.readText());
+  expect(text).toContain('--action-fill: #004466;');
+  expect(text).not.toContain('--surface-page:');
+  const event = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download draft JSON' }).click();
+  const file = await event;
+  expect(file.suggestedFilename()).toBe('apcosys.tokens.draft.json');
+  await expect(page.getByRole('link', { name: /Download design tokens/ })).toBeVisible();
+});
+
+test('palette edit mode remains responsive with visible controls', async ({ page }) => {
+  await page.goto(root + '#foundations/colors');
+  await page.getByRole('button', { name: 'Try color changes' }).click();
+  for (const width of [375, 599, 899, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect(page.getByRole('textbox', { name: 'HEX for Page background' })).toBeVisible();
+    await expect(page.locator('.ds-token-editor')).toHaveCount(17);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), width + 'px').toBeLessThanOrEqual(2);
+  }
+});

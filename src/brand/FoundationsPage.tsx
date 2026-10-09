@@ -1,16 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Logo } from '../components/ui/Logo';
 import { Icon } from '../components/ui/Icon';
 import tokens from '../tokens/apcosys.tokens.json';
+import ColorWorkbench from './ColorWorkbench';
 
 type Theme = 'light' | 'dark';
 const base=import.meta.env.BASE_URL;
-const groups=[
-  {name:'Surfaces',keys:['page','card','elevated','strong','tint']},
-  {name:'Typography',keys:['primary','body','muted','visualInk']},
-  {name:'Brand & actions',keys:['mark','accent','action','actionHover','onAction','api']},
-  {name:'Borders',keys:['subtle','strongBorder']},
-] as const;
 const typeSamples=[
   {title:'Display',spec:'72–106 · 500',cls:'ds-type-display',text:'Internet, understood.'},
   {title:'Heading',spec:'48–86 · 500',cls:'ds-type-heading',text:'One query. Full context.'},
@@ -18,7 +13,6 @@ const typeSamples=[
   {title:'Interface',spec:'14 · 500',cls:'ds-type-control',text:'Get started'},
   {title:'Data',spec:'13 · Mono',cls:'ds-type-mono',text:'93.184.216.34 · 200 OK'},
 ];
-const colorLabels:Record<string,string>={"page":"Page background","card":"Cards & panels","elevated":"Raised surfaces","strong":"Emphasis","tint":"Accent background","primary":"Headings","body":"Body text","muted":"Secondary text","visualInk":"Illustration lines","mark":"Logo accent","accent":"Links","action":"Primary action","actionHover":"Action hover","onAction":"Text on buttons","api":"API visuals","subtle":"Dividers","strongBorder":"Strong borders"};
 const spaces=tokens.spaces;
 const metrics=[
   {name:'Content width',value:tokens.layout.maxWidth,usage:'Maximum width'},
@@ -30,12 +24,6 @@ const metrics=[
 ];
 const anchors=[['Identity','ds-identity'],['Colors','ds-colors'],['Type','ds-type'],['Spacing','ds-spacing'],['Layout','ds-layout'],['Motion','ds-motion']] as const;
 const pxVar=(px:number)=>'--ds-space-'+px/4;
-const luminance=(hex:string)=>{
-  const values=(hex.match(/[a-f0-9]{2}/gi)||[]).map(part=>{const n=parseInt(part,16)/255;return n<=.04045?n/12.92:((n+.055)/1.055)**2.4;});
-  return .2126*(values[0]||0)+.7152*(values[1]||0)+.0722*(values[2]||0);
-};
-const ratio=(a:string,b:string)=>((Math.max(luminance(a),luminance(b))+.05)/(Math.min(luminance(a),luminance(b))+.05)).toFixed(1);
-
 export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string}){
   useEffect(()=>{
    if(!jumpTo)return;
@@ -47,11 +35,6 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
    if(id)requestAnimationFrame(()=>document.getElementById(id)?.scrollIntoView({block:'start',behavior:'instant'}));
   },[jumpTo]);
   const heading=(title:string,slug:string)=>jumpTo===slug?<h1 className="ds-focused-title">{title}</h1>:<h2>{title}</h2>;
-  const [copied,setCopied]=useState<string|null>(null);
-  const [copyFormat,setCopyFormat]=useState<'css'|'hex'>('hex');
-  const copy=async(value:string,key:string)=>{
-    try{await navigator.clipboard.writeText(value);setCopied(key);}catch{setCopied(null);}
-  };
   return <div className="ds-foundations ds-foundations--compact" data-focus={jumpTo||undefined}>
     <nav className="ds-local-nav" aria-label="Foundation sections">
       {anchors.map(([label,id])=><button type="button" key={id} onClick={()=>document.getElementById(id)?.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'})}>{label}</button>)}
@@ -79,41 +62,7 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
     </section>}
 
     {(!jumpTo||jumpTo==='colors')&&<section className="ds-section" id="ds-colors">
-      <div className="ds-section-bar">{heading('Colors','colors')}<div className="ds-color-actions">
-        <span className="ds-muted-note">{tone==='dark'?'Dark':'Light'} theme · click to copy</span>
-        <div className="ds-copy-format" role="group" aria-label="Copy color format">
-          {(['css','hex'] as const).map(mode=><button key={mode} type="button" aria-pressed={copyFormat===mode} onClick={()=>setCopyFormat(mode)}>{mode==='css'?'CSS variable':'HEX'}</button>)}
-        </div>
-      </div></div>
-      {groups.map(group=><div key={group.name} className="ds-token-group" id={'ds-color-'+group.name.toLowerCase().replace(/[^a-z]+/g,'-')}>
-        <h3>{group.name}</h3>
-        <div className="ds-token-list">
-          {group.keys.map(key=>{
-            const entry=tokens.colors[key] as {css:string;light:string;dark:string;usage:string};
-            const value=entry[tone];
-            const copyValue=copyFormat==='css'?'var('+entry.css+')':value.toUpperCase();
-            return <button className="ds-token-row" type="button" key={key} title={entry.usage+' · Click to copy '+(copyFormat==='css'?'CSS variable':'HEX value')}
-              onClick={()=>void copy(copyValue,key)}>
-              <span className="ds-token-swatch" style={{backgroundColor:value}}/>
-              <span className="ds-token-label"><strong className="ds-token-name">{colorLabels[key]||key}</strong><code>{entry.css}</code></span>
-              <span className="ds-token-hex">{value.toUpperCase()}</span>
-              <span className="ds-token-copy">{copied===key?'Copied':<Icon name="copy"/>}</span>
-            </button>;
-          })}
-        </div>
-      </div>)}
-      <a className="ds-token-download" href={base+'tokens/apcosys.tokens.json'} download="apcosys.tokens.json">Download design tokens <Icon name="down"/></a>
-      <div className="ds-reference-block" id="ds-contrast">
-        <h3>Contrast</h3>
-        <div className="ds-contrast-pair">
-          <div className="ds-contrast-sample" style={{background:tokens.colors.card[tone],color:tokens.colors.primary[tone]}}>
-            <span>Text / Card</span><strong>Aa</strong><small>{ratio(tokens.colors.primary[tone],tokens.colors.card[tone])}:1</small>
-          </div>
-          <div className="ds-contrast-sample" style={{background:tokens.colors.action[tone],color:tokens.colors.onAction[tone]}}>
-            <span>Text / Action</span><strong>Aa</strong><small>{ratio(tokens.colors.onAction[tone],tokens.colors.action[tone])}:1</small>
-          </div>
-        </div>
-      </div>
+      <ColorWorkbench tone={tone} focused={jumpTo==='colors'}/>
     </section>}
 
     {(!jumpTo||jumpTo==='typography')&&<section className="ds-section" id="ds-type">

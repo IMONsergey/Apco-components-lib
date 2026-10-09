@@ -33,6 +33,18 @@ npm run test:ux
 
 Do not casually replace approved page geometry with new primitives. The spacing normalization and minimum 44px touch target are **system recommendations**, not claims that the published site already enforced all of them.
 
+## Trying color changes without modifying the brand source
+
+Open **Brand styles → Colors** and select **Try color changes**. This switches the semantic color list from a read-only reference to a separate local draft:
+
+- Pick a color or type a complete 6-digit HEX value. Invalid fields revert on blur instead of corrupting the draft.
+- Compare the approved and draft interface samples, including body-text and button-text contrast indicators (4.5:1 threshold for normal text).
+- Switch the site's light/dark theme to edit and inspect each palette independently.
+- Use **Copy CSS** for changed semantic CSS variables only, or **Download draft JSON** for a complete draft manifest. **Reset all** removes the draft.
+- Browser local storage preserves the draft for later inspection on that browser only. There is no backend, auto-publishing or change to the approved product tokens.
+
+The **Download design tokens (approved)** link remains the original unedited manifest. A draft export is explicitly marked as a draft; review it before applying it to production. The preview illustrates a small interface sample and does not claim to validate every component against accessibility requirements.
+
 ## Source boundaries
 
 - `src/components/ui`: original UI components (including DoubleButton, AnimatedPrice, AnimatedDetails, BillingSwitch).

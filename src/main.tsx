@@ -22,3 +22,4 @@ import './styles/docs-shell.css';
 import './styles/friendly-ui.css';
 
 createRoot(document.getElementById('root')!).render(<StrictMode><MotionProvider><App /></MotionProvider></StrictMode>);
+import './styles/color-workbench.css';
