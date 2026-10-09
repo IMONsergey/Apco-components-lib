@@ -277,6 +277,32 @@
 
 
 
+.plan-price-block {
+  min-height: 102px;
+}
+.plan-price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.price-unit {
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+.price-amount {
+  display: inline-block;
+  animation: price-settle 240ms var(--ease);
+}
+.plan-billing-note {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--muted);
+  margin-top: 10px;
+}
+
+
 /* Production always uses semantic ink for buttons. The previous library
    inherited #fff from the dark parent and applied light-mode hover paint. */
 .lib-surface .plain-button { color:var(--ink); }
