@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Logo } from '../components/ui/Logo';
+import { Icon } from '../components/ui/Icon';
 import tokens from '../tokens/apcosys.tokens.json';
 
 type Theme = 'light' | 'dark';
@@ -57,18 +58,18 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
       <div className="ds-section-bar"><h2>Identity</h2></div>
       <div className="ds-brand-grid">
         <a className="ds-brand-sample ds-brand-sample--light" href={base+'assets/brand/wordmark-light.svg'} target="_blank" rel="noreferrer" title="Open light logo SVG">
-          <img src={base+'assets/brand/wordmark-light.svg'} alt="APCOSYS light wordmark"/><span>Light SVG ↗</span>
+          <img src={base+'assets/brand/wordmark-light.svg'} alt="APCOSYS light wordmark"/><span>Light SVG <Icon name="external"/></span>
         </a>
         <a className="ds-brand-sample ds-brand-sample--dark" href={base+'assets/brand/wordmark-dark.svg'} target="_blank" rel="noreferrer" title="Open dark logo SVG">
-          <img src={base+'assets/brand/wordmark-dark.svg'} alt="APCOSYS dark wordmark"/><span>Dark SVG ↗</span>
+          <img src={base+'assets/brand/wordmark-dark.svg'} alt="APCOSYS dark wordmark"/><span>Dark SVG <Icon name="external"/></span>
         </a>
       </div>
       <details className="ds-native-details ds-identity-details">
         <summary>Symbols and logo usage <span>+</span></summary>
         <div className="ds-identity-extra">
           <div><span>Responsive website mark</span><Logo/></div>
-          <a href={base+'assets/brand/symbol-light.svg'} target="_blank" rel="noreferrer"><img src={base+'assets/brand/symbol-light.svg'} alt="Light symbol"/>Light symbol ↗</a>
-          <a href={base+'assets/brand/symbol-dark.svg'} target="_blank" rel="noreferrer"><img src={base+'assets/brand/symbol-dark.svg'} alt="Dark symbol"/>Dark symbol ↗</a>
+          <a href={base+'assets/brand/symbol-light.svg'} target="_blank" rel="noreferrer"><img src={base+'assets/brand/symbol-light.svg'} alt="Light symbol"/>Light symbol <Icon name="external"/></a>
+          <a href={base+'assets/brand/symbol-dark.svg'} target="_blank" rel="noreferrer"><img src={base+'assets/brand/symbol-dark.svg'} alt="Dark symbol"/>Dark symbol <Icon name="external"/></a>
         </div>
         <p className="ds-caption">Use the supplied SVG geometry without distortion. Select the appropriate variant for the background.</p>
       </details>
@@ -93,11 +94,12 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
               <span className="ds-token-swatch" style={{backgroundColor:value}}/>
               <span className="ds-token-name">{colorLabels[key]||key}</span>
               <code>{entry.css}</code><span className="ds-token-hex">{value.toUpperCase()}</span>
-              <span className="ds-token-copy">{copied===copyValue?'Copied':'↗'}</span>
+              <span className="ds-token-copy">{copied===copyValue?'Copied':<Icon name="copy"/>}</span>
             </button>;
           })}
         </div>
       </div>)}
+      <a className="ds-token-download" href={base+'tokens/apcosys.tokens.json'} download="apcosys.tokens.json">Download design tokens <Icon name="down"/></a>
       <details className="ds-native-details">
         <summary>Contrast reference <span>+</span></summary>
         <div className="ds-contrast-pair">
@@ -112,7 +114,7 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
     </section>}
 
     {(!jumpTo||jumpTo==='typography')&&<section className="ds-section" id="ds-type">
-      <div className="ds-section-bar"><h2>Typography</h2><a href={base+'tokens/apcosys.tokens.json'} target="_blank" rel="noreferrer">Token JSON ↗</a></div>
+      <div className="ds-section-bar"><h2>Typography</h2></div>
       <p className="ds-muted-note ds-section-subtitle">Instrument Sans · IBM Plex Mono</p>
       <div className="ds-type-list">{typeSamples.map(t=><div className="ds-type-row" key={t.title}>
         <div><span className="ds-label">{t.title}</span><code>{t.spec}</code></div>

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Menu, X, Search, Check, Plus, Minus, ArrowRight, ArrowDown } from 'lucide';
 import { MorphIcon } from 'morphicons/react';
-import type { IconName } from '../components/ui/Icon';
+import { Icon, type IconName } from '../components/ui/Icon';
 import { LibraryIcon } from '../components/system/LibraryIcon';
 import registry from '../generated/icon-manifest.json';
 
@@ -38,7 +38,7 @@ function MorphPairs(){
   return <section className="ds-morph-panel">
     <div className="ds-section-bar">
       <div><h2>Morphicons</h2><p>Live icon transitions · motion only where a state changes</p></div>
-      <a href="https://www.morphicons.com/" target="_blank" rel="noreferrer">morphicons.com ↗</a>
+      <a href="https://www.morphicons.com/" target="_blank" rel="noreferrer">morphicons.com <Icon name="external"/></a>
     </div>
     <div className="ds-morph-top">
       <span className="ds-label">Spring</span>

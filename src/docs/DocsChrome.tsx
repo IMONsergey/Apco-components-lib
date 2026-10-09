@@ -111,7 +111,7 @@ function Toc({route}:{route:DocRoute}){
   <nav>{items.map(item=><a key={item.id} href={href(route.section,route.slug)} onClick={e=>{
    e.preventDefault();document.getElementById(item.id)?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
   }}>{item.label}</a>)}</nav>
-  <a className="docs-toc__top" href="#top" onClick={e=>{e.preventDefault();window.scrollTo({top:0,behavior:'smooth'})}}>Back to top ↑</a>
+  <a className="docs-toc__top" href="#top" onClick={e=>{e.preventDefault();window.scrollTo({top:0,behavior:'smooth'})}}>Back to top</a>
  </aside>;
 }
 export function DocsChrome({route,tone,onTheme,children}:{route:DocRoute;tone:Tone;onTheme:()=>void;children:ReactNode}){
@@ -164,7 +164,7 @@ export function DocsChrome({route,tone,onTheme,children}:{route:DocRoute;tone:To
     </main>
     <Toc route={route}/>
    </div>
-   <footer className="docs-footer"><span>APCOSYS LIBRARY</span><a href="https://github.com/IMONsergey/Apco-components-lib" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
+   <footer className="docs-footer"><span>APCOSYS LIBRARY</span><a href="https://github.com/IMONsergey/Apco-components-lib" target="_blank" rel="noreferrer">GitHub <Icon name="external"/></a></footer>
   </div>
   <CommandSearch open={search} onClose={()=>setSearch(false)} onNavigate={go}/>
  </div>;
