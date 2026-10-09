@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
+import { MotionProvider } from './components/visuals/MotionProvider';
 import './styles/instrument-sans.css';
 import './styles/ibm-plex-mono.css';
 import './styles/tokens.css';
@@ -18,4 +19,4 @@ import './styles/icons.css';
 import './styles/ux-refinements.css';
 import './styles/site-fidelity.css';
 
-createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode><MotionProvider><App /></MotionProvider></StrictMode>);
