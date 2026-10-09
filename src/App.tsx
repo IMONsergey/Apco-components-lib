@@ -62,9 +62,10 @@ function Detail({ item, tone, onClose }: { item: Item; tone: Tone; onClose: () =
   const [copied, setCopied] = useState(false);
   useEffect(() => {
     const el = dialog.current;
-    if (!el) return;
-    el.showModal();
-    return () => { if (el.open) el.close(); };
+    if (el && !el.open) el.showModal();
+    // Closing during StrictMode effect cleanup emits a native 'close' event
+    // and immediately unmounts the inspector. The DOM releases top-layer
+    // state when the dialog element itself is removed.
   }, []);
   const copy = async () => {
     try { await navigator.clipboard.writeText(item.code); setCopied(true); }
