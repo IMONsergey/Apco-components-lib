@@ -45,7 +45,9 @@
 .ds-guideline__heading h3{font-size:15px}
 /* The odd token spans the full grid; no fake empty grey cell. */
 .ds-token-list>.ds-token-row:last-child:nth-child(odd){grid-column:1 / -1}
-.ds-token-row code{display:none!important}
+.ds-token-label{min-width:0;display:flex;flex-direction:column;gap:3px}
+.ds-token-label code{display:block;font:400 10px/1.45 var(--font-mono);color:var(--muted);overflow-wrap:anywhere}
+.ds-token-row .ds-token-name{font-size:13px;font-weight:500;line-height:1.35}
 .ds-token-row{grid-template-columns:34px minmax(0,1fr) 85px 44px}
 .ds-token-hex{font-size:11px}
 .ds-token-name{font-size:13px}
@@ -166,3 +168,29 @@
  .ds-icon-reference .ds-morph-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
  .ds-icon-reference .ds-morph-card{min-height:120px}
 }
+
+/* R6 token reference: real values, visible without toggling an accordion. */
+.ds-foundations--compact .ds-layout-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+.ds-foundations--compact .ds-layout-metrics>div{align-items:flex-start;justify-content:flex-start;gap:9px;min-width:0;min-height:116px}
+.ds-layout-metrics>div>code{font:400 12px/1.5 var(--font-mono);overflow-wrap:anywhere;color:var(--ink)}
+.ds-layout-metrics>div>small{font-size:11px;line-height:1.4;color:var(--muted);margin-top:auto}
+.ds-token-label code{display:block}
+.ds-token-row{grid-template-columns:34px minmax(0,1fr) 86px 44px;min-height:70px}
+.ds-token-row .ds-token-hex{justify-self:end}
+.ds-reference-block .ds-breakpoint-list>div:last-child{border-bottom:0}
+.ds-reference-block .ds-breakpoint-list{margin-top:4px}
+@media(min-width:1450px){
+ .ds-foundations--compact .ds-layout-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:799px){
+ .ds-token-row{grid-template-columns:30px minmax(0,1fr) 84px 36px}
+}
+@media(max-width:640px){
+ .ds-foundations--compact .ds-layout-metrics{grid-template-columns:1fr}
+ .ds-foundations--compact .ds-layout-metrics>div{min-height:94px}
+ .ds-token-row{grid-template-columns:28px minmax(0,1fr) 72px 32px;gap:8px;padding:10px}
+ .ds-token-label code{font-size:9px}
+ .ds-token-hex{font-size:10px}
+ .ds-radii-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:380px){.ds-radii-grid{grid-template-columns:1fr}}
