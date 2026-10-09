@@ -14,7 +14,8 @@
     "check": "npm run build",
     "generate:icons": "node scripts/generate-icons.mjs",
     "postinstall": "node scripts/generate-icons.mjs",
-    "test:design-system": "node scripts/check-brand.mjs"
+    "test:design-system": "node scripts/check-brand.mjs",
+    "test:ux": "playwright test"
   },
   "dependencies": {
     "gsap": "3.13.0",
