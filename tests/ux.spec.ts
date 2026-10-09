@@ -12,10 +12,9 @@ test('sections and dark theme stay coordinated', async ({page})=>{
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
   await expect(first).toContainText('#0D1113');
   await expect.poll(async()=>page.locator('body').evaluate(el=>getComputedStyle(el).backgroundColor)).toBe('rgb(13, 17, 19)');
-  const breakpoint=page.locator('details').filter({hasText:'Responsive breakpoints'});
-  await expect(breakpoint).not.toHaveAttribute('open','');
-  await breakpoint.locator('summary').click();
-  await expect(breakpoint).toHaveAttribute('open','');
+  const breakpoint=page.locator('#ds-breakpoints');
+  await expect(breakpoint.getByRole('heading',{name:'Responsive breakpoints'})).toBeVisible();
+  await expect(breakpoint.locator('.ds-breakpoint-list>div')).toHaveCount(8);
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
 });
@@ -30,27 +29,24 @@ test('icons copy usage on one click without any floating panel',async({page})=>{
  await expect(tile).toHaveAttribute('data-copied','true');
  await expect(page.getByRole('status')).toContainText('Code copied · activity');
  await expect(page.locator('.ds-selected-icon')).toHaveCount(0);
- const settings=page.locator('details.ds-icon-settings');
- await expect(settings).not.toHaveAttribute('open','');
- await settings.locator('summary').click();
- await expect(settings).toHaveAttribute('open','');
+ const settings=page.locator('#docs-icon-options');
+ await expect(settings.getByRole('combobox',{name:'Icon size'})).toBeVisible();
+ await expect(settings.getByRole('combobox',{name:'Icon stroke width'})).toBeVisible();
  await page.getByRole('button',{name:/Phosphor/}).click();
  await expect(page.getByRole('searchbox',{name:'Search icons'})).toHaveValue('');
 });
 
-test('guidelines use progressive disclosure',async({page})=>{
-  await page.goto(root+'#guidelines');
-  const rules=page.locator('details.ds-guideline');
-  await expect(rules).toHaveCount(10);
-  await expect(rules.first()).not.toHaveAttribute('open','');
-  await rules.first().locator('summary').click();
-  await expect(rules.first()).toHaveAttribute('open','');
-  await expect(rules.first()).toContainText('Avoid');
-  const examples=page.locator('details.ds-doc-details').first();
-  await expect(examples).not.toHaveAttribute('open','');
+test('guidelines expose the ten rules and all examples without accordions',async({page})=>{
+ await page.goto(root+'#guidelines');
+ const rules=page.locator('article.ds-guideline');
+ await expect(rules).toHaveCount(10);
+ await expect(rules.first()).toContainText('Avoid');
+ await expect(page.locator('details.ds-guideline,details.ds-doc-details')).toHaveCount(0);
+ await expect(page.locator('#docs-guideline-patterns .ds-recipes>div')).toHaveCount(4);
+ await expect(page.locator('#docs-guideline-integration .ds-adoption>div')).toHaveCount(3);
 });
 
-test('component card opens its documentation in one step, code on demand',async({page})=>{
+test('component card opens documentation with visible usage code',async({page})=>{
  await page.goto(root+'#components');
  await expect(page.locator('.lib-card')).toHaveCount(28);
  await expect(page.locator('dialog.lib-dialog')).toHaveCount(0);
@@ -59,12 +55,10 @@ test('component card opens its documentation in one step, code on demand',async(
  await card.getByRole('link',{name:'Double Button'}).click();
  await expect(page).toHaveURL(/#components\/button$/);
  await expect(page.locator('.docs-component__stage .double-button').first()).toBeVisible();
- const details=page.locator('details.docs-component__code');
- await expect(details).not.toHaveAttribute('open','');
- await details.locator('summary').click();
- await expect(details).toHaveAttribute('open','');
- await expect(details.locator('pre.lib-code')).toContainText('DoubleButton');
- await expect(details.getByRole('button',{name:/Copy code/})).toBeVisible();
+ const usage=page.locator('.docs-component__code');
+ await expect(page.locator('details.docs-component__code')).toHaveCount(0);
+ await expect(usage.locator('pre.lib-code')).toContainText('DoubleButton');
+ await expect(usage.getByRole('button',{name:/Copy code/})).toBeVisible();
  await page.getByRole('link',{name:/All components/}).click();
  await expect(page.locator('.lib-card')).toHaveCount(28);
 });
@@ -386,4 +380,56 @@ test('empty catalog states offer a clear way back to results',async({page})=>{
  await expect(page.getByText('No icons found.')).toBeVisible();
  await page.getByRole('button',{name:'Clear search'}).click();
  await expect(page.getByRole('searchbox',{name:'Search icons'})).toHaveValue('');
+});
+
+test('all reference details are visible across layout, spacing, colors and logo',async({page})=>{
+ await page.goto(root+'#foundations/layout');
+ await expect(page.locator('.ds-layout-metrics>div')).toHaveCount(6);
+ await expect(page.locator('#ds-breakpoints .ds-breakpoint-list>div')).toHaveCount(8);
+ await page.goto(root+'#foundations/spacing');
+ await expect(page.locator('.ds-radii-grid>div')).toHaveCount(3);
+ await page.goto(root+'#foundations/colors');
+ await expect(page.locator('.ds-token-label code')).toHaveCount(17);
+ await expect(page.locator('#ds-contrast .ds-contrast-sample')).toHaveCount(2);
+ await page.goto(root+'#foundations/identity');
+ await expect(page.locator('#ds-symbols img')).toHaveCount(2);
+ await expect(page.locator('.ds-foundations details')).toHaveCount(0);
+});
+test('icon settings, states and Morphicons are immediately visible',async({page})=>{
+ await page.goto(root+'#icons');
+ const settings=page.locator('#docs-icon-options');
+ await expect(settings.getByRole('combobox',{name:'Icon size'})).toBeVisible();
+ await expect(settings.getByRole('combobox',{name:'Icon stroke width'})).toBeVisible();
+ await expect(page.locator('#docs-icon-states .ds-icon-state')).toHaveCount(5);
+ const morph=page.locator('#docs-icon-morph');
+ await expect(morph.getByRole('heading',{name:'Morphicons'})).toBeAttached();
+ await expect(morph.locator('.ds-morph-card')).toHaveCount(4);
+ await expect(page.locator('.ds-icons-page details')).toHaveCount(0);
+ const before=await settings.boundingBox(),after=await page.locator('.ds-icon-options').boundingBox();
+ expect(before&&after).not.toBeNull();
+ expect(Math.abs(before!.x-after!.x)).toBeLessThanOrEqual(2);
+ await settings.getByRole('combobox',{name:'Icon size'}).selectOption('32');
+ await expect(settings.getByRole('combobox',{name:'Icon size'})).toHaveValue('32');
+});
+test('reference pages fit five breakpoints without horizontal overflow in either theme',async({page})=>{
+ for(const width of [375,599,899,1440,1920]){
+  await page.setViewportSize({width,height:900});
+  for(const route of ['#foundations/layout','#foundations/colors','#icons','#guidelines']){
+   await page.goto(root+route);
+   await expect(page.locator('main#docs-content')).toBeVisible();
+   expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth),width+' '+route).toBeLessThanOrEqual(2);
+  }
+  await page.getByRole('button',{name:'Dark theme'}).click();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth),width+' dark').toBeLessThanOrEqual(2);
+ }
+});
+test('contextual links scroll to visible tokens and morph examples',async({page})=>{
+ await page.setViewportSize({width:1920,height:1080});
+ await page.goto(root+'#foundations/layout');
+ const toc=page.getByRole('complementary',{name:'On this page'});
+ await toc.getByRole('link',{name:'Breakpoints'}).click();
+ await expect(page.locator('#ds-breakpoints')).toBeInViewport();
+ await page.goto(root+'#icons');
+ await toc.getByRole('link',{name:'Morphicons'}).click();
+ await expect(page.locator('#docs-icon-morph')).toBeInViewport();
 });
