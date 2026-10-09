@@ -1,7 +1,7 @@
 import { lazy, Suspense, useState } from 'react';
 import type { ComponentId } from '../catalog';
-import ProductScene from '../visuals/product/ProductScene';
-import ApiScene from '../visuals/api/ApiScene';
+const ProductScene=lazy(()=>import('../visuals/product/ProductScene'));
+const ApiScene=lazy(()=>import('../visuals/api/ApiScene'));
 import { AnimatedPrice } from '../components/ui/AnimatedPrice';
 import { DoubleButton } from '../components/ui/DoubleButton';
 import { AnimatedDetails } from '../components/ui/AnimatedDetails';
