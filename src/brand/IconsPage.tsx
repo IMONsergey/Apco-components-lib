@@ -65,6 +65,7 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
    setFamily(family);setLimit(72);
    const valid=Boolean(requestedIcon&&all[family].includes(requestedIcon));
    setSelected(valid?{family,name:requestedIcon!}:null);
+   setCopied(null);
    setSearch(valid?requestedIcon!:'');
   },[initialFamily]);
   const [family,setFamily]=useState<Family>('apcosys');
@@ -73,18 +74,18 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
   const [stroke,setStroke]=useState(1.5);
   const [limit,setLimit]=useState(72);
   const [selected,setSelected]=useState<IconChoice|null>(null);
-  const [copied,setCopied]=useState(false);
+  const [copied,setCopied]=useState<string|null>(null);
   const names=useMemo(()=>all[family].filter(name=>name.toLowerCase().includes(search.trim().toLowerCase())),[family,search]);
   const visible=names.slice(0,limit);
   const sourceCode=(item:IconChoice)=>{
-    if(item.family==='apcosys')return `<Icon name="${item.name}" />`;
-    return `<LibraryIcon family="${item.family}" name="${item.name}" size={24} />`;
+    if(item.family==='apcosys')return `<Icon name="${item.name}" width={${size}} height={${size}} />`;
+    return `<LibraryIcon family="${item.family}" name="${item.name}" size={${size}} />`;
   };
   return <div className="ds-icons-page">
-    <div id="docs-icon-library" className="ds-section-bar"><h2>Browse icons</h2><span className="ds-label">Click an icon to see how to use it</span></div>
+    <div id="docs-icon-library" className="ds-section-bar"><h2>Browse icons</h2><span className="ds-label" role="status" aria-live="polite">{copied?'Code copied · '+copied.split('/')[1]:'Click an icon to copy its code'}</span></div>
     <div className="ds-icon-toolbar">
       <div className="ds-toggle-row">{families.map(f=><button key={f.key} type="button" data-active={family===f.key} aria-pressed={family===f.key}
-        onClick={()=>{setFamily(f.key);setSelected(null);setLimit(72)}}>{f.label}<small>{all[f.key].length}</small></button>)}</div>
+        onClick={()=>{setFamily(f.key);setSelected(null);setCopied(null);setSearch('');setLimit(72)}}>{f.label}<small>{all[f.key].length}</small></button>)}</div>
       <input type="search" aria-label="Search icons" placeholder="Find an icon..." value={search} onChange={e=>{setSearch(e.target.value);setLimit(72)}}/>
     </div>
     <details id="docs-icon-options" className="ds-icon-settings"><summary>Size & stroke <span>+</span></summary><div className="ds-icon-options">
@@ -96,19 +97,17 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
     </div></details>
     <div className="ds-icon-catalog" role="group" aria-label={family+' icons'}>
       {visible.map(name=><button key={name} type="button" className="ds-icon-tile" data-selected={selected?.family===family&&selected.name===name}
-        onClick={()=>{setSelected({family,name});setCopied(false)}} title={name}>
+        data-copied={copied===family+'/'+name} aria-label={name} title={'Copy '+name+' code'}
+        onClick={async()=>{
+          setSelected({family,name});
+          try{await navigator.clipboard.writeText(sourceCode({family,name}));setCopied(family+'/'+name)}
+          catch{setCopied(null)}
+        }}>
         <LibraryIcon family={family} name={name} size={size} stroke={stroke} spriteBaseUrl={spriteBaseUrl}/>
         <span>{name}</span></button>)}
     </div>
     {names.length===0&&<p className="ds-caption ds-empty">No icons found</p>}
     {names.length>limit&&<button className="ds-load-more" type="button" onClick={()=>setLimit(v=>v+72)}>Show more · {names.length-limit} remaining</button>}
-    {selected&&<div className="ds-selected-icon" role="region" aria-label="Selected icon">
-      <div className="ds-selected-symbol"><LibraryIcon {...selected} size={32} stroke={stroke} spriteBaseUrl={spriteBaseUrl}/></div>
-      <div><strong>{selected.name}</strong><span>{selected.family} · {size}px</span></div>
-      <code>{sourceCode(selected)}</code>
-      <button type="button" onClick={async()=>{try{await navigator.clipboard.writeText(sourceCode(selected));setCopied(true);}catch{setCopied(false);}}}>{copied?'Copied':'Copy code'}</button>
-      <button type="button" className="ds-selected-close" onClick={()=>setSelected(null)} aria-label="Close icon inspector">×</button>
-    </div>}
     <details className="ds-native-details ds-extra-section"><summary>Icon states & usage <span>+</span></summary><div className="ds-icon-states">
       <div className="ds-section-bar"><div><h2>States</h2><p>Color is semantic. Stroke and icon silhouette stay consistent.</p></div></div>
       <div className="ds-state-grid">
