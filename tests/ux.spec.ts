@@ -201,7 +201,7 @@ test('global command search navigates to full source component page',async({page
  await page.keyboard.press('ControlOrMeta+k');
  const dialog=page.getByRole('dialog',{name:'Search design system'});
  await expect(dialog).toBeVisible();
- await dialog.getByRole('searchbox',{name:'Search all docs'}).fill('Double Button');
+ await dialog.getByRole('combobox',{name:'Search all docs'}).fill('Double Button');
  await expect(dialog.getByRole('option',{name:/Double Button/}).first()).toBeVisible();
  await page.keyboard.press('Enter');
  await expect(page).toHaveURL(/#components\/button$/);
@@ -219,6 +219,7 @@ test('mobile docs drawer navigates without horizontal overflow',async({page})=>{
  await opener.click();
  const drawer=page.getByRole('complementary',{name:'Documentation navigation'});
  await expect(drawer).toHaveAttribute('data-open','true');
+ await expect(page.getByRole('button',{name:'Close navigation'})).toBeVisible();
  await drawer.getByRole('link',{name:'Typography'}).click();
  await expect(page).toHaveURL(/#foundations\/typography$/);
  await expect(page.locator('.docs-sidebar')).toHaveAttribute('data-open','false');
