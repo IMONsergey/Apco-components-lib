@@ -60,13 +60,12 @@ function ComponentPage({item,tone}:{item:Item;tone:Tone}){
    </div>
   </div>
   <section className="docs-component__section" id="docs-component-usage">
-   <details className="docs-component__code">
-    <summary>Code & usage <Icon name="chevron"/></summary>
-    <div className="docs-component__copy">
+   <div className="docs-component__code">
+    <div className="docs-component__code-heading"><h2>Code & usage</h2>
      <button type="button" onClick={()=>void navigator.clipboard.writeText(item.code).then(()=>setCopied(true)).catch(()=>setCopied(false))}>{copied?'Copied':'Copy code'} <Icon name="copy"/></button>
     </div>
     <pre className="lib-code"><code>{item.code}</code></pre>
-   </details>
+   </div>
   </section>
   <section className="docs-component__section" id="docs-component-source">
    <div className="docs-component__section-head"><h2>Source</h2></div>
