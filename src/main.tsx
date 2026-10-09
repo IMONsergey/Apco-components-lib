@@ -5,6 +5,7 @@ import './styles/instrument-sans.css';
 import './styles/ibm-plex-mono.css';
 import './styles/tokens.css';
 import './styles/source-components.css';
+import './styles/theme-demos.css';
 import './styles/trust-marquee.css';
 import './styles/micro-motion.css';
 import './styles/gallery.css';
