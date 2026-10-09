@@ -25,7 +25,7 @@ npm run build
 npm run preview
 ```
 
-Both `predev` and `prebuild` restore the two original uploaded React components from a verified, lossless Brotli-encoded source bundle. No external download is required. Those generated files live in `src/visuals/uploads/`. The source payload is version-controlled in `vendor/uploaded-components.br.base64`; a fixed SHA-256 detects corruption.
+The two original uploaded React components are committed directly as source files under `src/visuals/uploads/`. The original source implementation is preserved; each component has its own README, and no additional runtime dependency is required for either component.
 
 ## Integration
 
@@ -77,10 +77,10 @@ Products scenes accept `query`, `results`, `host`, `evidence` or `suggestions`. 
 - `src/components/ui/AnimatedPrice.tsx`, `DoubleButton.tsx`, `Icon.tsx`, `src/hooks/useMotion.ts`, `src/content/pricing.ts` — original implementation.
 - `AnimatedDetails.tsx` — the original animation logic with the marketing site's locale wrapper removed, allowing use in isolation.
 - `PartnerMarquee.tsx` — standalone extraction of the seamless two-copy motion pattern.
-- `vendor/uploaded-components.br.base64` — **exact, lossless** content of the two user-provided ZIP components, reconstructed at build time with a checksum.
+- `src/visuals/uploads/ai-chat/AIChatOrb.jsx` and `src/visuals/uploads/orb-cube/{OrbCubeLoader.tsx,OrbCubeLoader.css}` — original user-provided source files from both ZIP archives (verified byte-for-byte against a SHA-256 source manifest before committing).
 
 This repository is a source library with a gallery, **not an npm package**. Components should be copied or imported into an application with compatible dependencies; the directory is not yet a published semver-stable API.
 
 ## Publishing
 
-`.github/workflows/pages.yml` runs a clean `npm ci`, source verification, strict `tsc` build and GitHub Pages deployment on every `main` push. The site uses the Vite base path `/Apco-components-lib/`. The upstream `apcoweb` application is not modified.
+`.github/workflows/pages.yml` runs a clean `npm ci`, strict `tsc` build and GitHub Pages deployment on every `main` push. The site uses the Vite base path `/Apco-components-lib/`. The upstream `apcoweb` application is not modified.

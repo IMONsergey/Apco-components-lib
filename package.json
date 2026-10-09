@@ -7,12 +7,9 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "predev": "node scripts/restore-uploads.mjs",
     "dev": "vite --host 0.0.0.0",
-    "prebuild": "node scripts/restore-uploads.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "pretypecheck": "node scripts/restore-uploads.mjs",
     "typecheck": "tsc -b --pretty false",
     "check": "npm run build"
   },
