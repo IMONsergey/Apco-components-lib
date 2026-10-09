@@ -1,14 +1,14 @@
-name: Build and publish gallery
+name: Build and publish brand system
 on:
   push:
-    branches: [main]
+    branches: [main, feat/brand-system]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 concurrency:
-  group: github-pages
+  group: github-pages-${{ github.ref_name }}
   cancel-in-progress: true
 jobs:
   build:
@@ -19,6 +19,19 @@ jobs:
         with:
           node-version: '22'
           cache: npm
+      - name: Resolve exact icon packages
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Commit reproducible lockfile
+        if: github.ref == 'refs/heads/feat/brand-system'
+        shell: bash
+        run: |
+          if ! git diff --quiet -- package-lock.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package-lock.json
+            git commit -m "build: update exact icon dependency lockfile"
+            git push origin HEAD:feat/brand-system
+          fi
       - run: npm ci
       - run: npm run build
       - uses: actions/configure-pages@v5
@@ -26,6 +39,7 @@ jobs:
         with:
           path: ./dist
   deploy:
+    if: github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
