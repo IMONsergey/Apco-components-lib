@@ -84,7 +84,7 @@ function Toc({route}:{route:DocRoute}){
  const items=route.section==='components'&&route.slug&&route.slug!=='visual'&&route.slug!=='product'&&route.slug!=='interface'
   ?[{label:'Preview',id:'docs-component-preview'},{label:'Usage',id:'docs-component-usage'},{label:'Source',id:'docs-component-source'}]
   :route.section==='foundations'&&route.slug==='colors'
-   ?[{label:'Surfaces',id:'ds-color-surfaces'},{label:'Typography',id:'ds-color-typography'},{label:'Brand & actions',id:'ds-color-brand-actions-'},{label:'Borders',id:'ds-color-borders'}]
+   ?[{label:'Surfaces',id:'ds-color-surfaces'},{label:'Typography',id:'ds-color-typography'},{label:'Brand & actions',id:'ds-color-brand-actions'},{label:'Borders',id:'ds-color-borders'}]
   :route.section==='foundations'&&route.slug?[]:toc[route.section];
  if(!items.length)return <aside className="docs-toc docs-toc--empty" aria-hidden="true"/>;
  return <aside className="docs-toc" aria-label="On this page">
