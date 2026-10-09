@@ -17,6 +17,7 @@ const families: {key:Family;label:string;notes:string}[] = [
   {key:'feather',label:'Feather',notes:'24px grid · stroke normalized to 1.5px'},
   {key:'phosphor',label:'Phosphor',notes:'256px source grid · regular weight · fill-based'},
 ];
+const spriteBaseUrl = import.meta.env.BASE_URL + 'icons/';
 const all: Record<Family, readonly string[]> = {
   apcosys:native, feather:registry.feather, phosphor:registry.phosphor,
 };
@@ -87,13 +88,13 @@ export default function IconsPage(){
     <div className="ds-icon-catalog" role="list" aria-label={family+' icons'}>
       {visible.map(name=><button role="listitem" key={name} type="button" className="ds-icon-tile" data-selected={selected?.family===family&&selected.name===name}
         onClick={()=>setSelected({family,name})} title={name}>
-        <LibraryIcon family={family} name={name} size={size} stroke={stroke}/>
+        <LibraryIcon family={family} name={name} size={size} stroke={stroke} spriteBaseUrl={spriteBaseUrl}/>
         <span>{name}</span></button>)}
     </div>
     {names.length===0&&<p className="ds-caption ds-empty">No icons found</p>}
     {names.length>limit&&<button className="ds-load-more" type="button" onClick={()=>setLimit(v=>v+72)}>Show more · {names.length-limit} remaining</button>}
     {selected&&<div className="ds-selected-icon">
-      <div className="ds-selected-symbol"><LibraryIcon {...selected} size={32} stroke={stroke}/></div>
+      <div className="ds-selected-symbol"><LibraryIcon {...selected} size={32} stroke={stroke} spriteBaseUrl={spriteBaseUrl}/></div>
       <div><strong>{selected.name}</strong><span>{selected.family} · {size}px</span></div>
       <code>{sourceCode(selected)}</code>
       <button type="button" onClick={()=>void copyText(sourceCode(selected))}>Copy usage</button>
@@ -103,7 +104,7 @@ export default function IconsPage(){
       <div className="ds-state-grid">
         {(['Default','Hover','Active','Disabled','Inverse'] as const).map((state,i)=>
           <div className={'ds-icon-state ds-icon-state--'+state.toLowerCase()} key={state}>
-            <LibraryIcon family={family} name={family==='phosphor'?'magnifying-glass':'search'} size={24} stroke={1.5}/>
+            <LibraryIcon family={family} name={family==='phosphor'?'magnifying-glass':'search'} size={24} stroke={1.5} spriteBaseUrl={spriteBaseUrl}/>
             <span>{state}</span><code>{['--ink','--action-hover','--action','--muted','--white'][i]}</code>
           </div>)}
       </div>

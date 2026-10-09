@@ -36,7 +36,7 @@ Do not casually replace approved page geometry with new primitives. The spacing 
 
 - `src/components/ui`: original UI components (including DoubleButton, AnimatedPrice, AnimatedDetails, BillingSwitch).
 - `src/components/system`: standalone adapters preserving the page's published class treatment.
-- `src/index.ts`: stable source-first import entry; includes reusable `LibraryIcon` independent of the docs UI.
+- `src/index.ts`: stable source-first import entry; includes reusable `LibraryIcon` independent of the docs UI. The icon component takes an optional `spriteBaseUrl` and defaults to `/icons/`, so it also works outside Vite.
 - `src/visuals`: source animation engines; product previews make no backend calls.
 - `src/brand`: documentation/gallery pages, not production components.
 - `src/gallery`: gallery mounts only.
