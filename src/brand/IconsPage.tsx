@@ -89,13 +89,13 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
         onClick={()=>{setFamily(f.key);setSelected(null);setCopied(null);setCopyFallback(null);setSearch('');setLimit(72)}}>{f.label}<small>{all[f.key].length}</small></button>)}</div>
       <input type="search" aria-label="Search icons" placeholder="Find an icon..." value={search} onChange={e=>{setSearch(e.target.value);setLimit(72)}}/>
     </div>
-    <details id="docs-icon-options" className="ds-icon-settings"><summary>Size & stroke <span>+</span></summary><div className="ds-icon-options">
+    <div id="docs-icon-options" className="ds-icon-settings"><div className="ds-icon-options">
       <span>{families.find(f=>f.key===family)?.notes}</span>
       <label>Size <select aria-label="Icon size" value={size} onChange={e=>setSize(Number(e.target.value))}>
         {[16,20,24,32].map(n=><option key={n} value={n}>{n}px</option>)}</select></label>
       <label>Stroke <select aria-label="Icon stroke width" value={stroke} onChange={e=>setStroke(Number(e.target.value))} disabled={family==='phosphor'}>
         {[1,1.5,2].map(n=><option key={n} value={n}>{n}px</option>)}</select></label>
-    </div></details>
+    </div></div>
     <div className="ds-icon-catalog" role="group" aria-label={family+' icons'}>
       {visible.map(name=><div className="ds-icon-cell" key={name}>
         <button type="button" className="ds-icon-tile" data-selected={selected?.family===family&&selected.name===name}
@@ -121,7 +121,7 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
       <button type="button" onClick={()=>setSearch('')}>Clear search</button>
     </div>}
     {names.length>limit&&<button className="ds-load-more" type="button" onClick={()=>setLimit(v=>v+72)}>Show more · {names.length-limit} remaining</button>}
-    <details className="ds-native-details ds-extra-section"><summary>Icon states & usage <span>+</span></summary><div className="ds-icon-states">
+    <section className="ds-icon-reference" id="docs-icon-states"><div className="ds-icon-states">
       <div className="ds-section-bar"><div><h2>States</h2><p>Color is semantic. Stroke and icon silhouette stay consistent.</p></div></div>
       <div className="ds-state-grid">
         {(['Default','Hover','Active','Disabled','Inverse'] as const).map((state,i)=>
@@ -132,7 +132,7 @@ export default function IconsPage({initialFamily}:{initialFamily?:string}){
       </div>
       <p className="ds-caption">Phosphor is fill-based: stroke weight does not apply. Use native APCOSYS for navigation and Feather for new stroke-based product icons. Reserve Phosphor for clearly defined alternative families.</p>
     </div>
-    </details>
-    <details className="ds-native-details ds-extra-section"><summary>Morphicons · animated transitions <span>+</span></summary><MorphPairs/></details>
+    </section>
+    <section className="ds-icon-reference ds-icon-reference--morph" id="docs-icon-morph"><MorphPairs/></section>
   </div>;
 }
