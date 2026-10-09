@@ -9,6 +9,12 @@ function CommandSearch({open,onClose,onNavigate}:{open:boolean;onClose:()=>void;
  const [active,setActive]=useState(0);
  const field=useRef<HTMLInputElement>(null);
  useEffect(()=>{if(open){setQuery('');setActive(0);requestAnimationFrame(()=>field.current?.focus())}},[open]);
+ useEffect(()=>{
+  if(!open)return;
+  const previous=document.body.style.overflow;
+  document.body.style.overflow='hidden';
+  return ()=>{document.body.style.overflow=previous};
+ },[open]);
  const matches=useMemo(()=>{
   const q=query.trim().toLowerCase();
   const scored=sourceRoutes.map((item,index)=>{
@@ -35,11 +41,13 @@ function CommandSearch({open,onClose,onNavigate}:{open:boolean;onClose:()=>void;
     if(e.key==='ArrowUp'){e.preventDefault();setActive(v=>Math.max(0,v-1))}
     if(e.key==='Enter'&&matches.length){e.preventDefault();const target=matches[Math.min(active,matches.length-1)];if(target){window.location.hash=target.route;onClose();onNavigate();}}
    }}>
-   <div className="docs-command__field"><Icon name="search"/><input ref={field} type="search" placeholder="Search tokens, components, documentation..." aria-label="Search all docs" value={query}
+   <div className="docs-command__field"><Icon name="search"/><input ref={field} type="search" role="combobox" aria-expanded="true" aria-controls="docs-search-results"
+    aria-activedescendant={matches.length?'docs-search-option-'+Math.min(active,matches.length-1):undefined}
+    placeholder="Search tokens, components, documentation..." aria-label="Search all docs" value={query}
     onChange={e=>{setQuery(e.target.value);setActive(0)}}/>
     <button type="button" onClick={onClose} aria-label="Close search">ESC</button></div>
-   <div className="docs-command__results" role="listbox" aria-label="Search results">
-    {matches.length?matches.map((x,i)=><a key={x.route+x.label} href={x.route} role="option" aria-selected={i===active}
+   <div className="docs-command__results" id="docs-search-results" role="listbox" aria-label="Search results">
+    {matches.length?matches.map((x,i)=><a key={x.route+x.label} id={'docs-search-option-'+i} href={x.route} role="option" aria-selected={i===active}
      onMouseEnter={()=>setActive(i)} onClick={()=>{onClose();onNavigate()}}>
      <span className="docs-command__result-main">{x.label}</span>
      <span className="docs-command__path">{x.route.replace('#','')}</span>
@@ -54,13 +62,15 @@ function Sidebar({route,open,compact,onClose}:{route:DocRoute;open:boolean;compa
   {open&&<div className="docs-mobile-shade" onClick={onClose} aria-hidden="true"/>}
   <aside className="docs-sidebar" data-open={open} data-compact={compact} aria-label="Documentation navigation">
    <div className="docs-sidebar__scroll">
-    <div className="docs-sidebar__caption">DOCUMENTATION <span>V2.0</span></div>
+    <div className="docs-sidebar__caption">DOCUMENTATION <span>V2.0</span>
+      <button type="button" className="docs-sidebar__close" onClick={onClose} aria-label="Close navigation"><Icon name="close"/></button>
+    </div>
     <nav className="docs-sidebar__nav" aria-label="Design system">
      <a className="docs-sidebar__overview" href={href('overview')} aria-current={route.section==='overview'?'page':undefined}
        onClick={onClose}><span>Overview</span><Icon name="arrow"/></a>
      {sections.filter(s=>s.id!=='overview').map(section=>
       <details className="docs-sidebar__group" key={section.id} open={route.section===section.id||(route.section==='overview'&&section.id==='foundations')?true:undefined} data-section={section.id}>
-       <summary onClick={e=>{const el=e.currentTarget.parentElement as HTMLDetailsElement;if(el.open&&route.section===section.id){e.preventDefault()}}}>
+       <summary>
         <span>{section.label}</span><Icon name="chevron"/>
        </summary>
        <div className="docs-sidebar__subitems">

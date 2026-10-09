@@ -193,3 +193,11 @@
  .docs-sidebar:not([data-open='true']){visibility:hidden;pointer-events:none}
  .docs-sidebar[data-open='true']{visibility:visible;pointer-events:auto}
 }
+
+.docs-sidebar__close{display:none;border:0;background:none;color:var(--muted);width:30px;height:30px;border-radius:4px;place-items:center}
+.docs-sidebar__close svg{width:16px}
+.docs-sidebar__close:hover{background:var(--surface);color:var(--ink)}
+@media(max-width:1000px){
+ .docs-sidebar__caption{align-items:center;position:relative}
+ .docs-sidebar__close{display:grid;position:absolute;top:-9px;right:-4px}
+}
