@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Menu, X, Search, Check, Plus, Minus, ArrowRight, ArrowDown } from 'lucide';
 import { MorphIcon } from 'morphicons/react';
 import type { IconName } from '../components/ui/Icon';
@@ -58,7 +58,12 @@ function MorphPairs(){
   </section>;
 }
 
-export default function IconsPage(){
+export default function IconsPage({initialFamily}:{initialFamily?:string}){
+  useEffect(()=>{
+   if(initialFamily==='apcosys'||initialFamily==='feather'||initialFamily==='phosphor'){
+    setFamily(initialFamily);setSelected(null);setLimit(72);
+   }
+  },[initialFamily]);
   const [family,setFamily]=useState<Family>('apcosys');
   const [search,setSearch]=useState('');
   const [size,setSize]=useState(24);
@@ -73,13 +78,13 @@ export default function IconsPage(){
     return `<LibraryIcon family="${item.family}" name="${item.name}" size={24} />`;
   };
   return <div className="ds-icons-page">
-    <div className="ds-section-bar"><h2>Browse icons</h2><span className="ds-label">Select an icon for code</span></div>
+    <div id="docs-icon-library" className="ds-section-bar"><h2>Browse icons</h2><span className="ds-label">Select an icon for code</span></div>
     <div className="ds-icon-toolbar">
       <div className="ds-toggle-row">{families.map(f=><button key={f.key} type="button" data-active={family===f.key} aria-pressed={family===f.key}
         onClick={()=>{setFamily(f.key);setSelected(null);setLimit(72)}}>{f.label}<small>{all[f.key].length}</small></button>)}</div>
       <input type="search" aria-label="Search icons" placeholder="Search icons" value={search} onChange={e=>{setSearch(e.target.value);setLimit(72)}}/>
     </div>
-    <details className="ds-icon-settings"><summary>Size & stroke <span>+</span></summary><div className="ds-icon-options">
+    <details id="docs-icon-options" className="ds-icon-settings"><summary>Size & stroke <span>+</span></summary><div className="ds-icon-options">
       <span>{families.find(f=>f.key===family)?.notes}</span>
       <label>Size <select aria-label="Icon size" value={size} onChange={e=>setSize(Number(e.target.value))}>
         {[16,20,24,32].map(n=><option key={n} value={n}>{n}px</option>)}</select></label>

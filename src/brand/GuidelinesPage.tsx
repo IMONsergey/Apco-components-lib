@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 const rules=[
  {id:'01',name:'Use semantic colors',source:'src/styles/tokens.css · src/styles/theme-page.css',required:'Use --page, --white, --ink, --muted, --action, --line. Resolve through the active HTML data-theme.',avoid:'Do not hardcode a teal hex in components or invert logo assets with a general-purpose filter.'},
  {id:'02',name:'Preserve typography',source:'src/styles/instrument-sans.css · src/styles/ibm-plex-mono.css',required:'Instrument Sans for interface and headings; IBM Plex Mono for numeric/data metadata. 500 headings, 400 body.',avoid:'No substitute fonts, fabricated weights, global all-caps, or arbitrary tracking.'},
@@ -21,10 +21,16 @@ function Copy({code}:{code:string}){
  const [copied,setCopied]=useState(false);
  return <button type="button" onClick={()=>{void navigator.clipboard?.writeText(code).then(()=>setCopied(true)).catch(()=>setCopied(false))}}>{copied?'Copied':'Copy'}</button>;
 }
-export default function GuidelinesPage(){
+export default function GuidelinesPage({focus}:{focus?:string}){
+ useEffect(()=>{
+  if(focus==='usage'||focus==='integration'){
+   const target=document.getElementById(focus==='usage'?'docs-guideline-patterns':'docs-guideline-integration') as HTMLDetailsElement|null;
+   if(target){target.open=true;requestAnimationFrame(()=>target.scrollIntoView({block:'start',behavior:'instant'}))}
+  }
+ },[focus]);
  return <div className="ds-guidelines">
   <div className="ds-section-bar"><div><h2>Implementation rules</h2><p>Published constraints + explicit extension policy</p></div><span className="ds-label">10 rules</span></div>
-  <div className="ds-guideline-list">{rules.map(rule=>
+  <div id="docs-guideline-rules" className="ds-guideline-list">{rules.map(rule=>
    <details key={rule.id} className="ds-guideline">
     <summary className="ds-guideline__heading"><span>{rule.id}</span><h3>{rule.name}</h3><span className="ds-rule-caret">+</span></summary>
     <div className="ds-guideline__content">
@@ -33,12 +39,12 @@ export default function GuidelinesPage(){
      <code>{rule.source}</code>
     </div>
    </details>)}</div>
-  <details className="ds-native-details ds-doc-details"><summary>Code examples <span>+</span></summary>
+  <details id="docs-guideline-patterns" className="ds-native-details ds-doc-details"><summary>Code examples <span>+</span></summary>
   <section className="ds-section">
    <div className="ds-section-bar"><h2>Usage</h2></div>
    <div className="ds-recipes">{snippets.map(s=><div key={s.label}><div><span>{s.label}</span><Copy code={s.code}/></div><pre><code>{s.code}</code></pre></div>)}</div>
   </section></details>
-  <details className="ds-native-details ds-doc-details"><summary>Integration <span>+</span></summary>
+  <details id="docs-guideline-integration" className="ds-native-details ds-doc-details"><summary>Integration <span>+</span></summary>
   <section className="ds-section">
    <div className="ds-section-bar"><h2>Adoption</h2></div>
    <div className="ds-adoption"><div><span className="ds-label">01 / Install</span><code>npm ci</code><code>npm run build</code></div>

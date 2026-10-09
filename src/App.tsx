@@ -4,7 +4,7 @@ const IconsPage = lazy(() => import('./brand/IconsPage'));
 const GuidelinesPage = lazy(() => import('./brand/GuidelinesPage'));
 import { catalog, groups, type Item } from './catalog';
 import { DocsChrome } from './docs/DocsChrome';
-import { parseRoute, href, sectionTitles, type DocRoute } from './docs/navigation';
+import { parseRoute, href, type DocRoute } from './docs/navigation';
 import Overview from './docs/Overview';
 import { Icon } from './components/ui/Icon';
 import Preview from './gallery/Preview';

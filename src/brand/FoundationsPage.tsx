@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Logo } from '../components/ui/Logo';
 import tokens from '../tokens/apcosys.tokens.json';
 
@@ -32,7 +32,16 @@ const luminance=(hex:string)=>{
 };
 const ratio=(a:string,b:string)=>((Math.max(luminance(a),luminance(b))+.05)/(Math.min(luminance(a),luminance(b))+.05)).toFixed(1);
 
-export default function FoundationsPage({tone}:{tone:Theme}){
+export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string}){
+  useEffect(()=>{
+   if(!jumpTo)return;
+   const key:Record<string,string>={
+    identity:'ds-identity',colors:'ds-colors',typography:'ds-type',spacing:'ds-spacing',
+    layout:'ds-layout',motion:'ds-motion'
+   };
+   const id=key[jumpTo];
+   if(id)requestAnimationFrame(()=>document.getElementById(id)?.scrollIntoView({block:'start',behavior:'instant'}));
+  },[jumpTo]);
   const [copied,setCopied]=useState<string|null>(null);
   const [copyFormat,setCopyFormat]=useState<'css'|'hex'>('css');
   const copy=async(value:string)=>{
