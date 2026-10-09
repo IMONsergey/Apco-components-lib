@@ -59,7 +59,7 @@ function Sidebar({route,open,compact,onClose}:{route:DocRoute;open:boolean;compa
      <a className="docs-sidebar__overview" href={href('overview')} aria-current={route.section==='overview'?'page':undefined}
        onClick={onClose}><span>Overview</span><Icon name="arrow"/></a>
      {sections.filter(s=>s.id!=='overview').map(section=>
-      <details className="docs-sidebar__group" key={section.id} open={route.section===section.id?true:undefined} data-section={section.id}>
+      <details className="docs-sidebar__group" key={section.id} open={route.section===section.id||(route.section==='overview'&&section.id==='foundations')?true:undefined} data-section={section.id}>
        <summary onClick={e=>{const el=e.currentTarget.parentElement as HTMLDetailsElement;if(el.open&&route.section===section.id){e.preventDefault()}}}>
         <span>{section.label}</span><Icon name="chevron"/>
        </summary>
