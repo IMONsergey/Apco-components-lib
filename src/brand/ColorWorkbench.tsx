@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useDesignDraft, draftCount } from './draft-store';
+import ManualCopy from './ManualCopy';
 import { Icon } from '../components/ui/Icon';
 import tokens from '../tokens/apcosys.tokens.json';
 
@@ -7,7 +9,6 @@ type Colors = typeof tokens.colors;
 type Role = keyof Colors;
 type Draft = Partial<Record<Theme, Partial<Record<Role, string>>>>;
 
-const key = 'apcosys-palette-draft-v1';
 const roles = Object.keys(tokens.colors) as Role[];
 const groups: { name: string; keys: Role[] }[] = [
   { name: 'Surfaces', keys: ['page', 'card', 'elevated', 'strong', 'tint'] },
@@ -26,22 +27,6 @@ const labels: Record<Role, string> = {
 
 function isHex(value: unknown): value is string {
   return typeof value === 'string' && /^#[\da-f]{6}$/i.test(value);
-}
-
-function getDraft(): Draft {
-  try {
-    const stored = JSON.parse(localStorage.getItem(key) || '{}') as Record<string, Record<string, unknown>>;
-    const safe: Draft = {};
-    for (const theme of ['light', 'dark'] as const) {
-      for (const role of roles) {
-        const value = stored?.[theme]?.[role];
-        if (isHex(value) && value.toLowerCase() !== tokens.colors[role][theme].toLowerCase()) {
-          (safe[theme] ||= {})[role] = value.toUpperCase();
-        }
-      }
-    }
-    return safe;
-  } catch { return {}; }
 }
 
 function contrast(a: string, b: string) {
@@ -100,67 +85,27 @@ function MiniPreview({ theme, draft, reference, name }: {
   </div>;
 }
 
-function buildCss(draft: Draft) {
-  const blocks = (['light', 'dark'] as const).map(theme => {
-    const changed = roles.filter(role => draft[theme]?.[role]);
-    if (!changed.length) return '';
-    const selector = theme === 'light' ? ':root' : ':root[data-theme="dark"]';
-    return selector + ' {\n' + changed.map(role => '  ' + tokens.colors[role].css + ': ' + draft[theme]?.[role] + ';').join('\n') + '\n}';
-  }).filter(Boolean);
-  return '/* APCOSYS palette experiment — overrides only; source tokens unchanged */\n' + blocks.join('\n\n') + '\n';
-}
-
-function download(content: string, filename: string, type: string) {
-  const url = URL.createObjectURL(new Blob([content], { type }));
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
 export default function ColorWorkbench({ tone, focused = false }: { tone: Theme; focused?: boolean }) {
-  const [draft, setDraft] = useState<Draft>(getDraft);
+  const {draft:allDraft,setColor,reset} = useDesignDraft();
+  const draft:Draft=allDraft.colors;
   const [editing, setEditing] = useState(false);
   const [copyFormat, setCopyFormat] = useState<'css' | 'hex'>('hex');
   const [copied, setCopied] = useState<string | null>(null);
-  const changed = roles.reduce((n, role) => n + Number(Boolean(draft.light?.[role])) + Number(Boolean(draft.dark?.[role])), 0);
+  const [manual, setManual] = useState<string | null>(null);
+  const changed = draftCount(allDraft, 'colors');
   const activeChanges = roles.filter(role => draft[tone]?.[role]).length;
-  useEffect(() => {
-    try {
-      if (Object.keys(draft.light || {}).length || Object.keys(draft.dark || {}).length) localStorage.setItem(key, JSON.stringify(draft));
-      else localStorage.removeItem(key);
-    } catch { /* Browser storage is optional. */ }
-  }, [draft]);
-  const setValue = (role: Role, value: string) => {
-    setDraft(previous => {
-      const next = { ...previous, [tone]: { ...previous[tone] } };
-      if (value.toLowerCase() === tokens.colors[role][tone].toLowerCase()) delete next[tone]?.[role];
-      else (next[tone] ||= {})[role] = value.toUpperCase();
-      return next;
-    });
-  };
+  const setValue=(role:Role,value:string)=>setColor(tone,role,value);
   const value = (role: Role) => draft[tone]?.[role] || tokens.colors[role][tone];
   const copy = async (s: string, id: string) => {
-    try { await navigator.clipboard.writeText(s); setCopied(id); }
-    catch { setCopied(null); }
-  };
-  const exportJson = () => {
-    const colors = Object.fromEntries(roles.map(role => [role, {
-      ...tokens.colors[role],
-      light: draft.light?.[role] || tokens.colors[role].light,
-      dark: draft.dark?.[role] || tokens.colors[role].dark,
-    }]));
-    download(JSON.stringify({ ...tokens, name: 'APCOSYS Design Tokens — Draft', draft: true, basedOnVersion: tokens.version, colors }, null, 2) + '\n',
-      'apcosys.tokens.draft.json', 'application/json');
+    try { await navigator.clipboard.writeText(s); setCopied(id); setManual(null); }
+    catch { setCopied(null); setManual(s); }
   };
   return <>
     <div className="ds-section-bar ds-workbench__heading">
       {focused ? <h1 className="ds-focused-title">Colors</h1> : <h2>Colors</h2>}
       <div className="ds-color-actions">
         <span className="ds-muted-note">{tone === 'dark' ? 'Dark' : 'Light'} theme</span>
+        {changed>0&&<button type="button" className="ds-edit-reset" onClick={()=>reset('colors')}>Reset colors</button>}
         <button type="button" className="ds-workbench__mode" aria-pressed={editing} onClick={() => setEditing(!editing)}>
           {editing ? 'View reference' : 'Try color changes'}
         </button>
@@ -172,20 +117,13 @@ export default function ColorWorkbench({ tone, focused = false }: { tone: Theme;
     </p>
     {editing && <div className="ds-workbench" id="ds-palette-preview">
       <div className="ds-workbench__toolbar">
-        <span role="status">{changed ? changed + ' changed ' + (changed === 1 ? 'value' : 'values') : 'No draft changes'}</span>
-        {changed > 0 && <div>
-          <button type="button" onClick={() => void copy(buildCss(draft), 'css-export')}>
-            {copied === 'css-export' ? 'Copied CSS' : 'Copy CSS'}
-          </button>
-          <button type="button" onClick={() => exportJson()}>Download draft JSON</button>
-          <button type="button" onClick={() => setDraft({})}>Reset all</button>
-        </div>}
+        <span role="status">{changed ? changed + ' changed ' + (changed === 1 ? 'value' : 'values') : 'No color edits'}</span>
       </div>
       <div className="ds-workbench__previews" data-single={changed === 0}>
         {changed > 0 && <MiniPreview name="Approved" theme={tone} draft={draft} reference />}
         <MiniPreview name={changed ? 'Your draft' : 'Preview · matches approved palette'} theme={tone} draft={draft} reference={false}/>
       </div>
-      <p className="ds-workbench__note">Edit the HEX fields or pick a swatch below. Both themes are stored separately. Contrast indicators measure the pairs shown, not the whole product. CSS export includes changed variables only.</p>
+      <p className="ds-workbench__note">Edit the HEX fields or pick a swatch below. Both themes are stored separately. Contrast indicators measure the pairs shown, not the whole product. Draft CSS includes only edited variables and portable aliases.</p>
       <span className="ds-workbench__change-count">{activeChanges} {tone} theme edits</span>
     </div>}
     {!editing && <div className="ds-color-actions ds-workbench__copy-settings">
@@ -195,6 +133,7 @@ export default function ColorWorkbench({ tone, focused = false }: { tone: Theme;
           onClick={() => setCopyFormat(mode)}>{mode === 'css' ? 'CSS variable' : 'HEX'}</button>)}
       </div>
     </div>}
+    {manual!==null&&<ManualCopy value={manual} label="Copy color token manually" onClose={()=>setManual(null)}/>}
     {groups.map(group => <div key={group.name} className="ds-token-group"
       id={'ds-color-' + group.name.toLowerCase().replace(/[^a-z]+/g, '-')}>
       <h3>{group.name}</h3>

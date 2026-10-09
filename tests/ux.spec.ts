@@ -496,3 +496,136 @@ test('palette edit mode remains responsive with visible controls', async ({ page
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), width + 'px').toBeLessThanOrEqual(2);
   }
 });
+
+test('unified token draft spans type, spacing, radii, layout and motion', async ({ page }) => {
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.goto(root+'#foundations/typography');
+  await expect(page.getByRole('button',{name:'Try type changes'})).toBeVisible();
+  await page.getByRole('button',{name:'Try type changes'}).click();
+  const type=page.getByRole('spinbutton',{name:'Display size scale'});
+  await type.fill('110');
+  await type.press('Enter');
+  await expect(type).toHaveValue('110');
+  const before=await page.locator('.ds-type-row').first().locator('.ds-type-display').evaluate(el=>parseFloat(getComputedStyle(el).fontSize));
+  expect(before).toBeGreaterThan(40);
+  await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toContainText('1 change');
+
+  await page.goto(root+'#foundations/spacing');
+  await page.getByRole('button',{name:'Try spacing changes'}).first().click();
+  const space=page.getByRole('spinbutton',{name:'Spacing token 16 value'});
+  await space.fill('28'); await space.press('Enter');
+  await expect(space).toHaveValue('28');
+  const radius=page.getByRole('spinbutton',{name:'control radius'});
+  await radius.fill('8'); await radius.press('Enter');
+  await expect(radius).toHaveValue('8');
+  await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toContainText('3 changes');
+  await page.reload();
+  await page.getByRole('button',{name:'Try spacing changes'}).first().click();
+  await expect(page.getByRole('spinbutton',{name:'Spacing token 16 value'})).toHaveValue('28');
+
+  await page.goto(root+'#foundations/layout');
+  await page.getByRole('button',{name:'Try max width'}).click();
+  const max=page.getByRole('spinbutton',{name:'Maximum content width'});
+  await max.fill('1600'); await max.press('Enter');
+  await expect(max).toHaveValue('1600');
+  await page.goto(root+'#foundations/motion');
+  await page.getByRole('button',{name:'Try timing changes'}).click();
+  const duration=page.getByRole('spinbutton',{name:'disclosure duration'});
+  await duration.fill('360'); await duration.press('Enter');
+  await expect(duration).toHaveValue('360');
+
+  await page.getByRole('button',{name:'Copy CSS'}).click();
+  const css=await page.evaluate(()=>navigator.clipboard.readText());
+  expect(css).toContain('--ds-type-display-scale: 1.1;');
+  expect(css).toContain('--ds-space-4: 28px;');
+  expect(css).toContain('--ds-radius-control: 8px;');
+  expect(css).toContain('--ds-grid-max: 1600px;');
+  expect(css).toContain('--ds-duration-disclosure: 360ms;');
+
+  const requested=page.waitForEvent('download');
+  await page.getByRole('button',{name:'Download draft JSON'}).click();
+  const file=await requested;
+  const fs=await import('node:fs/promises');
+  const draft=JSON.parse(await fs.readFile(await file.path(),'utf-8'));
+  expect(draft.draft).toBe(true);
+  expect(draft.spaces).toContain(28);
+  expect(draft.radii.control).toBe('8px');
+  expect(draft.layout.maxWidth).toBe('1600px');
+  expect(draft.motions.disclosure).toBe('360ms');
+  expect(draft.draftExtensions.typographySizeScalePercent.Display).toBe(110);
+
+  await page.getByRole('button',{name:'Reset all'}).click();
+  await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toHaveCount(0);
+});
+
+test('unified token editors reject invalid numbers, retain source values and stay responsive', async ({page})=>{
+  for(const [route,button,input] of [
+   ['typography','Try type changes','Display size scale'],
+   ['spacing','Try spacing changes','Spacing token 4 value'],
+   ['layout','Try max width','Maximum content width'],
+   ['motion','Try timing changes','disclosure duration'],
+  ]){
+   await page.goto(root+'#foundations/'+route);
+   await page.getByRole('button',{name:button}).first().click();
+   const field=page.getByRole('spinbutton',{name:input});
+   const initial=await field.inputValue();
+   await field.fill('99999');
+   await expect(field).toHaveAttribute('aria-invalid','true');
+   await field.press('Enter');
+   await expect(field).toHaveValue(initial);
+   for(const width of [340,375,599,899,1200,1920]){
+    await page.setViewportSize({width,height:800});
+    await expect(field).toBeVisible();
+    const excess=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+    expect(excess,route+' '+width).toBeLessThanOrEqual(2);
+   }
+  }
+});
+
+test('legacy R7 color-only drafts migrate without changing brand source',async({page})=>{
+  await page.addInitScript(()=>{
+   localStorage.setItem('apcosys-palette-draft-v1',JSON.stringify({light:{action:'#004466'}}));
+   localStorage.removeItem('apcosys-design-draft-v2');
+  });
+  await page.goto(root+'#foundations/colors');
+  await page.getByRole('button',{name:'Try color changes'}).click();
+  await expect(page.getByRole('textbox',{name:'HEX for Primary action'})).toHaveValue('#004466');
+  await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toContainText('1 change');
+});
+
+test('resetting a foundation does not erase unrelated draft sections',async({page})=>{
+ await page.goto(root+'#foundations/colors');
+ await page.getByRole('button',{name:'Try color changes'}).click();
+ const color=page.getByRole('textbox',{name:'HEX for Page background'});
+ await color.fill('#ABCDEF');await color.press('Enter');
+ await page.goto(root+'#foundations/typography');
+ await page.getByRole('button',{name:'Try type changes'}).click();
+ const type=page.getByRole('spinbutton',{name:'Display size scale'});
+ await type.fill('115');await type.press('Enter');
+ await page.goto(root+'#foundations/colors');
+ await page.getByRole('button',{name:'Reset colors'}).click();
+ await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toContainText('1 change');
+ await page.goto(root+'#foundations/typography');
+ await page.getByRole('button',{name:'Try type changes'}).click();
+ await expect(page.getByRole('spinbutton',{name:'Display size scale'})).toHaveValue('115');
+ await page.getByRole('button',{name:'Reset type'}).click();
+ await expect(page.getByRole('region',{name:'Your unpublished design draft'})).toHaveCount(0);
+});
+
+test('CSS export has manual copy fallback if clipboard permission is denied',async({page})=>{
+ await page.addInitScript(()=>{
+  Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:()=>Promise.reject(new Error('not allowed'))}});
+ });
+ await page.goto(root+'#foundations/colors');
+ await page.getByRole('button',{name:'Try color changes'}).click();
+ const color=page.getByRole('textbox',{name:'HEX for Page background'});
+ await color.fill('#FAFAFA');await color.press('Enter');
+ await page.getByRole('button',{name:'Copy CSS'}).click();
+ await expect(page.getByRole('textbox',{name:'Copy draft CSS manually'})).toContainText('--surface-page: #FAFAFA');
+ await page.getByRole('button',{name:'Close manual copy'}).click();
+ await expect(page.getByRole('textbox',{name:'Copy draft CSS manually'})).toHaveCount(0);
+ await page.getByRole('button',{name:'Copy HEX for Page background'}).click();
+ await expect(page.getByRole('textbox',{name:'Copy color token manually'})).toHaveValue('#FAFAFA');
+});

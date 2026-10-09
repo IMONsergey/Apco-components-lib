@@ -45,6 +45,20 @@ Open **Brand styles → Colors** and select **Try color changes**. This switches
 
 The **Download design tokens (approved)** link remains the original unedited manifest. A draft export is explicitly marked as a draft; review it before applying it to production. The preview illustrates a small interface sample and does not claim to validate every component against accessibility requirements.
 
+## Unified foundation drafts (R8)
+
+The design library now has one local, unpublished draft shared across **Colors, Typography, Spacing / Radii, Layout and Animations**. Visit **Brand styles** and choose **Try ... changes** in a foundation section. Reference values are visible without activating edit mode.
+
+- **Colors:** edit semantic values per theme. Approved light/dark variables remain unchanged until explicitly applied elsewhere.
+- **Typography:** scale the five responsive font specimens in 5% increments from 70–130%. This is a *preview extension*, not a claim that the source font-size rules have changed. Responsive values such as `clamp()` are kept intact.
+- **Spacing:** edit the existing 14 spacing values on a 4px grid (4–240px) and the three radii in 1px steps (0–32px).
+- **Layout:** only the single maximum content width can be edited (960–2400px, 8px steps). Published breakpoint, gutter and responsive height expressions remain read-only.
+- **Animations:** edit the disclosure and theme durations (80–800ms, 20ms steps). Test disclosure motion in the live sample; `prefers-reduced-motion` is respected.
+- **Recovery:** invalid numeric/HEX values revert; changes survive route/theme switches and reloads. A section-level reset leaves other sections intact. **Reset all** clears the complete local draft.
+- **Export:** one global toolbar, shown when edits exist, copies changed CSS only or downloads one marked draft JSON. A selectable manual-copy field appears when clipboard permissions are denied. CSS includes the published color roles and portable `--ds-*` aliases for other foundations; consuming components must explicitly adopt these aliases.
+
+Storage migrates valid R7 color drafts once from `apcosys-palette-draft-v1` to `apcosys-design-draft-v2`. No backend sync, npm release or published-site mutation occurs. The approved `src/tokens/apcosys.tokens.json` and CSS source files remain the source of truth. Edits to typography, breakpoint-dependent layout or transitions are not assumed pixel-equivalent to production until integrated and manually reviewed.
+
 ## Source boundaries
 
 - `src/components/ui`: original UI components (including DoubleButton, AnimatedPrice, AnimatedDetails, BillingSwitch).
