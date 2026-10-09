@@ -61,8 +61,15 @@ export function LanguageButton(){
  useEffect(()=>{
   if(!open)return;
   const close=(e:PointerEvent)=>{if(e.target instanceof Node&&!ref.current?.contains(e.target))setOpen(false)};
+  const onKey=(e:globalThis.KeyboardEvent)=>{
+    if(e.key!=='Escape')return;
+    setOpen(false);
+    ref.current?.querySelector<HTMLButtonElement>('.language')?.focus({preventScroll:true});
+  };
   document.addEventListener('pointerdown',close);
-  return ()=>document.removeEventListener('pointerdown',close);
+  document.addEventListener('keydown',onKey);
+  return ()=>{document.removeEventListener('pointerdown',close);document.removeEventListener('keydown',onKey)};
+
  },[open]);
  return <div ref={ref} className="ds-language-preview">
   <LanguageBadge open={open} onOpenChange={setOpen}/>
