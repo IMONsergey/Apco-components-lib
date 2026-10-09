@@ -186,9 +186,9 @@ test('14 interface previews retain content in light/dark desktop and mobile',asy
 
 test('docs home exposes a persistent hierarchy and deep-linked color tokens',async({page})=>{
  await page.goto(root);
- await expect(page.getByRole('heading',{name:'Design system',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Everything in one place.',exact:true})).toBeVisible();
  const nav=page.getByRole('navigation',{name:'Design system',exact:true});
- await expect(nav.getByRole('link',{name:'Overview'})).toBeVisible();
+ await expect(nav.getByRole('link',{name:'Home'})).toBeVisible();
  await nav.getByRole('link',{name:'Colors'}).click();
  await expect(page).toHaveURL(/#foundations\/colors$/);
  await expect(page.getByRole('heading',{name:'Brand styles',exact:true})).toBeVisible();
