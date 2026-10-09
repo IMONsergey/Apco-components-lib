@@ -115,3 +115,13 @@
 
 /* Focused token pages use their own H1, without a duplicate brand-styles heading. */
 .ds-foundations .ds-section-bar .ds-focused-title{font-size:clamp(28px,3.1vw,38px);font-weight:500;letter-spacing:-.04em;line-height:1.1}
+
+/* Failed clipboard access is handled in place, without another modal or toast. */
+.ds-icon-cell{min-width:0;background:var(--white)}
+.ds-icon-cell .ds-icon-tile{width:100%}
+.ds-icon-cell:has(.ds-icon-copy-fallback){grid-column:span 2}
+.ds-icon-copy-fallback{display:grid;grid-template-columns:minmax(0,1fr) 28px;gap:7px;padding:9px;border-top:1px solid var(--line)}
+.ds-icon-copy-fallback span{grid-column:1/-1;font-size:10px;line-height:1.4;color:var(--muted)}
+.ds-icon-copy-fallback input{min-width:0;width:100%;border:1px solid var(--line);background:var(--page);color:var(--ink);border-radius:3px;padding:7px;font:400 10px/1.4 var(--font-mono)}
+.ds-icon-copy-fallback button{border:0;background:transparent;color:var(--muted);display:grid;place-items:center}
+.ds-icon-copy-fallback button svg{width:15px;height:15px}

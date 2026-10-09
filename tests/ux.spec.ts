@@ -21,6 +21,7 @@ test('sections and dark theme stay coordinated', async ({page})=>{
 });
 
 test('icons copy usage on one click without any floating panel',async({page})=>{
+ await page.context().grantPermissions(['clipboard-read','clipboard-write']);
  await page.goto(root+'#icons');
  await page.getByRole('button',{name:/Feather/}).click();
  const tile=page.getByRole('button',{name:'activity',exact:true});
@@ -69,6 +70,7 @@ test('component card opens its documentation in one step, code on demand',async(
 });
 
 test('mobile icon interaction stays inline and without horizontal overflow',async({page})=>{
+ await page.context().grantPermissions(['clipboard-read','clipboard-write']);
  await page.setViewportSize({width:390,height:844});
  await page.goto(root+'#icons');
  await page.getByRole('button',{name:/Feather/}).click();
@@ -352,4 +354,23 @@ test('search results do not repeat the same token destination',async({page})=>{
  expect(hrefs.length).toBeGreaterThan(0);
  expect(hrefs.length).toBeLessThanOrEqual(8);
  expect(new Set(hrefs).size).toBe(hrefs.length);
+});
+
+test('clipboard permissions denied still provide manually selectable icon code',async({page})=>{
+ await page.addInitScript(()=>{
+  Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+   writeText:async()=>{throw new Error('Clipboard blocked')}
+  }});
+ });
+ await page.goto(root+'#icons');
+ await page.getByRole('button',{name:/Feather/}).click();
+ const tile=page.getByRole('button',{name:'activity',exact:true});
+ await tile.click();
+ await expect(tile).toHaveAttribute('data-selected','true');
+ await expect(tile).toHaveAttribute('data-copied','false');
+ const fallback=page.locator('.ds-icon-copy-fallback');
+ await expect(fallback).toBeVisible();
+ await expect(fallback.getByRole('textbox',{name:'Icon JSX code'})).toHaveValue(/LibraryIcon.*activity/);
+ await fallback.getByRole('button',{name:'Close copy fallback'}).click();
+ await expect(fallback).toHaveCount(0);
 });
