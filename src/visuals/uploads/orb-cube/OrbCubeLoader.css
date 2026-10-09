@@ -1,0 +1,19 @@
+.orb-cube-loader {
+  position: relative;
+  display: block;
+  width: 160px;
+  height: 160px;
+  max-width: 100%;
+  flex: none;
+  overflow: hidden;
+  contain: layout paint;
+}
+
+.orb-cube-loader__canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
