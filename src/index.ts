@@ -7,6 +7,7 @@ export { BillingSwitch } from './components/ui/BillingSwitch';
 export { PlainButton, IconAction, SearchField, NavDisclosure, LanguageButton, UseCaseTags, PlanCard, ModalExample } from './components/system/SitePrimitives';
 export { LanguageBadge } from './components/system/LanguageBadge';
 export { SiteModal } from './components/system/SiteModal';
+export { MotionProvider } from './components/visuals/MotionProvider';
 export { plans } from './content/site-plans';
 export { LibraryIcon, type IconFamily, type LibraryIconProps } from './components/system/LibraryIcon';
 export { default as ProductScene } from './visuals/product/ProductScene';

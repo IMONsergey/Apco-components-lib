@@ -59,3 +59,22 @@ Website icons and APCOSYS logo: first-party brand assets. Feather and Phosphor: 
 - Build/typecheck with `npm run build`. CI publishes GitHub Pages from main.
 
 This is a source-first library, not an npm package. It can be split into a versioned design-system package later without putting the docs/gallery runtime into shipped components.
+
+## Fidelity of published components
+
+[Component-by-component source audit](docs/SOURCE_PARITY.md) classifies every item as an unchanged upstream source, an i18n-free port or a gallery adapter.
+
+Import the production CSS token stack and the extracted source rules when reusing controls outside this gallery. Do not copy the gallery's card sizing rules into product interfaces.
+
+```tsx
+import { MotionProvider, PlanCard, LanguageBadge, SiteModal } from './index';
+import './styles/tokens.css';
+import './styles/theme-page.css';
+import './styles/source-components.css';
+import './styles/site-fidelity.css';
+
+// Mount MotionProvider above controls and honor device reduced-motion preferences.
+<MotionProvider><PlanCard id="plus" period="monthly" /></MotionProvider>
+```
+
+The original APCOSYS PLUS plan is $40 / month (not a placeholder $89).
