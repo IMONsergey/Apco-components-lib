@@ -68,6 +68,6 @@ export const toc:{[K in Section]:Array<{label:string;id:string}>}={
   {label:'Typography',id:'ds-type'},{label:'Spacing',id:'ds-spacing'},
   {label:'Layout',id:'ds-layout'},{label:'Animations',id:'ds-motion'}
  ],
- components:[],icons:[{label:'Browse icons',id:'docs-icon-library'},{label:'Options',id:'docs-icon-options'}],
+ components:[],icons:[{label:'Browse icons',id:'docs-icon-library'},{label:'Size & stroke',id:'docs-icon-options'},{label:'Icon states',id:'docs-icon-states'},{label:'Morphicons',id:'docs-icon-morph'}],
  guidelines:[{label:'Best practices',id:'docs-guideline-rules'},{label:'Examples',id:'docs-guideline-patterns'}]
 };

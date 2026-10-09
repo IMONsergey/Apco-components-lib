@@ -127,7 +127,7 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
 
     {(!jumpTo||jumpTo==='spacing')&&<section className="ds-section" id="ds-spacing">
       <div className="ds-section-bar">{heading('Spacing','spacing')}<span className="ds-muted-note">4px base</span></div>
-      <div className="ds-spacing-grid">{spaces.map(n=><div className="ds-space-row" key={n}>
+      <div className="ds-spacing-grid" id="ds-spacing-values">{spaces.map(n=><div className="ds-space-row" key={n}>
         <code>{n}px</code><span className="ds-space-bar" style={{width:n}}/><code>{pxVar(n)}</code>
       </div>)}</div>
       <div className="ds-reference-block" id="ds-radii">
@@ -140,7 +140,7 @@ export default function FoundationsPage({tone,jumpTo}:{tone:Theme;jumpTo?:string
 
     {(!jumpTo||jumpTo==='layout')&&<section className="ds-section" id="ds-layout">
       <div className="ds-section-bar">{heading('Layout','layout')}</div>
-      <div className="ds-layout-metrics">{metrics.map(item=><div key={item.name}>
+      <div className="ds-layout-metrics" id="ds-layout-values">{metrics.map(item=><div key={item.name}>
         <span>{item.name}</span><code>{item.value}</code><small>{item.usage}</small>
        </div>)}</div>
       <div className="ds-reference-block" id="ds-breakpoints">
