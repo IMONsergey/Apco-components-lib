@@ -65,18 +65,22 @@ const release = {
   websiteSource: '92cb513',
 };
 const entries = [];
+const excludedSources = new Set([
+  'src/visuals/api/api-developer-demo.js',
+  'src/visuals/product/product-scenes.js',
+]);
 function collect(path) {
   const absolute = join(root, path);
   for (const name of readdirSync(absolute).sort()) {
     const file = join(absolute, name);
     const rel = relative(root, file).replaceAll('\\', '/');
-    if (rel.startsWith('public/downloads/')) continue;
+    if (rel.startsWith('public/downloads/') || excludedSources.has(rel)) continue;
     if (statSync(file).isDirectory()) collect(rel);
     else entries.push({ name: rel, data: readFileSync(file) });
   }
 }
 for (const directory of ['src', 'public', 'scripts', 'tests']) collect(directory);
-for (const name of ['package.json', 'package-lock.json', 'README.md', 'THIRD_PARTY_NOTICES.md', 'index.html', 'vite.config.ts', 'playwright.config.ts', 'tsconfig.json', 'tsconfig.app.json', 'tsconfig.node.json', '.nvmrc', '.gitignore']) entries.push({ name, data: readFileSync(join(root, name)) });
+for (const name of ['package.json', 'package-lock.json', 'README.md', 'THIRD_PARTY_NOTICES.md', 'docs/SOURCE_PARITY.md', 'index.html', 'vite.config.ts', 'playwright.config.ts', 'tsconfig.json', 'tsconfig.app.json', 'tsconfig.node.json', '.nvmrc', '.gitignore']) entries.push({ name, data: readFileSync(join(root, name)) });
 entries.push({ name: 'QUICK_START.md', data: Buffer.from(instructions) });
 entries.push({ name: 'RELEASE.json', data: Buffer.from(JSON.stringify(release, null, 2) + '\n') });
 const crcTable = Array.from({ length: 256 }, (_, index) => {

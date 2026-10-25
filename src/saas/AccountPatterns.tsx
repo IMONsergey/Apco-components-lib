@@ -24,8 +24,15 @@ export function AuthPattern({ state = "ready" }: PatternProps) {
         ? "Example sign-in failed. Check the details and try again."
         : "",
     ),
+    [fieldErrors, setFieldErrors] = useState({
+      email: "",
+      password: "",
+      code: "",
+    }),
     [notice, setNotice] = useState("");
-  const passwordId = useId();
+  const emailId = useId(),
+    passwordId = useId(),
+    codeId = useId();
   if (current === "unknown")
     return (
       <div className="s-pattern-pad">
@@ -49,6 +56,7 @@ export function AuthPattern({ state = "ready" }: PatternProps) {
         onChange={(value) => {
           setView(value);
           setError("");
+          setFieldErrors({ email: "", password: "", code: "" });
           setNotice("");
         }}
         items={[
@@ -81,42 +89,56 @@ export function AuthPattern({ state = "ready" }: PatternProps) {
             onSubmit={(event) => {
               event.preventDefault();
               setNotice("");
-              if (view === "verify") {
-                if (code.replace(/\s/g, "") !== "123456") {
-                  setError(
-                    "Use the demo code 123456. You can paste all six digits.",
-                  );
-                  return;
-                }
-                setError("");
-                setNotice(
-                  "Demo verification complete. No account was verified.",
-                );
-              } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                setError(
-                  "Enter an email address in the form name@example.com.",
-                );
+              setError("");
+              const errors = { email: "", password: "", code: "" };
+              if (view === "verify" && code.replace(/\s/g, "") !== "123456") {
+                errors.code =
+                  "Use the demo code 123456. You can paste all six digits.";
+              } else if (
+                view !== "verify" &&
+                !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+              ) {
+                errors.email =
+                  "Enter an email address in the form name@example.com.";
               } else if (view === "login" && !password.trim()) {
-                setError(
-                  "Enter a demonstration password. Do not use a real password.",
+                errors.password =
+                  "Enter a demonstration password. Do not use a real password.";
+              }
+              setFieldErrors(errors);
+              const invalidId = errors.email
+                ? emailId
+                : errors.password
+                  ? passwordId
+                  : errors.code
+                    ? codeId
+                    : "";
+              if (invalidId) {
+                requestAnimationFrame(() =>
+                  document.getElementById(invalidId)?.focus(),
                 );
-              } else {
-                setError("");
-                setNotice(
-                  view === "login"
+                return;
+              }
+              setNotice(
+                view === "verify"
+                  ? "Demo verification complete. No account was verified."
+                  : view === "login"
                     ? "Demo sign-in flow complete. You are not signed in to an account."
                     : "Demo reset requested. No email was sent.",
-                );
-              }
+              );
             }}
           >
             <SaasField
               label="Email address"
+              id={emailId}
               type="email"
               autoComplete="off"
               value={email}
               disabled={current === "loading"}
-              onChange={(event) => setEmail(event.target.value)}
+              error={fieldErrors.email || undefined}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                setFieldErrors((errors) => ({ ...errors, email: "" }));
+              }}
             />
             {view === "login" && (
               <div className="s-field">
@@ -128,7 +150,12 @@ export function AuthPattern({ state = "ready" }: PatternProps) {
                     type={showPassword ? "text" : "password"}
                     value={password}
                     disabled={current === "loading"}
-                    onChange={(event) => setPassword(event.target.value)}
+                    aria-invalid={!!fieldErrors.password || undefined}
+                    aria-describedby={`${passwordId}-${fieldErrors.password ? "error" : "hint"}`}
+                    onChange={(event) => {
+                      setPassword(event.target.value);
+                      setFieldErrors((errors) => ({ ...errors, password: "" }));
+                    }}
                   />
                   <button
                     type="button"
@@ -139,22 +166,35 @@ export function AuthPattern({ state = "ready" }: PatternProps) {
                     {showPassword ? "Hide" : "Show"}
                   </button>
                 </div>
-                <small>
-                  Use a sample password, never your real credentials.
-                </small>
+                {fieldErrors.password ? (
+                  <small
+                    id={`${passwordId}-error`}
+                    className="s-field-error"
+                    role="alert"
+                  >
+                    {fieldErrors.password}
+                  </small>
+                ) : (
+                  <small id={`${passwordId}-hint`}>
+                    Use a sample password, never your real credentials.
+                  </small>
+                )}
               </div>
             )}
             {view === "verify" && (
               <SaasField
                 label="Verification code"
+                id={codeId}
                 value={code}
                 inputMode="numeric"
                 autoComplete="one-time-code"
                 maxLength={10}
-                onChange={(event) =>
-                  setCode(event.target.value.replace(/[^0-9\s]/g, ""))
-                }
+                onChange={(event) => {
+                  setCode(event.target.value.replace(/[^0-9\s]/g, ""));
+                  setFieldErrors((errors) => ({ ...errors, code: "" }));
+                }}
                 hint="Demo code: 123456"
+                error={fieldErrors.code || undefined}
                 disabled={current === "loading"}
               />
             )}
@@ -165,6 +205,7 @@ export function AuthPattern({ state = "ready" }: PatternProps) {
                 onClick={() => {
                   setView("recovery");
                   setError("");
+                  setFieldErrors({ email: "", password: "", code: "" });
                   setNotice("");
                 }}
               >

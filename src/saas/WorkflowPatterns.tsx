@@ -567,7 +567,7 @@ export function ScannerPattern({ state = "ready" }: PatternProps) {
     [targets, setTargets] = useState("192.0.2.12\nweb.example.com"),
     [cidrs, setCidrs] = useState(""),
     [ports, setPorts] = useState("80, 443"),
-    [error, setError] = useState(""),
+    [errors, setErrors] = useState({ targets: "", ports: "" }),
     [review, setReview] = useState(false),
     [created, setCreated] = useState(false);
   const targetList = targets.split(/[\s,]+/).filter(Boolean),
@@ -575,7 +575,8 @@ export function ScannerPattern({ state = "ready" }: PatternProps) {
   const estimate =
     !cidrs.trim() && portList ? targetList.length * portList.length : undefined;
   const targetsId = useId(),
-    cidrId = useId();
+    cidrId = useId(),
+    portsId = useId();
   if (current !== "ready")
     return (
       <div className="s-pattern-pad">
@@ -596,52 +597,86 @@ export function ScannerPattern({ state = "ready" }: PatternProps) {
         className="s-scanner-layout"
         onSubmit={(event) => {
           event.preventDefault();
-          if ((!targetList.length && !cidrs.trim()) || !portList) {
-            setError(
-              "Add a target and valid port numbers between 1 and 65535.",
+          const nextErrors = {
+            targets:
+              !targetList.length && !cidrs.trim()
+                ? "Add at least one host, IP address or CIDR block."
+                : "",
+            ports: !portList
+              ? "Enter valid port numbers between 1 and 65535."
+              : "",
+          };
+          setErrors(nextErrors);
+          if (nextErrors.targets || nextErrors.ports) {
+            const invalidId = nextErrors.targets ? targetsId : portsId;
+            requestAnimationFrame(() =>
+              document.getElementById(invalidId)?.focus(),
             );
             return;
           }
-          setError("");
           setReview(true);
         }}
       >
         <div className="s-form">
-          <label className="s-field" htmlFor={targetsId}>
-            <span>Hosts and IP addresses</span>
+          <div className="s-field">
+            <label htmlFor={targetsId}>Hosts and IP addresses</label>
             <textarea
               id={targetsId}
               value={targets}
-              onChange={(event) => setTargets(event.target.value)}
+              onChange={(event) => {
+                setTargets(event.target.value);
+                setErrors((previous) => ({ ...previous, targets: "" }));
+              }}
+              aria-invalid={!!errors.targets || undefined}
+              aria-describedby={`${targetsId}-${errors.targets ? "error" : "hint"}`}
               rows={4}
               spellCheck={false}
             />
-            <small>
-              One target per line. Use documentation addresses in this example.
-            </small>
-          </label>
-          <label className="s-field" htmlFor={cidrId}>
-            <span>
+            {errors.targets ? (
+              <small
+                id={`${targetsId}-error`}
+                className="s-field-error"
+                role="alert"
+              >
+                {errors.targets}
+              </small>
+            ) : (
+              <small id={`${targetsId}-hint`}>
+                One target per line. Use documentation addresses in this
+                example.
+              </small>
+            )}
+          </div>
+          <div className="s-field">
+            <label htmlFor={cidrId}>
               CIDR blocks <span className="s-muted">optional</span>
-            </span>
+            </label>
             <textarea
               id={cidrId}
               value={cidrs}
-              onChange={(event) => setCidrs(event.target.value)}
+              onChange={(event) => {
+                setCidrs(event.target.value);
+                setErrors((previous) => ({ ...previous, targets: "" }));
+              }}
+              aria-describedby={`${cidrId}-hint`}
               rows={2}
               placeholder="192.0.2.0/28"
               spellCheck={false}
             />
-            <small>
+            <small id={`${cidrId}-hint`}>
               CIDR estimation belongs to the application’s scan model.
             </small>
-          </label>
+          </div>
           <SaasField
             label="Ports"
+            id={portsId}
             value={ports}
-            onChange={(event) => setPorts(event.target.value)}
+            onChange={(event) => {
+              setPorts(event.target.value);
+              setErrors((previous) => ({ ...previous, ports: "" }));
+            }}
             hint="Separate port numbers with commas. Example: 80, 443."
-            error={error || undefined}
+            error={errors.ports || undefined}
           />
           <div className="s-action-row">
             <SaasButton type="submit">

@@ -1076,6 +1076,7 @@
 .s-table-scroll {
   border: 1px solid var(--s-line);
   border-radius: 8px;
+  height: 475px;
   max-height: 475px;
   overflow: auto;
   scrollbar-width: thin;
@@ -1214,6 +1215,19 @@
   display: grid;
   grid-template-columns: 1.5fr 1fr;
   gap: 30px;
+}
+.s-object-panels {
+  display: grid;
+  min-width: 0;
+}
+.s-object-panels > div {
+  grid-area: 1 / 1;
+  min-width: 0;
+  align-self: start;
+}
+.s-object-panels > [data-active="false"] {
+  visibility: hidden;
+  pointer-events: none;
 }
 .s-object-summary {
   padding: 22px;

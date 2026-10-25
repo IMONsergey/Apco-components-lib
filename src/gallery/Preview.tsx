@@ -7,6 +7,7 @@ import { BillingSwitch } from '../components/ui/BillingSwitch';
 import type { BillingPeriod } from '../content/pricing';
 import PartnerMarquee from '../visuals/marquee/PartnerMarquee';
 import {PlainButton,IconAction,SearchField,NavDisclosure,LanguageButton,UseCaseTags,PlanCard,ModalExample} from '../components/system/SitePrimitives';
+import { visualExampleProps, type ChatState } from './visual-examples';
 
 const Flow = lazy(() => import('../visuals/flow/TurquoiseFlow'));
 const Dots = lazy(() => import('../visuals/dots/DotCascade'));
@@ -24,56 +25,51 @@ export type PreviewConfiguration = {
   plan?: 'free' | 'plus' | 'expert' | 'business';
   period?: BillingPeriod;
   amount?: number;
+  chatState?: ChatState;
 };
 export default function Preview({ id, active, tone, speed, large = false, configuration, onConfigurationChange }: {
   id: ComponentId; active: boolean; tone: 'light' | 'dark'; speed: number; large?: boolean;
   configuration?: PreviewConfiguration; onConfigurationChange?: (value: Partial<PreviewConfiguration>) => void;
 }) {
-  const [chat, setChat] = useState<'idle' | 'thinking' | 'answer'>('idle');
+  const [chat, setChat] = useState<ChatState>('idle');
   const [price, setPrice] = useState(50);
   const [message, setMessage] = useState('');
   const [period, setPeriod] = useState<BillingPeriod>('monthly');
 
   if (!active) return <div className="lib-preview__blank" aria-hidden="true" />;
-  const dark = tone === 'dark';
+  const chatState = configuration?.chatState ?? chat;
+  const visual = visualExampleProps({ tone, speed, large, chatState });
   let content: ReactNode;
 
   switch (id) {
     case 'flow':
-      content = <Flow theme={tone} speed={speed} fps={30}/>;
+      content = <Flow {...visual.flow}/>;
       break;
     case 'dots':
-      content = <Dots fps={30} startOpacity={0.55} endOpacity={0.02}
-        color={dark ? '#A9DCE2' : '#03879f'} />;
+      content = <Dots {...visual.dots}/>;
       break;
     case 'globe':
-      content = <Globe speed={0.85 * speed} fps={30} renderer="canvas2d"
-        interactive pixelRatio={1.5} landColor={dark ? '#5FAFBC' : '#6AB6C2'}
-        shellColor={dark ? '#2E3B40' : '#FFFFFF'}
-        signalColor={dark ? '#42C0CF' : '#269CAD'}/>;
+      content = <Globe {...visual.globe}/>;
       break;
     case 'waves':
-      content = <Waves theme={tone} speed={0.7 * speed}/>;
+      content = <Waves {...visual.waves}/>;
       break;
     case 'rosette':
     case 'echo':
-      content = <Shape kind={id === 'echo' ? 'echo' : 'rosette'} speed={0.75 * speed}
-        strength={0.65} fps={30} opacity={0.42} strokeWidth={1.35}
-        color={dark ? '#A8B5BA' : '#121314'}/>;
+      content = <Shape {...visual[id]}/>;
       break;
     case 'ai-orb':
       content = <div className="lib-orb-demo">
-        <ChatOrb state={chat} size={large ? 170 : 130}/>
-        <div className="lib-orb-states">
+        <ChatOrb {...visual['ai-orb']}/>
+        <div className="lib-orb-states" role="group" aria-label="Состояние индикатора ассистента">
           {(['idle', 'thinking', 'answer'] as const).map(state =>
-            <button key={state} type="button" data-active={chat === state}
-              onClick={() => setChat(state)}>{state}</button>)}
+            <button key={state} type="button" data-active={chatState === state} aria-pressed={chatState === state}
+              onClick={() => { setChat(state); onConfigurationChange?.({ chatState: state }); }}>{state}</button>)}
         </div>
       </div>;
       break;
     case 'orb-cube':
-      content = <OrbCube size={large ? 185 : 145} speed={speed} fps={30}
-        color={dark ? '#F6FAFB' : '#121314'} label="Loading"/>;
+      content = <OrbCube {...visual['orb-cube']}/>;
       break;
     case 'query': case 'results': case 'host': case 'evidence': case 'suggestions':
       content = <ProductScene scene={id}/>;

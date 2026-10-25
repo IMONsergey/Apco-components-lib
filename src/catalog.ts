@@ -12,7 +12,7 @@ export const catalog = [
   {id:'host',name:'Host Intelligence',group:'Product motion',tech:'React / DOM / SVG',source:'src/visuals/product/ProductScene.tsx',description:'Host evidence, exposure and vulnerability interaction sequence.',code:"import ProductScene from './visuals/product/ProductScene';\n<ProductScene scene='host' />"},
   {id:'evidence',name:'Evidence View',group:'Product motion',tech:'React / DOM / SVG',source:'src/visuals/product/ProductScene.tsx',description:'Technical evidence progression from the walkthrough.',code:"import ProductScene from './visuals/product/ProductScene';\n<ProductScene scene='evidence' />"},
   {id:'suggestions',name:'Suggestions',group:'Product motion',tech:'React / DOM / SVG',source:'src/visuals/product/ProductScene.tsx',description:'Contextual recommendations with animated transitions.',code:"import ProductScene from './visuals/product/ProductScene';\n<ProductScene scene='suggestions' />"},
-  {id:'api',name:'API Developer Demo',group:'Product motion',tech:'React / DOM / SVG',source:'src/visuals/api/ApiScene.tsx',description:'Request flow, parameters, status transitions and JSON response.',code:"import ApiScene from './visuals/api/ApiScene';\n<ApiScene />"},
+  {id:'api',name:'API Access Preview',group:'Product motion',tech:'React / DOM / SVG',source:'src/visuals/api/ApiScene.tsx',description:'Account API key, example credit balances and limits from the current marketing site.',code:"import ApiScene from './visuals/api/ApiScene';\n<ApiScene />"},
   {id:'price',name:'Digit Odometer',group:'Interface motion',tech:'React / WAAPI',source:'src/components/ui/AnimatedPrice.tsx',description:'Digit-by-digit price transitions preserving a readable price label.',code:"import { AnimatedPrice } from './components/ui/AnimatedPrice';\n<AnimatedPrice amount={89} />"},
   {id:'button',name:'Double Button',group:'Interface motion',tech:'React / CSS',source:'src/components/ui/DoubleButton.tsx',description:'Two visual button shapes with a single semantic action.',code:"import { DoubleButton } from './components/ui/DoubleButton';\n<DoubleButton variant='primary'>Get started</DoubleButton>"},
   {id:'accordion',name:'Animated Details',group:'Interface motion',tech:'React / WAAPI',source:'src/components/ui/AnimatedDetails.tsx',description:'Native details/summary keyboard behavior with cancellable height transitions.',code:"import { AnimatedDetails } from './components/ui/AnimatedDetails';\n<AnimatedDetails title='How does it work?'>Answer</AnimatedDetails>"},
@@ -23,10 +23,48 @@ export const catalog = [
   {"id":"iconaction","name":"Icon Button","group":"Interface motion","tech":"React / CSS","source":"src/components/system/SitePrimitives.tsx","description":"46px icon action with native 16px glyph.","code":"import { IconAction } from './components/system/SitePrimitives';\n<IconAction name='search' label='Search' />"},
   {"id":"searchfield","name":"Search Input","group":"Interface motion","tech":"React / CSS","source":"src/components/system/SitePrimitives.tsx","description":"The original search form's surface and focus behavior.","code":"import { SearchField } from './components/system/SitePrimitives';\n<SearchField onSearch={handleSearch} />"},
   {"id":"navmenu","name":"Navigation Disclosure","group":"Interface motion","tech":"React / CSS","source":"src/components/system/SitePrimitives.tsx","description":"Original navigation trigger and disclosure motion.","code":"import { NavDisclosure } from './components/system/SitePrimitives';\n<NavDisclosure label='Explore' />"},
-  {"id":"language","name":"Language Control","group":"Interface motion","tech":"React / CSS","source":"src/components/system/SitePrimitives.tsx","description":"English, Russian and Chinese locale selection.","code":"import { LanguageButton } from './components/system/SitePrimitives';\n<LanguageButton />"},
+  {id:'language',name:'Language Control',group:'Interface motion',tech:'React / CSS',source:'src/components/system/LanguageBadge.tsx',description:'Controlled English, Russian and Chinese locale selection.',code:`import { useState } from 'react';
+import { LanguageBadge, type LanguageCode } from './components/system/LanguageBadge';
+
+export function LanguageField() {
+  const [locale, setLocale] = useState<LanguageCode>('en');
+  const [open, setOpen] = useState(false);
+
+  return (
+    <LanguageBadge
+      value={locale}
+      onChange={setLocale}
+      open={open}
+      onOpenChange={setOpen}
+    />
+  );
+}`},
   {"id":"tags","name":"Use Case Tags","group":"Interface motion","tech":"React / CSS","source":"src/components/system/SitePrimitives.tsx","description":"Original audience section tags.","code":"import { UseCaseTags } from './components/system/SitePrimitives';\n<UseCaseTags items={['Exposure', 'Attack surface']} />"},
   {"id":"plancard","name":"Pricing Card","group":"Interface motion","tech":"React / CSS","source":"src/components/system/SitePrimitives.tsx","description":"Production pricing card structure.","code":"import { PlanCard } from './components/system/SitePrimitives';\n<PlanCard />"},
-  {"id":"modal","name":"Modal Dialog","group":"Interface motion","tech":"React / CSS","source":"src/components/system/SitePrimitives.tsx","description":"Native dialog with original source panel treatment.","code":"import { ModalExample } from './components/system/SitePrimitives';\n<ModalExample />"},
+  {id:'modal',name:'Modal Dialog',group:'Interface motion',tech:'React / CSS',source:'src/components/system/SiteModal.tsx',description:'Controlled native dialog with original source panel treatment.',code:`import { useState } from 'react';
+import { SiteModal } from './components/system/SiteModal';
+import { DoubleButton } from './components/ui/DoubleButton';
+import { MotionProvider } from './components/visuals/MotionProvider';
+
+export function WorkspaceDialog() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <MotionProvider>
+      <DoubleButton variant="primary" onClick={() => setOpen(true)}>
+        Open modal
+      </DoubleButton>
+      <SiteModal
+        open={open}
+        onClose={() => setOpen(false)}
+        title="APCOSYS workspace"
+      >
+        <p>Inspect your infrastructure in a unified workspace.</p>
+        <DoubleButton onClick={() => setOpen(false)}>Continue</DoubleButton>
+      </SiteModal>
+    </MotionProvider>
+  );
+}`},
 ] as const;
 export type Item = typeof catalog[number];
 export type ComponentId = Item['id'];

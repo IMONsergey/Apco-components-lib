@@ -18,26 +18,13 @@ The submitted Figma archives are design references and are not asserted to be by
 
 ## Fonts
 
-Local font files are distributed under the SIL Open Font License 1.1. Preserve the license files in `public/fonts/` when redistributing these assets.
+The library self-hosts Latin and Cyrillic font files under the SIL Open Font License 1.1. The source archive includes complete copyright and license notices in `public/fonts/`. Preserve those notices when copying font assets into another project.
 
-| Font | Role | License file |
-| --- | --- | --- |
-| Instrument Sans | English marketing typography and SaaS display typography | `public/fonts/instrument-sans-LICENSE.txt` |
-| Onest | Russian marketing typography | `public/fonts/onest-LICENSE.txt` |
-| Inter | SaaS interface and Cyrillic fallback | `public/fonts/inter-LICENSE.txt` |
-| IBM Plex Mono | Technical data and code, including Cyrillic | `public/fonts/ibm-plex-mono-LICENSE.txt` |
+| Font | Role | Copyright holder | Included license | Upstream |
+| --- | --- | --- | --- | --- |
+| Instrument Sans Variable | English marketing and SaaS headings | The Instrument Sans Project Authors (2022) | `instrument-sans-LICENSE.txt` | https://github.com/Instrument/instrument-sans |
+| Onest Variable | Russian marketing typography | The Onest Project Authors (2021) | `onest-LICENSE.txt` | https://github.com/googlefonts/onest |
+| Inter Variable | SaaS interface and Cyrillic fallback | The Inter Project Authors (2016) | `inter-LICENSE.txt` | https://github.com/rsms/inter |
+| IBM Plex Mono | Technical data and code, including Cyrillic | IBM Corp. (2017) | `ibm-plex-mono-LICENSE.txt` | https://github.com/IBM/plex |
 
 Onest and IBM Plex Mono Cyrillic files were copied from the APCOSYS website font assets. The Onest license is retained from the [Google Fonts Onest source](https://github.com/google/fonts/tree/main/ofl/onest); the other font license texts are retained from their installed Fontsource packages.
-
-## Bundled fonts
-
-The library self-hosts the following font files. They are distributed under the SIL Open Font License 1.1, with their complete copyright and license notices in `public/fonts/`. The source archive includes those notices.
-
-| Font | Copyright holder | Included license | Upstream |
-| --- | --- | --- | --- |
-| Instrument Sans Variable | The Instrument Sans Project Authors (2022) | `instrument-sans-LICENSE.txt` | https://github.com/Instrument/instrument-sans |
-| Onest Variable | The Onest Project Authors (2021) | `onest-LICENSE.txt` | https://github.com/googlefonts/onest |
-| Inter Variable | The Inter Project Authors (2016) | `inter-LICENSE.txt` | https://github.com/rsms/inter |
-| IBM Plex Mono | IBM Corp. (2017) | `ibm-plex-mono-LICENSE.txt` | https://github.com/IBM/plex |
-
-Preserve these license files when copying the Latin and Cyrillic WOFF2 assets into another project.

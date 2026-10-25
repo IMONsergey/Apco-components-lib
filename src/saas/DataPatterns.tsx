@@ -237,6 +237,7 @@ export function ObjectPattern({ state = "ready" }: PatternProps) {
   const [tab, setTab] = useState("overview"),
     [current, setCurrent] = useState(state),
     [service, setService] = useState<string | null>(null);
+  const overviewUnavailable = ["loading", "error", "empty"].includes(current);
   return (
     <div className="s-pattern-pad">
       <div className="s-object-header">
@@ -261,133 +262,161 @@ export function ObjectPattern({ state = "ready" }: PatternProps) {
           { id: "whois", label: "WHOIS" },
         ]}
       >
-        {current === "loading" || current === "error" ? (
-          <DemoStateNotice
-            state={current}
-            onReset={() => setCurrent("ready")}
-          />
-        ) : current === "empty" ? (
-          <SaasEmpty
-            title="Section not returned"
-            action={
-              <SaasButton
-                variant="secondary"
-                onClick={() => setCurrent("ready")}
-              >
-                Restore example data
-              </SaasButton>
-            }
+        <div className="s-object-panels">
+          <div
+            data-active={tab === "overview" && overviewUnavailable}
+            aria-hidden={tab !== "overview" || !overviewUnavailable}
+            inert={tab !== "overview" || !overviewUnavailable}
           >
-            The server may not provide every field for every object.
-          </SaasEmpty>
-        ) : tab === "overview" ? (
-          <div className="s-object-grid">
+            {current === "loading" || current === "error" ? (
+              <DemoStateNotice
+                state={current}
+                onReset={() => setCurrent("ready")}
+              />
+            ) : current === "empty" ? (
+              <SaasEmpty
+                title="Section not returned"
+                action={
+                  <SaasButton
+                    variant="secondary"
+                    onClick={() => setCurrent("ready")}
+                  >
+                    Restore example data
+                  </SaasButton>
+                }
+              >
+                The server may not provide every field for every object.
+              </SaasEmpty>
+            ) : null}
+          </div>
+          <div
+            data-active={tab === "overview" && !overviewUnavailable}
+            aria-hidden={tab !== "overview" || overviewUnavailable}
+            inert={tab !== "overview" || overviewUnavailable}
+          >
+            <div className="s-object-grid">
+              <dl className="s-definition-list">
+                <div>
+                  <dt>Address</dt>
+                  <dd className="s-mono">192.0.2.12</dd>
+                </div>
+                <div>
+                  <dt>Domain</dt>
+                  <dd className="s-mono">web.example.com</dd>
+                </div>
+                <div>
+                  <dt>Network</dt>
+                  <dd className="s-mono">192.0.2.0/24</dd>
+                </div>
+                <div>
+                  <dt>Observed</dt>
+                  <dd>25 October 2026, 09:42</dd>
+                </div>
+                <div>
+                  <dt>Organization</dt>
+                  <dd>Example Network</dd>
+                </div>
+              </dl>
+              <div className="s-object-summary">
+                <span className="s-eyebrow">SERVICES</span>
+                <strong>2</strong>
+                <p>HTTP and HTTPS observed on this example host.</p>
+                <SaasButton
+                  variant="secondary"
+                  onClick={() => setTab("services")}
+                >
+                  Inspect services
+                  <Icon name="arrow" />
+                </SaasButton>
+              </div>
+            </div>
+          </div>
+          <div
+            data-active={tab === "services"}
+            aria-hidden={tab !== "services"}
+            inert={tab !== "services"}
+          >
+            <div className="s-services">
+              {[
+                {
+                  port: "443",
+                  name: "HTTPS",
+                  detail: "TLS · certificate · HTTP response",
+                },
+                {
+                  port: "80",
+                  name: "HTTP",
+                  detail: "HTTP banner · detected product",
+                },
+              ].map((item) => (
+                <button
+                  key={item.port}
+                  type="button"
+                  onClick={() => setService(item.port)}
+                >
+                  <span className="s-service-port s-mono">{item.port}</span>
+                  <span>
+                    <strong>{item.name}</strong>
+                    <small>{item.detail}</small>
+                  </span>
+                  <Icon name="arrow" />
+                </button>
+              ))}
+              <SaasAlert tone="info">
+                Product and CVE associations help investigation. They do not
+                confirm that this host is vulnerable.
+              </SaasAlert>
+            </div>
+          </div>
+          <div
+            data-active={tab === "dns"}
+            aria-hidden={tab !== "dns"}
+            inert={tab !== "dns"}
+          >
             <dl className="s-definition-list">
               <div>
-                <dt>Address</dt>
-                <dd className="s-mono">192.0.2.12</dd>
+                <dt>A</dt>
+                <dd className="s-mono">web.example.com → 192.0.2.12</dd>
               </div>
               <div>
-                <dt>Domain</dt>
-                <dd className="s-mono">web.example.com</dd>
+                <dt>AAAA</dt>
+                <dd>Not returned</dd>
               </div>
               <div>
-                <dt>Network</dt>
-                <dd className="s-mono">192.0.2.0/24</dd>
+                <dt>Nameservers</dt>
+                <dd className="s-mono">
+                  ns1.example.com
+                  <br />
+                  ns2.example.com
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <div
+            data-active={tab === "whois"}
+            aria-hidden={tab !== "whois"}
+            inert={tab !== "whois"}
+          >
+            <dl className="s-definition-list">
+              <div>
+                <dt>Range</dt>
+                <dd className="s-mono">192.0.2.0 — 192.0.2.255</dd>
               </div>
               <div>
-                <dt>Observed</dt>
-                <dd>25 October 2026, 09:42</dd>
+                <dt>Purpose</dt>
+                <dd>Documentation address block</dd>
               </div>
               <div>
                 <dt>Organization</dt>
                 <dd>Example Network</dd>
               </div>
+              <div>
+                <dt>Contact</dt>
+                <dd>Not returned</dd>
+              </div>
             </dl>
-            <div className="s-object-summary">
-              <span className="s-eyebrow">SERVICES</span>
-              <strong>2</strong>
-              <p>HTTP and HTTPS observed on this example host.</p>
-              <SaasButton
-                variant="secondary"
-                onClick={() => setTab("services")}
-              >
-                Inspect services
-                <Icon name="arrow" />
-              </SaasButton>
-            </div>
           </div>
-        ) : tab === "services" ? (
-          <div className="s-services">
-            {[
-              {
-                port: "443",
-                name: "HTTPS",
-                detail: "TLS · certificate · HTTP response",
-              },
-              {
-                port: "80",
-                name: "HTTP",
-                detail: "HTTP banner · detected product",
-              },
-            ].map((item) => (
-              <button
-                key={item.port}
-                type="button"
-                onClick={() => setService(item.port)}
-              >
-                <span className="s-service-port s-mono">{item.port}</span>
-                <span>
-                  <strong>{item.name}</strong>
-                  <small>{item.detail}</small>
-                </span>
-                <Icon name="arrow" />
-              </button>
-            ))}
-            <SaasAlert tone="info">
-              Product and CVE associations help investigation. They do not
-              confirm that this host is vulnerable.
-            </SaasAlert>
-          </div>
-        ) : tab === "dns" ? (
-          <dl className="s-definition-list">
-            <div>
-              <dt>A</dt>
-              <dd className="s-mono">web.example.com → 192.0.2.12</dd>
-            </div>
-            <div>
-              <dt>AAAA</dt>
-              <dd>Not returned</dd>
-            </div>
-            <div>
-              <dt>Nameservers</dt>
-              <dd className="s-mono">
-                ns1.example.com
-                <br />
-                ns2.example.com
-              </dd>
-            </div>
-          </dl>
-        ) : (
-          <dl className="s-definition-list">
-            <div>
-              <dt>Range</dt>
-              <dd className="s-mono">192.0.2.0 — 192.0.2.255</dd>
-            </div>
-            <div>
-              <dt>Purpose</dt>
-              <dd>Documentation address block</dd>
-            </div>
-            <div>
-              <dt>Organization</dt>
-              <dd>Example Network</dd>
-            </div>
-            <div>
-              <dt>Contact</dt>
-              <dd>Not returned</dd>
-            </div>
-          </dl>
-        )}
+        </div>
       </SaasTabs>
       <SaasDialog
         open={service !== null}

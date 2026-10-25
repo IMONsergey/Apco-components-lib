@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Item } from '../catalog';
 import { Icon } from '../components/ui/Icon';
 import Preview, { type PreviewConfiguration } from '../gallery/Preview';
+import { visualExampleCode } from '../gallery/visual-examples';
 import { componentReference } from './component-reference';
 import { CopyButton, downloadText } from './CopyButton';
 import { href } from './navigation';
@@ -9,6 +10,8 @@ import { href } from './navigation';
 type Tone = 'light' | 'dark';
 const websiteSources = 'https://github.com/IMONsergey/Apco-components-lib/blob/main/';
 function snippet(item: Item, config: PreviewConfiguration, tone: Tone) {
+  const visualCode = visualExampleCode(item.id, tone, config.chatState);
+  if (visualCode) return visualCode;
   if (item.id === 'button') return `import { DoubleButton } from './components/ui/DoubleButton';\n\n<DoubleButton variant="${config.variant ?? 'primary'}"${config.disabled ? ' disabled' : ''} onClick={handleContinue}>\n  Продолжить\n</DoubleButton>`;
   if (item.id === 'plancard') return `import { PlanCard } from './components/system/SitePrimitives';\n\n<PlanCard id="${config.plan ?? 'plus'}" period="${config.period ?? 'monthly'}" onSelect={handlePlanSelect} />`;
   if (item.id === 'billing') return `import { useState } from 'react';\nimport { BillingSwitch } from './components/ui/BillingSwitch';\nimport type { BillingPeriod } from './content/pricing';\n\nexport function PeriodField() {\n  const [period, setPeriod] = useState<BillingPeriod>('${config.period ?? 'monthly'}');\n  return <BillingSwitch value={period} onChange={setPeriod} />;\n}`;
@@ -16,7 +19,6 @@ function snippet(item: Item, config: PreviewConfiguration, tone: Tone) {
   if (item.id === 'searchfield') return `import { SearchField } from './components/system/SitePrimitives';\n\n<SearchField placeholder="IP, домен или запрос" onSearch={handleSearch} />`;
   if (item.id === 'plain') return `import { PlainButton } from './components/system/SitePrimitives';\n\n<PlainButton${config.disabled ? ' disabled' : ''} onClick={handleCancel}>Отмена</PlainButton>`;
   if (item.id === 'iconaction') return `import { IconAction } from './components/system/SitePrimitives';\n\n<IconAction name="search" label="Найти"${config.disabled ? ' disabled' : ''} onClick={handleSearch} />`;
-  if (item.id === 'flow' || item.id === 'waves') return item.code.replace(/theme='(light|dark)'/, `theme='${tone}'`);
   return item.code;
 }
 function Options<T extends string | number>({ label, items, value, onChange }: { label: string; items: readonly T[]; value: T; onChange: (value: T) => void }) {
@@ -26,7 +28,7 @@ export default function ComponentPage({ item, tone }: { item: Item; tone: Tone }
   const reference = componentReference[item.id];
   const [previewTone, setPreviewTone] = useState<Tone | 'inherit'>('inherit');
   const [size, setSize] = useState<'wide' | 'mobile'>('wide');
-  const [config, setConfig] = useState<PreviewConfiguration>({ variant: 'primary', period: 'monthly', plan: 'plus', amount: 50, disabled: false });
+  const [config, setConfig] = useState<PreviewConfiguration>({ variant: 'primary', period: 'monthly', plan: 'plus', amount: 50, disabled: false, chatState: 'idle' });
   const [reset, setReset] = useState(0);
   const activeTone = previewTone === 'inherit' ? tone : previewTone;
   const code = snippet(item, config, activeTone);
@@ -40,7 +42,7 @@ export default function ComponentPage({ item, tone }: { item: Item; tone: Tone }
       <div className="docs-component__tags"><span>{item.name}</span><span>{item.tech}</span><span>{motion ? 'Иллюстрация продукта' : item.group === 'Visual engines' ? 'Фирменная графика' : 'Компонент интерфейса'}</span></div>
     </div>
     <section className="docs-component__example" id="docs-component-preview" aria-label="Интерактивный пример">
-      <div className="docs-component__example-head"><strong>Попробуйте компонент</strong><button type="button" className="docs-text-button" onClick={() => { setReset(value => value + 1); setConfig({ variant: 'primary', period: 'monthly', plan: 'plus', amount: 50, disabled: false }); }}>Сбросить пример</button></div>
+      <div className="docs-component__example-head"><strong>Попробуйте компонент</strong><button type="button" className="docs-text-button" onClick={() => { setReset(value => value + 1); setConfig({ variant: 'primary', period: 'monthly', plan: 'plus', amount: 50, disabled: false, chatState: 'idle' }); }}>Сбросить пример</button></div>
       <div className="docs-playground-toolbar">
         <div role="group" aria-label="Тема примера">{(['inherit', 'light', 'dark'] as const).map(value => <button type="button" key={value} aria-pressed={previewTone === value} onClick={() => setPreviewTone(value)}>{value === 'inherit' ? 'Как на странице' : value === 'light' ? 'Светлая' : 'Тёмная'}</button>)}</div>
         <div role="group" aria-label="Ширина примера">{(['wide', 'mobile'] as const).map(value => <button type="button" key={value} aria-pressed={size === value} onClick={() => setSize(value)}>{value === 'wide' ? 'На всю ширину' : 'Контейнер 390 px'}</button>)}</div>
@@ -65,6 +67,8 @@ export default function ComponentPage({ item, tone }: { item: Item; tone: Tone }
     <section className="docs-component__section" id="docs-component-usage">
       <div className="docs-component__code"><div className="docs-component__code-heading"><h2>Пример подключения</h2><div className="docs-code-actions"><CopyButton text={code} /><button type="button" className="docs-text-button" onClick={() => downloadText(code, item.id + '.example.tsx')}>Скачать .tsx</button></div></div><pre className="lib-code" tabIndex={0} aria-label="Код примера"><code>{code}</code></pre></div>
       <p className="docs-code-help">Пути указаны относительно папки <code>src</code>. Обработчики <code>handle…</code> принадлежат вашему приложению. <a href="#guide/integration">Инструкция подключения</a></p>
+      {item.id === 'language' && <p className="docs-code-help">В интерактивном примере <code>LanguageButton</code> хранит локальное состояние. Код выше подключает управляемый <code>LanguageBadge</code> для интеграции с языком вашего приложения.</p>}
+      {item.id === 'modal' && <p className="docs-code-help">В интерактивном примере <code>ModalExample</code> управляет открытием. Код выше подключает <code>SiteModal</code>; заголовок, содержимое и действия задаёт приложение.</p>}
       {reference.props.length > 0 && <div className="docs-props-table" role="region" aria-label="Параметры компонента" tabIndex={0}><table><caption>Основные параметры</caption><thead><tr><th scope="col">Параметр</th><th scope="col">Значение</th><th scope="col">Назначение</th></tr></thead><tbody>{reference.props.map(([name, type, meaning]) => <tr key={name}><th scope="row"><code>{name}</code></th><td><code>{type}</code></td><td>{meaning}</td></tr>)}</tbody></table></div>}
     </section>
     <section className="docs-component__section" id="docs-component-source"><div className="docs-component__section-head"><h2>Исходник и зависимости</h2></div>

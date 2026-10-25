@@ -130,7 +130,7 @@ export function SaasOverview() {
                   <p>{entry.description}</p>
                   <span>
                     {entry.states.length > 1
-                      ? `${entry.states.length} состояний`
+                      ? `${entry.states.length} ${entry.states.length < 5 ? 'состояния' : 'состояний'}`
                       : "Интерактивный пример"}
                   </span>
                 </div>
@@ -227,10 +227,12 @@ export default function SaasPage({
     [previewTone, setPreviewTone] = useState(tone),
     [codeOpen, setCodeOpen] = useState(false),
     [copyStatus, setCopyStatus] = useState(""),
+    [manualLink, setManualLink] = useState(""),
     [reset, setReset] = useState(0);
   useEffect(() => {
     setState("ready");
     setCopyStatus("");
+    setManualLink("");
     setCodeOpen(false);
     setReset(0);
   }, [slug]);
@@ -240,15 +242,23 @@ export default function SaasPage({
   if (!Pattern) return <SaasOverview />;
   const displayState = entry.states.includes(state) ? state : "ready";
   const code = `import { ${entry.component} } from './saas';\n\n// Example file is inside src/. Styles ship with the source archive.\n<div className="saas-scope" data-tone="${previewTone}">\n  <${entry.component}${entry.states.length > 1 ? ` state="${displayState}"` : ""} />\n</div>`;
-  async function copy(text: string, success: string) {
+  async function copy(text: string, kind: "code" | "link") {
+    setManualLink("");
     try {
       await navigator.clipboard.writeText(text);
-      setCopyStatus(success);
+      setCopyStatus(
+        kind === "code"
+          ? "Код примера скопирован."
+          : "Ссылка на паттерн скопирована.",
+      );
     } catch {
       setCopyStatus(
-        "Буфер обмена недоступен. Выделите код и скопируйте вручную.",
+        kind === "code"
+          ? "Буфер обмена недоступен. Выделите код и скопируйте вручную."
+          : "Буфер обмена недоступен. Скопируйте ссылку из поля ниже.",
       );
-      setCodeOpen(true);
+      if (kind === "code") setCodeOpen(true);
+      else setManualLink(text);
     }
   }
   return (
@@ -316,6 +326,7 @@ export default function SaasPage({
                 setState("ready");
                 setReset(reset + 1);
                 setCopyStatus("");
+                setManualLink("");
               }}
               title="Сбросить локальные данные примера"
             >
@@ -408,10 +419,7 @@ export default function SaasPage({
           </pre>
         )}
         <div className="s-code-actions">
-          <button
-            type="button"
-            onClick={() => void copy(code, "Код примера скопирован.")}
-          >
+          <button type="button" onClick={() => void copy(code, "code")}>
             <Icon name="copy" />
             Скопировать код
           </button>
@@ -420,7 +428,7 @@ export default function SaasPage({
             onClick={() =>
               void copy(
                 `${window.location.origin}${window.location.pathname}#saas/${entry.id}`,
-                "Ссылка на паттерн скопирована.",
+                "link",
               )
             }
           >
@@ -432,6 +440,28 @@ export default function SaasPage({
           <p className="s-copy-status" role="status">
             {copyStatus}
           </p>
+        )}
+        {manualLink && (
+          <div className="s-code-explanation">
+            <textarea
+              aria-label="Ссылка на паттерн для ручного копирования"
+              readOnly
+              rows={3}
+              value={manualLink}
+              onFocus={(event) => event.currentTarget.select()}
+              style={{
+                display: "block",
+                width: "100%",
+                padding: 12,
+                border: "1px solid var(--line)",
+                borderRadius: 6,
+                background: "var(--page)",
+                color: "var(--ink)",
+                font: "inherit",
+                resize: "vertical",
+              }}
+            />
+          </div>
         )}
         <p className="s-code-explanation">
           Пример содержит локальные данные и состояния. Для продукта используйте

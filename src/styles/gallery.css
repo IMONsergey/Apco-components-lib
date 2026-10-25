@@ -38,6 +38,9 @@
 .lib-card__preview{position:relative;height:300px;isolation:isolate;overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .lib-surface{--surface-page:#f6f6f6;--surface-card:#ffffff;--surface-elevated:#eceef1;--surface-strong:#e1e4e7;--text-primary:#121314;--color-text-body:#3a3e43;--text-muted:#62666b;--brand-mark:#03879f;--action-fill:#037a8f;--action-hover-fill:#036c7f;--on-action:#ffffff;--surface-tint:#d3eaee;--border-subtle:#dde1e5;--border-strong:#828993;--page:var(--surface-page);--white:var(--surface-card);--ink:var(--text-primary);--body:var(--color-text-body);--muted:var(--text-muted);--brand:var(--action-fill);--action:var(--action-fill);--action-hover:var(--action-hover-fill);--surface:var(--surface-elevated);--tint:var(--surface-tint);--line:var(--border-subtle);--control-line:var(--border-strong);background:var(--page);color:var(--ink)}
 .lib-surface[data-tone='dark']{--surface-page:#0d1113;--surface-card:#151b1f;--surface-elevated:#1c252a;--surface-strong:#263239;--text-primary:#f4f7f8;--color-text-body:#cbd3d6;--text-muted:#9ca8ae;--brand-mark:#43c0d0;--action-fill:#04768a;--action-hover-fill:#0b778b;--surface-tint:#173b42;--border-subtle:#344148;--border-strong:#617078}
+/* A preview can use a different theme from the surrounding documentation. */
+.lib-surface{color-scheme:light;--accent-text:#037a8f;--focus:#037a8f;--api-surface:#037a8f;--visual-ink:#121314}
+.lib-surface[data-tone='dark']{color-scheme:dark;--accent-text:#43c0d0;--focus:#43c0d0;--api-surface:#075462;--visual-ink:#b4c2c7}
 .lib-card__foot{height:44px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;font:400 11px/1.4 var(--font-mono);color:var(--muted)}
 .lib-empty{font-size:14px;color:var(--muted);padding:65px 0;text-align:center}
 .lib-footer{background:var(--white);border-top:1px solid var(--line);padding:28px 0;font:400 12px/1.6 var(--font-mono);color:var(--muted)}

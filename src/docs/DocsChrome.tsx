@@ -49,9 +49,9 @@ function CommandSearch({open,onClose,onNavigate}:{open:boolean;onClose:()=>void;
      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
     }
    }
-    if(e.key==='ArrowDown'){e.preventDefault();setActive(v=>Math.max(0,Math.min(matches.length-1,v+1)))}
-    if(e.key==='ArrowUp'){e.preventDefault();setActive(v=>Math.max(0,v-1))}
-    if(e.key==='Enter'&&matches.length){e.preventDefault();const target=matches[Math.min(active,matches.length-1)];if(target){window.location.hash=target.route;onClose();onNavigate();}}
+    if(e.target===field.current&&e.key==='ArrowDown'){e.preventDefault();setActive(v=>Math.max(0,Math.min(matches.length-1,v+1)))}
+    if(e.target===field.current&&e.key==='ArrowUp'){e.preventDefault();setActive(v=>Math.max(0,v-1))}
+    if(e.target===field.current&&e.key==='Enter'&&matches.length){e.preventDefault();const target=matches[Math.min(active,matches.length-1)];if(target){window.location.hash=target.route;onClose();onNavigate();}}
    }}>
    <div className="docs-command__field"><Icon name="search"/><input ref={field} type="search" role="combobox" aria-expanded="true" aria-controls="docs-search-results"
     aria-activedescendant={matches.length?'docs-search-option-'+Math.min(active,matches.length-1):undefined}
@@ -60,7 +60,7 @@ function CommandSearch({open,onClose,onNavigate}:{open:boolean;onClose:()=>void;
     <button type="button" onClick={onClose} aria-label="Закрыть поиск">ESC</button></div>
    <div className="docs-command__results" id="docs-search-results" role="listbox" aria-label="Результаты поиска">
     {matches.length?matches.map((x,i)=><a key={x.route+x.label} id={'docs-search-option-'+i} href={x.route} role="option" aria-selected={i===active}
-     onMouseEnter={()=>setActive(i)} onClick={()=>{onClose();onNavigate()}}>
+     onMouseEnter={()=>setActive(i)} onFocus={()=>setActive(i)} onClick={()=>{onClose();onNavigate()}}>
      <span className="docs-command__result-main">{x.label}</span>
      <span className="docs-command__path">{resultCategory(x.route)}</span>
      <Icon name="arrow"/></a>):<p>Ничего не найдено. Попробуйте «таблица», «фильтр», «кнопка» или название иконки.</p>}
@@ -108,6 +108,26 @@ function Sidebar({route,open,compact,onClose,onCompact}:{route:DocRoute;open:boo
  </>;
 }
 function Toc({route}:{route:DocRoute}){
+ const pending=useRef<MutationObserver|null>(null);
+ const timer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined);
+ useEffect(()=>()=>{pending.current?.disconnect();clearTimeout(timer.current)},[route.section,route.slug]);
+ function scrollToSection(id:string){
+  pending.current?.disconnect();clearTimeout(timer.current);
+  const scroll=()=>{
+   const target=document.getElementById(id);
+   if(!target)return false;
+   pending.current?.disconnect();clearTimeout(timer.current);
+   requestAnimationFrame(()=>target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}));
+   return true;
+  };
+  if(scroll())return;
+  const content=document.getElementById('docs-content');
+  if(!content)return;
+  pending.current=new MutationObserver(()=>{scroll()});
+  pending.current.observe(content,{childList:true,subtree:true});
+  timer.current=setTimeout(()=>pending.current?.disconnect(),10000);
+ }
+
  const items=route.section==='components'&&route.slug&&route.slug!=='visual'&&route.slug!=='product'&&route.slug!=='interface'
   ?[{label:'Пример',id:'docs-component-preview'},{label:'Применение',id:'docs-component-rules'},{label:'Код',id:'docs-component-usage'},{label:'Исходник',id:'docs-component-source'}]
   :route.section==='foundations'&&route.slug
@@ -122,7 +142,7 @@ function Toc({route}:{route:DocRoute}){
  return <aside className="docs-toc" aria-label="На этой странице">
   <span>На этой странице</span>
   <nav>{items.map(item=><a key={item.id} href={href(route.section,route.slug)} onClick={e=>{
-   e.preventDefault();document.getElementById(item.id)?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+   e.preventDefault();scrollToSection(item.id);
   }}>{item.label}</a>)}</nav>
   <a className="docs-toc__top" href="#top" onClick={e=>{e.preventDefault();window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}}>Наверх</a>
  </aside>;
@@ -133,7 +153,7 @@ export function DocsChrome({route,tone,onTheme,children}:{route:DocRoute;tone:To
  useEffect(()=>{
   const key=(e:KeyboardEvent)=>{
    if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'||(e.key==='/'&&!e.metaKey&&!e.ctrlKey&&!(e.target as HTMLElement)?.isContentEditable&&!['INPUT','TEXTAREA','SELECT'].includes((e.target as HTMLElement)?.tagName))){
-    e.preventDefault();last.current=document.activeElement instanceof HTMLElement?document.activeElement:null;setSearch(s=>!s);
+    e.preventDefault();setSearch(current=>{if(!current)last.current=document.activeElement instanceof HTMLElement?document.activeElement:null;return !current});
    }else if(e.key==='Escape'){setSearch(false);setOpen(false)}
   };
   document.addEventListener('keydown',key);

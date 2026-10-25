@@ -9,7 +9,8 @@ const allowed: Section[] = ['overview', 'start', 'foundations', 'components', 's
 export function parseRoute(hash: string): DocRoute {
   const [section, ...rest] = hash.replace(/^#\/?/, '').split('/');
   const name = allowed.includes(section as Section) ? section as Section : 'overview';
-  return { section: name === 'guidelines' ? 'guide' : name, slug: rest.join('/') };
+  const slug = rest.join('/');
+  return { section: name === 'guidelines' ? 'guide' : name, slug: name === 'saas' && slug === 'overview' ? '' : slug };
 }
 export function href(section: Section, slug = '') { return '#' + section + (slug ? '/' + slug : ''); }
 export type NavItem = { label: string; route: string; keywords?: string };
