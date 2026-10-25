@@ -35,6 +35,7 @@
   --control-line: var(--border-strong);
   --radius-control: 5px;
   --radius-panel: 7px;
+  --layout-max: 1440px;
   --gutter: clamp(32px, calc(4vw - 8px), 40px);
   --space-density: 1;
   --media-density: 1;
@@ -136,7 +137,7 @@ dd {
 }
 .container {
   width: calc(100% - 2 * var(--gutter));
-  max-width: 1760px;
+  max-width: var(--layout-max);
   margin-inline: auto;
 }
 .section-space {

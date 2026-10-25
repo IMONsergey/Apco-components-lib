@@ -18,11 +18,20 @@ const OrbCube = lazy(() => import('../visuals/uploads/orb-cube/OrbCubeLoader'));
 const ProductScene = lazy(() => import('../visuals/product/ProductScene'));
 const ApiScene = lazy(() => import('../visuals/api/ApiScene'));
 
-export default function Preview({ id, active, tone, speed, large = false }: {
+export type PreviewConfiguration = {
+  variant?: 'primary' | 'secondary' | 'inverse' | 'dark';
+  disabled?: boolean;
+  plan?: 'free' | 'plus' | 'expert' | 'business';
+  period?: BillingPeriod;
+  amount?: number;
+};
+export default function Preview({ id, active, tone, speed, large = false, configuration, onConfigurationChange }: {
   id: ComponentId; active: boolean; tone: 'light' | 'dark'; speed: number; large?: boolean;
+  configuration?: PreviewConfiguration; onConfigurationChange?: (value: Partial<PreviewConfiguration>) => void;
 }) {
   const [chat, setChat] = useState<'idle' | 'thinking' | 'answer'>('idle');
-  const [price, setPrice] = useState(89);
+  const [price, setPrice] = useState(50);
+  const [message, setMessage] = useState('');
   const [period, setPeriod] = useState<BillingPeriod>('monthly');
 
   if (!active) return <div className="lib-preview__blank" aria-hidden="true" />;
@@ -74,20 +83,20 @@ export default function Preview({ id, active, tone, speed, large = false }: {
       break;
     case 'price':
       content = <div className="lib-price-demo">
-        <AnimatedPrice amount={price}/>
+        <AnimatedPrice amount={configuration?.amount ?? price}/>
         <div className="lib-price-options">
-          {[49, 89, 129].map(amount =>
+          {!configuration && [40, 50, 300].map(amount =>
             <button key={amount} type="button" data-active={amount === price}
               onClick={() => setPrice(amount)}>${amount}</button>)}
         </div>
       </div>;
       break;
     case 'button':
-      content = <div className="lib-button-demo">
-        <DoubleButton variant="primary">Get started</DoubleButton>
-        <DoubleButton variant="secondary">Learn more</DoubleButton>
-        <DoubleButton variant="inverse">Explore</DoubleButton>
-        <DoubleButton variant="dark">Contact us</DoubleButton>
+      content = configuration ? <DoubleButton variant={configuration.variant ?? 'primary'} disabled={configuration.disabled ?? false} onClick={() => setMessage('Действие выполнено в примере')}>Продолжить</DoubleButton> : <div className="lib-button-demo">
+        <DoubleButton variant="primary" onClick={() => setMessage('Основное действие')}>Get started</DoubleButton>
+        <DoubleButton variant="secondary" onClick={() => setMessage('Дополнительное действие')}>Learn more</DoubleButton>
+        <DoubleButton variant="inverse" onClick={() => setMessage('Инверсный вариант')}>Explore</DoubleButton>
+        <DoubleButton variant="dark" onClick={() => setMessage('Тёмный вариант')}>Contact us</DoubleButton>
       </div>;
       break;
     case 'accordion':
@@ -107,23 +116,23 @@ export default function Preview({ id, active, tone, speed, large = false }: {
       break;
     case 'billing':
       content = <div className="lib-segment-demo">
-        <BillingSwitch value={period} onChange={setPeriod}/>
+        <BillingSwitch value={configuration?.period ?? period} onChange={value => { setPeriod(value); onConfigurationChange?.({ period: value }); }}/>
       </div>;
       break;
     case 'planbutton':
       content = <div className="lib-plan-demo">
-        <button className="plan-button" type="button">Get started</button>
+        <button className="plan-button" type="button" onClick={() => setMessage('Тариф выбран в примере')}>Get started</button>
       </div>;
       break;
 
     case 'plain':
-      content = <PlainButton>Sign in</PlainButton>;
+      content = <PlainButton disabled={configuration?.disabled ?? false} onClick={() => setMessage('Отмена в примере')}>{configuration ? 'Отмена' : 'Sign in'}</PlainButton>;
       break;
     case 'iconaction':
-      content = <div className="ds-action-preview"><IconAction name="search" label="Search"/><IconAction name="appearance" label="Theme"/><IconAction name="close" label="Close"/><IconAction name="plus" label="Add" disabled/></div>;
+      content = configuration ? <IconAction name="search" label="Найти" disabled={configuration.disabled ?? false} onClick={() => setMessage('Поиск вызван в примере')} /> : <div className="ds-action-preview"><IconAction name="search" label="Search" onClick={() => setMessage('Поиск')}/><IconAction name="appearance" label="Theme" onClick={() => setMessage('Тема меняется кнопкой в шапке')}/><IconAction name="close" label="Close" onClick={() => setMessage('Закрытие')}/><IconAction name="plus" label="Add" disabled/></div>;
       break;
     case 'searchfield':
-      content = <SearchField />;
+      content = <SearchField placeholder="IP, домен или запрос" onSearch={value => setMessage(value.trim() ? 'Запрос в примере: ' + value : 'Введите запрос')} />;
       break;
     case 'navmenu':
       content = <NavDisclosure label="Platform" />;
@@ -135,13 +144,13 @@ export default function Preview({ id, active, tone, speed, large = false }: {
       content = <UseCaseTags/>;
       break;
     case 'plancard':
-      content = <PlanCard/>;
+      content = <PlanCard id={configuration?.plan ?? 'plus'} period={configuration?.period ?? 'monthly'} onSelect={() => setMessage('Тариф выбран в примере. Заказ не создаётся.')} />;
       break;
     case 'modal':
       content = <ModalExample/>;
       break;
   }
   return <Suspense fallback={<div className="lib-preview lib-preview__blank"><span className="lib-preview__loading" aria-label="Loading"/></div>}>
-    <div className={`lib-preview lib-preview--${id}`}>{content}</div>
+    <div className={`lib-preview lib-preview--${id}`}>{content}{message && <p className="docs-demo-feedback" role="status">{message}</p>}</div>
   </Suspense>;
 }

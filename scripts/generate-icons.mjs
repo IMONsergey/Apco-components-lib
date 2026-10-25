@@ -27,7 +27,7 @@ function buildPack(packageName, prefix, filter) {
     // Both sets are used through currentColor; Feather's published
     // 2px strokes are normalized to the APCOSYS 1.5px icon policy.
     if (prefix === 'feather') {
-      body = body.replace(/\\sstroke-width="[^"]*"/g, '');
+      body = body.replace(/\sstroke-width="[^"]*"/g, '');
     }
     return '<symbol id="' + prefix + '-' + name + '" viewBox="0 0 ' +
       viewWidth + ' ' + viewHeight + '">' + body + '</symbol>';

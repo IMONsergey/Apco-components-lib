@@ -21,3 +21,12 @@ export const formatPrice = (amount: number) =>
     maximumFractionDigits: 2,
     minimumFractionDigits: 0,
   }).format(amount);
+
+export const formatApiRate = (
+  plan: { apiRequestsPerSecond: number | null },
+  translate: (source: string, values: Record<string, string | number>) => string =
+    (source, values) => source.replace(/\{(\w+)\}/g, (token, name: string) => String(values[name] ?? token)),
+) => plan.apiRequestsPerSecond === null ? '—' :
+  translate(plan.apiRequestsPerSecond === 1 ? '{count} request/s' : '{count} requests/s', {
+    count: plan.apiRequestsPerSecond,
+  });

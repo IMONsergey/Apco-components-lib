@@ -1,73 +1,75 @@
 import { catalog } from '../catalog';
+import { componentReference } from './component-reference';
 import tokens from '../tokens/apcosys.tokens.json';
 import iconRegistry from '../generated/icon-manifest.json';
 
-export type Section='overview'|'foundations'|'components'|'icons'|'guidelines';
-export type DocRoute={section:Section;slug:string};
-const allowed:Section[]=['overview','foundations','components','icons','guidelines'];
-export function parseRoute(hash:string):DocRoute{
- const [section,...rest]=hash.replace(/^#\/?/,'').split('/');
- const name=allowed.includes(section as Section)?section as Section:'overview';
- return {section:name,slug:rest.join('/')};
+export type Section = 'overview' | 'start' | 'foundations' | 'components' | 'saas' | 'icons' | 'guide' | 'guidelines' | 'resources';
+export type DocRoute = { section: Section; slug: string };
+const allowed: Section[] = ['overview', 'start', 'foundations', 'components', 'saas', 'icons', 'guide', 'guidelines', 'resources'];
+export function parseRoute(hash: string): DocRoute {
+  const [section, ...rest] = hash.replace(/^#\/?/, '').split('/');
+  const name = allowed.includes(section as Section) ? section as Section : 'overview';
+  return { section: name === 'guidelines' ? 'guide' : name, slug: rest.join('/') };
 }
-export function href(section:Section,slug=''):string{return '#'+section+(slug?'/'+slug:'')}
-export type NavItem={label:string;route:string;keywords?:string};
-export const sections:{id:Section;label:string;items:NavItem[]}[]=[
- {id:'overview',label:'Home',items:[]},
- {id:'foundations',label:'Brand styles',items:[
-  {label:'Logo',route:href('foundations','identity'),keywords:'identity brand mark'},
-  {label:'Colors',route:href('foundations','colors'),keywords:'palette swatches dark light color tokens'},
-  {label:'Typography',route:href('foundations','typography'),keywords:'text styles fonts'},
-  {label:'Spacing',route:href('foundations','spacing'),keywords:'gaps radius corners'},
-  {label:'Layout',route:href('foundations','layout'),keywords:'grid responsive screen breakpoints'},
-  {label:'Animations',route:href('foundations','motion'),keywords:'motion transitions'},
- ]},
- {id:'components',label:'Components',items:[
-  {label:'All components',route:href('components')},
- ]},
- {id:'icons',label:'Icons',items:[
-  {label:'All icons',route:href('icons')},
- ]},
- {id:'guidelines',label:'Guides',items:[
-  {label:'Best practices',route:href('guidelines')},
-  {label:'Examples',route:href('guidelines','usage')},
-  {label:'For developers',route:href('guidelines','integration')},
- ]},
+export function href(section: Section, slug = '') { return '#' + section + (slug ? '/' + slug : ''); }
+export type NavItem = { label: string; route: string; keywords?: string };
+export const saasNavigation: NavItem[] = [
+  { label: 'Обзор SaaS', route: href('saas'), keywords: 'saas product dashboard платформа интерфейс' },
+  { label: 'Рабочая область', route: href('saas', 'workspace'), keywords: 'shell sidebar navigation меню аккаунт' },
+  { label: 'Кнопки и формы', route: href('saas', 'controls'), keywords: 'button input select dropdown checkbox поля выпадающий список' },
+  { label: 'Поиск и фильтры', route: href('saas', 'search'), keywords: 'search facets conditions фильтр условия фасеты' },
+  { label: 'Таблицы и пагинация', route: href('saas', 'results'), keywords: 'table results pagination pager сортировка выдача страницы' },
+  { label: 'Карточка объекта', route: href('saas', 'object'), keywords: 'host domain ip dns whois services cve сервисы' },
+  { label: 'Private Scanner', route: href('saas', 'scanner'), keywords: 'scan task targets ports csv сканер задания сканирование' },
+  { label: 'Вход и подтверждение', route: href('saas', 'auth'), keywords: 'login password recovery verification 2fa регистрация пароль код авторизация' },
+  { label: 'Аккаунт и безопасность', route: href('saas', 'account'), keywords: 'profile security api key sessions organization профиль ключ сессии' },
+  { label: 'Тарифы и оплата', route: href('saas', 'billing'), keywords: 'pricing payment plans checkout monthly annual цены подписка' },
+  { label: 'Состояния и сообщения', route: href('saas', 'feedback'), keywords: 'loading error empty success unknown toast skeleton ошибка загрузка пусто' },
+  { label: 'Баланс и лимиты', route: href('saas', 'usage'), keywords: 'usage credits tokens progress лимит токены остаток' },
+  { label: 'История поиска', route: href('saas', 'history'), keywords: 'history saved queries история сохраненные запросы' },
 ];
-export const sourceRoutes:NavItem[]=[
- {label:'Home',route:href('overview'),keywords:'start overview library'},
- ...sections.filter(section=>section.id!=='overview').flatMap(section=>[
-  {label:section.label,route:href(section.id),keywords:section.id},
-  ...section.items
- ]),
- ...catalog.map(item=>({
-  label:item.name,route:href('components',item.id),
-  keywords:item.group+' '+item.tech+' '+item.description,
- })),
- ...Object.entries({
-  apcosys:['arrow','down','chevron','search','plus','minus','close','menu','previous','external','focus','database','scanner','cube','book','bookmark','appearance','play','pause','copy'],
-  feather:iconRegistry.feather,
-  phosphor:iconRegistry.phosphor,
- }).flatMap(([family,names])=>names.map(name=>({
-  label:name,route:href('icons',family+'/'+name),
-  keywords:'icon '+family+' '+name.replace(/-/g,' ')+' symbol',
- }))),
- ...Object.entries(tokens.colors).map(([key,v])=>({
-  label:key+' color',route:href('foundations','colors'),
-  keywords:'palette '+key+' '+v.css+' '+v.usage+' '+v.light+' '+v.dark,
- })),
+export const sections: { id: Section; label: string; items: NavItem[] }[] = [
+  { id: 'overview', label: 'Главная', items: [] },
+  { id: 'start', label: 'С чего начать', items: [] },
+  { id: 'foundations', label: 'Основы стиля', items: [
+    { label: 'Логотип', route: href('foundations', 'identity'), keywords: 'logo identity brand mark бренд логотип' },
+    { label: 'Цвета', route: href('foundations', 'colors'), keywords: 'palette colors swatches dark light tokens цвет палитра тема' },
+    { label: 'Типографика', route: href('foundations', 'typography'), keywords: 'text typography fonts шрифт текст заголовок' },
+    { label: 'Отступы и радиусы', route: href('foundations', 'spacing'), keywords: 'spacing gaps radius corners отступ радиус' },
+    { label: 'Сетка и размеры', route: href('foundations', 'layout'), keywords: 'layout grid responsive breakpoints адаптив сетка' },
+    { label: 'Анимация', route: href('foundations', 'motion'), keywords: 'animation motion transition движение reduced motion' },
+  ] },
+  { id: 'components', label: 'Компоненты сайта', items: [] },
+  { id: 'saas', label: 'SaaS-платформа', items: saasNavigation },
+  { id: 'icons', label: 'Иконки', items: [] },
+  { id: 'guide', label: 'Правила и сценарии', items: [
+    { label: 'Как собрать экран', route: href('guide', 'usage'), keywords: 'assemble usage recipe сборка экран паттерны' },
+    { label: 'Состояния интерфейса', route: href('guide', 'states'), keywords: 'states loading empty error limited состояния ошибки' },
+    { label: 'Адаптивность', route: href('guide', 'responsive'), keywords: 'responsive mobile tablet desktop мобильный планшет' },
+    { label: 'Доступность', route: href('guide', 'accessibility'), keywords: 'accessibility a11y keyboard focus contrast клавиатура доступность' },
+    { label: 'Подключение в проект', route: href('guide', 'integration'), keywords: 'install code source react css developer интеграция разработчик' },
+    { label: 'Передача и обновление', route: href('guide', 'handoff'), keywords: 'handoff checklist update проверка передача релиз' },
+  ] },
+  { id: 'resources', label: 'Материалы и загрузки', items: [] },
 ];
-export const sectionTitles:Record<Section,string>={
- overview:'Home',foundations:'Brand styles',components:'Components',
- icons:'Icons',guidelines:'Guides'
-};
-export const toc:{[K in Section]:Array<{label:string;id:string}>}={
- overview:[],
- foundations:[
-  {label:'Logo',id:'ds-identity'},{label:'Colors',id:'ds-colors'},
-  {label:'Typography',id:'ds-type'},{label:'Spacing',id:'ds-spacing'},
-  {label:'Layout',id:'ds-layout'},{label:'Animations',id:'ds-motion'}
- ],
- components:[],icons:[{label:'Browse icons',id:'docs-icon-library'},{label:'Size & stroke',id:'docs-icon-options'},{label:'Icon states',id:'docs-icon-states'},{label:'Morphicons',id:'docs-icon-morph'}],
- guidelines:[{label:'Best practices',id:'docs-guideline-rules'},{label:'Examples',id:'docs-guideline-patterns'}]
+export const sourceRoutes: NavItem[] = [
+  { label: 'Главная', route: href('overview'), keywords: 'home start overview library библиотека' },
+  ...sections.filter(section => section.id !== 'overview').flatMap(section => [
+    { label: section.label, route: href(section.id), keywords: section.id }, ...section.items,
+  ]),
+  ...catalog.map(item => ({ label: componentReference[item.id].title, route: href('components', item.id), keywords: item.name + ' ' + item.group + ' ' + item.tech + ' ' + item.description + ' ' + componentReference[item.id].keywords })),
+  ...Object.entries({
+    apcosys: ['arrow', 'down', 'chevron', 'search', 'plus', 'minus', 'close', 'menu', 'previous', 'external', 'focus', 'database', 'scanner', 'cube', 'book', 'bookmark', 'appearance', 'play', 'pause', 'copy'],
+    feather: iconRegistry.feather, phosphor: iconRegistry.phosphor,
+  }).flatMap(([family, names]) => names.map(name => ({ label: name, route: href('icons', family + '/' + name), keywords: 'icon иконка ' + family + ' ' + name.replace(/-/g, ' ') }))),
+  ...Object.entries(tokens.colors).map(([key, v]) => ({ label: key + ' · цвет', route: href('foundations', 'colors'), keywords: 'palette цвет палитра ' + key + ' ' + v.css + ' ' + v.usage + ' ' + v.light + ' ' + v.dark })),
+];
+export const sectionTitles: Record<Section, string> = { overview: 'Главная', start: 'С чего начать', foundations: 'Основы стиля', components: 'Компоненты сайта', saas: 'SaaS-платформа', icons: 'Иконки', guide: 'Правила и сценарии', guidelines: 'Правила и сценарии', resources: 'Материалы и загрузки' };
+export function routeTitle(route: DocRoute) {
+  return sourceRoutes.find(item => item.route === href(route.section, route.slug))?.label ?? sectionTitles[route.section];
+}
+export const toc: Record<Section, Array<{ label: string; id: string }>> = {
+  overview: [], start: [], saas: [], resources: [], guide: [], guidelines: [], components: [],
+  foundations: [{ label: 'Логотип', id: 'ds-identity' }, { label: 'Цвета', id: 'ds-colors' }, { label: 'Типографика', id: 'ds-type' }, { label: 'Отступы', id: 'ds-spacing' }, { label: 'Сетка', id: 'ds-layout' }, { label: 'Анимация', id: 'ds-motion' }],
+  icons: [{ label: 'Каталог', id: 'docs-icon-library' }, { label: 'Размер и обводка', id: 'docs-icon-options' }, { label: 'Состояния', id: 'docs-icon-states' }, { label: 'Переходы', id: 'docs-icon-morph' }],
 };

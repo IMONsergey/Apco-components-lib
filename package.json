@@ -1,6 +1,6 @@
 {
   "name": "apcosys-brand-system",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -8,26 +8,28 @@
   },
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc -b && vite build",
+    "build": "node scripts/build-resources.mjs && tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "typecheck": "tsc -b --pretty false",
     "check": "npm run build",
     "generate:icons": "node scripts/generate-icons.mjs",
     "postinstall": "node scripts/generate-icons.mjs",
     "test:design-system": "node scripts/check-brand.mjs",
-    "test:ux": "playwright test"
+    "test:ux": "playwright test",
+    "build:resources": "node scripts/build-resources.mjs"
   },
   "dependencies": {
-    "gsap": "3.13.0",
+    "lucide": "1.52.0",
+    "morphicons": "1.7.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "typograf": "7.8.0",
-    "lucide": "1.52.0",
-    "morphicons": "1.7.1"
+    "typograf": "7.8.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
     "@eslint/js": "10.0.1",
+    "@iconify-json/feather": "1.2.1",
+    "@iconify-json/ph": "1.2.2",
     "@playwright/test": "1.63.0",
     "@types/node": "22.20.5",
     "@types/react": "19.3.0",
@@ -40,8 +42,6 @@
     "prettier": "3.9.9",
     "typescript": "5.9.3",
     "typescript-eslint": "8.71.1",
-    "vite": "8.3.4",
-    "@iconify-json/feather": "1.2.1",
-    "@iconify-json/ph": "1.2.2"
+    "vite": "8.3.4"
   }
 }

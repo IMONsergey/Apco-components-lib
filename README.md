@@ -1,95 +1,135 @@
-# APCOSYS Brand System
+# APCOSYS Design System
 
-Live: https://imonsergey.github.io/Apco-components-lib/
+Библиотека: https://imonsergey.github.io/Apco-components-lib/
 
-React + TypeScript + Vite. The production APCOSYS website at https://imonsergey.github.io/apcoweb/ is the visual reference; this repository is the **reusable design-system source**.
+Компоненты, интерактивные примеры и правила для маркетингового сайта и SaaS APCOSYS. Документация помогает дизайнеру выбрать решение, разработчику взять исходники, а команде — согласовать поведение и проверить экран перед передачей.
 
-## Sections
+## Разделы
 
-- **Components:** 28 extracted animations and UI patterns, including product GSAP scenes, CTA controls, FAQ, search, navigation and pricing.
-- **Foundations:** logos for both themes, 17 semantic color roles, Instrument Sans and IBM Plex Mono, type scales, spacing/radii, layout, responsive breakpoints and motion.
-- **Icons:** original APCOSYS icon set, offline Feather + regular Phosphor SVG catalogs and interactive [Morphicons](https://www.morphicons.com/) examples.
-- **Guidelines:** constraints, states, accessibility, recommended usage and source links.
+| Раздел | Что внутри |
+| --- | --- |
+| Начало работы | Маршруты для дизайнера, разработчика и менеджера; поиск, работа с примерами, передача решения |
+| Основы | Логотипы, семантические цвета двух тем, типографика, отступы, сетка и движение |
+| Компоненты сайта | Элементы управления, тарифы, навигация, иллюстрации и продуктовые анимации |
+| SaaS | Рабочее пространство, формы, поиск и фильтры, таблицы, карточка объекта, вход, задачи, тарифы, аккаунт и состояния |
+| Иконки | Поиск, размеры, семейства, копирование JSX и правила использования |
+| Руководство | Сборка экрана, состояния, адаптив, доступность, подключение и чек-лист передачи |
+| Материалы | Архив исходников, JSON-токены, SVG-логотипы и краткая инструкция |
 
-## Install
+Примеры используют демонстрационные данные. Серверные операции, проверка прав и платёжные сценарии подключаются в продуктовом приложении. Библиотека распространяется как исходный код; отдельный npm-пакет не опубликован.
+
+## Запуск
+
+Требуется Node.js 22.12+; версия ветки Node указана в `.nvmrc`.
 
 ```sh
+git clone https://github.com/IMONsergey/Apco-components-lib.git
+cd Apco-components-lib
 npm ci
 npm run dev
+```
+
+`npm ci` использует закреплённые версии `package-lock.json`. Скрипт `postinstall` генерирует локальные SVG-спрайты и поисковый манифест иконок из пакетов Iconify. Браузер загружает иконки из этого проекта.
+
+```sh
 npm run build
+npm run test:design-system
 npm run test:ux
 ```
 
-`postinstall` runs `scripts/generate-icons.mjs`, which converts pinned local npm icon data to SVG sprites and the searchable manifest. Nothing is downloaded by the browser from a third-party icon service.
+Для `test:ux` нужны браузеры Playwright. GitHub Pages публикуется workflow из `.github/workflows/` после обновления `main`.
 
-## Design tokens
+## Как пользоваться
 
-- `src/styles/tokens.css` — preserved published colors, fonts and layout; CSS source of truth.
-- `src/styles/theme-page.css` — dark-theme semantic overrides.
-- `src/styles/system-primitives.css` — portable spacing and component aliases (normalized extension).
-- `src/tokens/apcosys.tokens.json` — auditable light/dark token export and source references.
-- `public/tokens/apcosys.tokens.json` — downloadable identical export.
-- `public/assets/brand/` — brand wordmark and standalone symbol variants for light and dark contexts.
+1. Выберите контекст: публичный сайт или SaaS.
+2. Найдите компонент через навигацию или глобальный поиск (`⌘K` / `Ctrl+K`).
+3. Проверьте действие, доступные состояния, обе темы и узкую ширину.
+4. Посмотрите правила, код и ссылку на исходник. Для переноса нужны связанные CSS и ассеты.
+5. Зафиксируйте версию исходников и проверьте компонент в целевом приложении.
 
-Do not casually replace approved page geometry with new primitives. The spacing normalization and minimum 44px touch target are **system recommendations**, not claims that the published site already enforced all of them.
+Ширина области предпросмотра помогает оценить поведение контейнера. Медиазапросы, зависящие от окна браузера, дополнительно проверяются на настоящей мобильной ширине.
 
-## Source boundaries
+## Структура исходников
 
-- `src/components/ui`: original UI components (including DoubleButton, AnimatedPrice, AnimatedDetails, BillingSwitch).
-- `src/components/system`: standalone adapters preserving the page's published class treatment.
-- `src/index.ts`: stable source-first import entry; includes reusable `LibraryIcon` independent of the docs UI. The icon component takes an optional `spriteBaseUrl` and defaults to `/icons/`, so it also works outside Vite.
-- `src/visuals`: source animation engines; product previews make no backend calls.
-- `src/brand`: documentation/gallery pages, not production components.
-- `src/gallery`: gallery mounts only.
+- `src/components/ui/` — базовые компоненты сайта, включая DoubleButton, AnimatedPrice, AnimatedDetails и BillingSwitch.
+- `src/components/system/` — самостоятельные адаптеры сайта, LibraryIcon, LanguageBadge и SiteModal.
+- `src/saas/` — SaaS-паттерны и локальные демонстрационные сценарии. Реальные продуктовые исходники указаны в каталоге каждого паттерна.
+- `src/visuals/` — иллюстрации и анимационные движки.
+- `src/styles/` — токены, темы и стили компонентов.
+- `src/index.ts` — точка входа для переиспользуемых экспортов.
+- `src/docs/`, `src/brand/`, `src/gallery/` — интерфейс документации и галереи.
+- `public/assets/brand/` — SVG-логотипы и знаки для светлого и тёмного фона.
+- `public/fonts/` — локальные файлы шрифтов.
+- `public/icons/` — генерируемые спрайты иконок.
+- `public/tokens/` — JSON-экспорты токенов.
+- `public/downloads/` — комплект материалов и краткая инструкция.
 
-Original user's reference archives contain 4 SVG brand marks and 274 Feather / 1050 Phosphor SVGs. Logotype palette variants and the original website geometry inform the brand gallery. Feather and Phosphor catalogs are built from maintained official MIT Iconify packages; **their names/paths may differ from individual Figma-exported SVGs**, so treat the 2 sets as normalized extensions, not byte-identical copies of the archives.
+### Границы источников
 
-## Licensing
+Компоненты сайта начинались с извлечения из `IMONsergey/apcoweb`; происхождение сохранённых компонентов описано в `docs/SOURCE_PARITY.md`. Этот исторический документ фиксирует исходную выгрузку, а не обещает автоматическую синхронизацию с каждой новой версией маркетингового сайта.
 
-See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the exact extension packages and license references.
+SaaS-паттерны документируют интерфейс `IMONsergey/Assaasdev`. Зафиксированная ревизия и ссылки на продуктовые файлы находятся в `src/saas/catalog.ts`. Библиотечный пример отделяет интеракцию от продуктовых API-запросов; при подключении учитывайте актуальный контракт приложения.
 
+Контекст проектов:
 
-Website icons and APCOSYS logo: first-party brand assets. Feather and Phosphor: MIT (third-party assets); Lucide: ISC; Morphicons: MIT. Retain license/attribution notices in redistributed work. Avoid combining stroke and fill families within a single navigation toolbar.
+- Маркетинговый сайт: https://imonsergey.github.io/APCOCLEAR2/
+- SaaS-прототип: https://assaasdev.vercel.app/
+- SaaS-исходники: https://github.com/IMONsergey/Assaasdev
 
-## Workflow
+## Подключение компонентов
 
-- Prefer tokens and existing components before creating new CSS.
-- Compare every adjustment with the production `apcoweb` site at mobile, desktop and short-desktop widths.
-- Respect keyboard focus, contrast, reduced motion and visibility-based animation cleanup.
-- Build/typecheck with `npm run build`. CI publishes GitHub Pages from main.
-
-This is a source-first library, not an npm package. It can be split into a versioned design-system package later without putting the docs/gallery runtime into shipped components.
-
-## Fidelity of published components
-
-[Component-by-component source audit](docs/SOURCE_PARITY.md) classifies every item as an unchanged upstream source, an i18n-free port or a gallery adapter.
-
-Import the production CSS token stack and the extracted source rules when reusing controls outside this gallery. Do not copy the gallery's card sizing rules into product interfaces.
+Можно скопировать нужные исходники вместе с импортируемыми зависимостями в свой проект. Пример ниже размещается внутри `src` библиотеки; адаптируйте пути и целевой адрес при переносе.
 
 ```tsx
-import { MotionProvider, PlanCard, LanguageBadge, SiteModal } from './index';
+import { DoubleButton } from './components/ui/DoubleButton';
+import './styles/instrument-sans.css';
 import './styles/tokens.css';
 import './styles/theme-page.css';
 import './styles/source-components.css';
-import './styles/site-fidelity.css';
 
-// Mount MotionProvider above controls and honor device reduced-motion preferences.
-<MotionProvider><PlanCard id="plus" period="monthly" /></MotionProvider>
+export function ActionExample() {
+  return <DoubleButton href="/search">Перейти к поиску</DoubleButton>;
+}
 ```
 
-The original APCOSYS PLUS plan is $40 / month (not a placeholder $89).
+### Что проверить при переносе
 
+- Сохраните CSS-порядок: шрифты → токены → тема → компонентные правила. Прочитайте импорты компонента; пример с кнопкой не является универсальным CSS-набором для всех компонентов.
+- Стили оболочки документации не нужны в продуктовом интерфейсе. Базовые токены содержат общие правила; проверьте их совместимость с CSS приложения.
+- Тема сайта задаётся `data-theme="light"` или `data-theme="dark"` на `html`. Для SaaS-компонентов сохраняйте соответствующие токены и область их применения.
+- Для потребителей `useMotion` подключите `MotionProvider` из `src/components/visuals/MotionProvider.tsx`. Он учитывает системное предпочтение reduced motion.
+- Перенесите нужные файлы из `public/fonts/`, `public/assets/` и `public/icons/`. Проверьте пути на вложенном базовом URL.
+- `LibraryIcon` поддерживает `spriteBaseUrl`; значение по умолчанию — `/icons/`. Оно должно совпадать с размещением спрайтов в вашем приложении.
+- Проверьте покрытие языков шрифтами. Файлы с суффиксом `latin` покрывают латиницу; для кириллицы нужен соответствующий набор или согласованный fallback.
+- Подключите реальные обработчики, маршрутизацию, данные, права доступа и восстановление ошибок в приложении.
 
-## Documentation portal navigation
+## Токены и материалы
 
-The published site is a responsive design-system documentation portal. Navigation is built into React and does not depend on an external docs/CMS platform.
+Для сайта CSS-значения хранятся в `src/styles/tokens.css`, тёмная тема — в `src/styles/theme-page.css`. `src/styles/system-primitives.css` содержит дополнительные алиасы отступов. JSON в `src/tokens/apcosys.tokens.json` и `public/tokens/apcosys.tokens.json` описывает значения, назначение и ссылки на источники.
 
-- **Desktop:** fixed left navigation, a focused reading column, and a contextual table of contents on extra-wide screens. The sidebar can be collapsed.
-- **Mobile:** an accessible off-canvas navigation menu; documentation contents have a single readable column.
-- **Search:** `⌘K` on macOS / `Ctrl+K` on other platforms or the search control in the header. The indexed items include routes, 28 components and 17 color tokens. Arrow keys select and Enter opens a result.
-- **Deep links:** `#overview`, `#foundations/colors`, `#foundations/typography`, `#components/button`, `#icons/phosphor`, `#guidelines/usage`.
-- **Source of navigation:** `src/docs/navigation.ts` defines the hierarchy, section URLs, search index and the contextual table of contents. `src/docs/DocsChrome.tsx` contains only the shell interaction/accessible navigation, not design components.
-- **Adding a page:** register its address and label in `src/docs/navigation.ts`, route it through `src/App.tsx`, and author page content under `src/brand/` or `src/docs/`. Keep implementation source code under `src/components/` and `src/visuals/`.
+JSON-экспорт переносит данные токенов. Способ их импорта в Figma или другой редактор зависит от инструмента; CSS подключается отдельно.
 
-Legacy `#components`, `#foundations`, `#icons`, and `#guidelines` anchors still work. React demos, tokens and asset source remain separate from the docs UI.
+Коммерческие примеры тарифов используют месячную базу Free $0, Plus $50, Expert $300 и Business $900. Годовые эквиваленты за месяц: $0 / $40 / $240 / $720; годовые суммы: $0 / $480 / $2,880 / $8,640. При изменении тарифов обновляйте общий источник данных и оба режима вместе.
 
+## Навигация и расширение
+
+Используются hash-ссылки, поэтому страницы открываются напрямую на GitHub Pages:
+
+- `#start`
+- `#foundations/colors`
+- `#components/button`
+- `#saas/search`
+- `#saas/results`
+- `#guide/integration`
+- `#guide/handoff`
+- `#resources`
+
+Навигация, названия и поисковый индекс находятся в `src/docs/navigation.ts`. Оболочка — `src/docs/DocsChrome.tsx`; маршрутизация — `src/App.tsx`. Старые адреса разделов сохранены.
+
+Добавляя компонент, зарегистрируйте его в соответствующем каталоге, укажите источник, назначение, состояния и правила. Добавьте рабочий пример и доступный экспорт. Проверьте ссылку, поиск, копирование, темы, узкий экран и клавиатуру.
+
+## Лицензии
+
+APCOSYS-логотип и оригинальные иконки — фирменные материалы проекта. Feather и Phosphor доступны через официальные пакеты Iconify с MIT-лицензией; Lucide — ISC, Morphicons — MIT. Состав и ссылки перечислены в `THIRD_PARTY_NOTICES.md`. Сохраняйте уведомления лицензий при распространении.
+
+Внутри одной панели действий сохраняйте согласованное семейство, толщину линии и размер иконок. Используйте тематические SVG-версии логотипа, сохраняя геометрию и пропорции.

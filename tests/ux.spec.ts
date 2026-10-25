@@ -4,16 +4,16 @@ const root='/Apco-components-lib/';
 
 test('sections and dark theme stay coordinated', async ({page})=>{
   await page.goto(root+'#foundations');
-  await expect(page.getByRole('heading',{name:'Brand styles',exact:true})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Основы стиля',exact:true})).toBeVisible();
   await expect(page.locator('.ds-token-row')).toHaveCount(17);
   const first=page.locator('.ds-token-row').first();
   await expect(first).toContainText('#F6F6F6');
-  await page.getByRole('button',{name:'Dark theme'}).click();
+  await page.getByRole('button',{name:'Тёмная тема'}).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
   await expect(first).toContainText('#0D1113');
   await expect.poll(async()=>page.locator('body').evaluate(el=>getComputedStyle(el).backgroundColor)).toBe('rgb(13, 17, 19)');
   const breakpoint=page.locator('#ds-breakpoints');
-  await expect(breakpoint.getByRole('heading',{name:'Responsive breakpoints'})).toBeVisible();
+  await expect(breakpoint.getByRole('heading',{name:'Диапазоны ширины'})).toBeVisible();
   await expect(breakpoint.locator('.ds-breakpoint-list>div')).toHaveCount(8);
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
@@ -27,23 +27,30 @@ test('icons copy usage on one click without any floating panel',async({page})=>{
  await tile.click();
  await expect(tile).toHaveAttribute('data-selected','true');
  await expect(tile).toHaveAttribute('data-copied','true');
- await expect(page.getByRole('status')).toContainText('Code copied · activity');
+ await expect(page.locator('#docs-icon-library [role=status]')).toContainText('Код скопирован · activity');
  await expect(page.locator('.ds-selected-icon')).toHaveCount(0);
  const settings=page.locator('#docs-icon-options');
- await expect(settings.getByRole('combobox',{name:'Icon size'})).toBeVisible();
- await expect(settings.getByRole('combobox',{name:'Icon stroke width'})).toBeVisible();
+ await expect(settings.getByRole('group',{name:'Размер иконки'})).toBeVisible();
+ await expect(settings.getByRole('group',{name:'Толщина линии иконки'})).toBeVisible();
  await page.getByRole('button',{name:/Phosphor/}).click();
- await expect(page.getByRole('searchbox',{name:'Search icons'})).toHaveValue('');
+ await expect(page.getByRole('searchbox',{name:'Поиск иконок'})).toHaveValue('');
 });
 
-test('guidelines expose the ten rules and all examples without accordions',async({page})=>{
+test('guides expose practical rules and persistent handoff checklist',async({page})=>{
  await page.goto(root+'#guidelines');
- const rules=page.locator('article.ds-guideline');
- await expect(rules).toHaveCount(10);
- await expect(rules.first()).toContainText('Avoid');
- await expect(page.locator('details.ds-guideline,details.ds-doc-details')).toHaveCount(0);
- await expect(page.locator('#docs-guideline-patterns .ds-recipes>div')).toHaveCount(4);
- await expect(page.locator('#docs-guideline-integration .ds-adoption>div')).toHaveCount(3);
+ await expect(page.getByRole('heading',{name:'От компонента к готовому экрану',exact:true})).toBeVisible();
+ await expect(page.locator('.client-topic-nav a')).toHaveCount(6);
+ await expect(page.locator('.client-guide > section')).toHaveCount(6);
+ await expect(page.locator('.client-guide details')).toHaveCount(0);
+ await page.goto(root+'#guide/handoff');
+ const checks=page.locator('.client-checklist input[type="checkbox"]');
+ await expect(checks).toHaveCount(9);
+ await checks.first().check();
+ await expect(page.locator('.client-checklist__summary')).toContainText('Отмечено 1 из 9');
+ await page.reload();
+ await expect(checks.first()).toBeChecked();
+ await page.getByRole('button',{name:'Сбросить отметки'}).click();
+ await expect(checks.first()).not.toBeChecked();
 });
 
 test('component card opens documentation with visible usage code',async({page})=>{
@@ -52,14 +59,14 @@ test('component card opens documentation with visible usage code',async({page})=
  await expect(page.locator('dialog.lib-dialog')).toHaveCount(0);
  await expect(page.locator('.lib-card').first()).toHaveAttribute('data-group','Interface motion');
  const card=page.locator('.lib-card[data-testid="button"]');
- await card.getByRole('link',{name:'Double Button'}).click();
+ await card.getByRole('link',{name:'Составная кнопка'}).click();
  await expect(page).toHaveURL(/#components\/button$/);
  await expect(page.locator('.docs-component__stage .double-button').first()).toBeVisible();
  const usage=page.locator('.docs-component__code');
  await expect(page.locator('details.docs-component__code')).toHaveCount(0);
  await expect(usage.locator('pre.lib-code')).toContainText('DoubleButton');
- await expect(usage.getByRole('button',{name:/Copy code/})).toBeVisible();
- await page.getByRole('link',{name:/All components/}).click();
+ await expect(usage.getByRole('button',{name:/Копировать код/})).toBeVisible();
+ await page.locator('.docs-component__back').click();
  await expect(page.locator('.lib-card')).toHaveCount(28);
 });
 
@@ -78,7 +85,7 @@ test('mobile icon interaction stays inline and without horizontal overflow',asyn
 
 test('source parity: dark Plain Button retains readable colors and hover',async({page})=>{
   await page.goto(root+'#components');
-  await page.getByRole('button',{name:'Dark theme'}).click();
+  await page.getByRole('button',{name:'Тёмная тема'}).click();
   const card=page.locator('.lib-card[data-testid="plain"]');
   await card.scrollIntoViewIfNeeded();
   const button=card.locator('.plain-button');
@@ -110,7 +117,7 @@ test('source parity: Plus plan values and elements stay inside preview',async({p
   expect(planBox!.y).toBeGreaterThanOrEqual(cardBox!.y-1);
   expect(planBox!.y+planBox!.height).toBeLessThanOrEqual(cardBox!.y+cardBox!.height+1);
   expect(ctaBox!.y+ctaBox!.height).toBeLessThanOrEqual(planBox!.y+planBox!.height+1);
-  await page.getByRole('button',{name:'Dark theme'}).click();
+  await page.getByRole('button',{name:'Тёмная тема'}).click();
   // Opening the header theme switch scrolls away; the gallery intentionally
   // unmounts heavy previews outside the IntersectionObserver viewport.
   await card.scrollIntoViewIfNeeded();
@@ -128,16 +135,26 @@ test('source parity: language menu uses original flags and anchored panel',async
   const panel=card.locator('.language-panel');
   await expect(panel).toHaveAttribute('data-open','true');
   await expect(panel.getByRole('menuitemradio')).toHaveCount(3);
-  await expect(panel.getByRole('menuitemradio',{name:/Russian/i})).toBeDisabled({timeout:2000}).catch(async()=>{
-    await expect(panel.locator('button[lang="ru"]')).toBeDisabled();
-  });
+  await expect(panel.locator('button[lang="ru"]')).toBeEnabled();
+  await expect(panel.locator('button[lang="zh-Hans"]')).toBeEnabled();
   const triggerBox=await trigger.boundingBox();
   const panelBox=await panel.boundingBox();
   expect(triggerBox&&panelBox).toBeTruthy();
   expect(Math.abs((panelBox!.x+panelBox!.width)-(triggerBox!.x+triggerBox!.width))).toBeLessThanOrEqual(3);
   expect(panelBox!.y).toBeGreaterThanOrEqual(triggerBox!.y+triggerBox!.height);
+  await panel.locator('button[lang="ru"]').click();
+  await expect(trigger).toContainText('RU');
+  await expect(panel).toHaveAttribute('data-open','false');
+  await trigger.press('ArrowDown');
+  await page.keyboard.press('End');
+  await expect(panel.locator('button[lang="zh-Hans"]')).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(trigger).toContainText('ZH');
+  await trigger.click();
+  await expect(panel.locator('button[lang="zh-Hans"]')).toHaveAttribute('aria-checked','true');
   await page.keyboard.press('Escape');
   await expect(panel).toHaveAttribute('data-open','false');
+  await expect(trigger).toBeFocused();
 });
 
 test('source parity: site modal traps focus, closes and restores scroll',async({page})=>{
@@ -161,7 +178,7 @@ test('14 interface previews retain content in light/dark desktop and mobile',asy
   await page.goto(root+'#components');
   for(const theme of ['light','dark'] as const){
    const current=await page.locator('html').getAttribute('data-theme');
-   if(current!==theme)await page.getByRole('button',{name:theme==='dark'?'Dark theme':'Light theme'}).click();
+   if(current!==theme)await page.getByRole('button',{name:theme==='dark'?'Тёмная тема':'Светлая тема'}).click();
    for(const id of names){
     const card=page.locator('.lib-card[data-testid="'+id+'"]');
     await card.scrollIntoViewIfNeeded();
@@ -179,12 +196,12 @@ test('14 interface previews retain content in light/dark desktop and mobile',asy
 
 test('docs home exposes a persistent hierarchy and deep-linked color tokens',async({page})=>{
  await page.goto(root);
- await expect(page.getByRole('heading',{name:'Design library',exact:true})).toBeVisible();
- const nav=page.getByRole('navigation',{name:'Design system',exact:true});
- await expect(nav.getByRole('link',{name:'Home'})).toBeVisible();
- await nav.getByRole('link',{name:'Colors'}).click();
+ await expect(page.getByRole('heading',{name:/Одна система\.\s*Все детали интерфейса\./})).toBeVisible();
+ const nav=page.getByRole('navigation',{name:'Дизайн-система',exact:true});
+ await expect(nav.getByRole('link',{name:'Главная'})).toBeVisible();
+ await nav.getByRole('link',{name:'Цвета'}).click();
  await expect(page).toHaveURL(/#foundations\/colors$/);
- await expect(page.getByRole('heading',{name:'Colors',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Цвета',exact:true})).toBeVisible();
  await expect(page.locator('.ds-token-row')).toHaveCount(17);
  await expect(page.locator('#ds-colors')).toBeInViewport();
 });
@@ -192,13 +209,13 @@ test('docs home exposes a persistent hierarchy and deep-linked color tokens',asy
 test('global command search navigates to full source component page',async({page})=>{
  await page.goto(root+'#overview');
  await page.keyboard.press('ControlOrMeta+k');
- const dialog=page.getByRole('dialog',{name:'Search design system'});
+ const dialog=page.getByRole('dialog',{name:'Поиск по дизайн-системе'});
  await expect(dialog).toBeVisible();
- await dialog.getByRole('combobox',{name:'Search all docs'}).fill('Double Button');
- await expect(dialog.getByRole('option',{name:/Double Button/}).first()).toBeVisible();
+ await dialog.getByRole('combobox',{name:'Поиск по библиотеке'}).fill('Double Button');
+ await expect(dialog.getByRole('option',{name:/Составная кнопка/}).first()).toBeVisible();
  await page.keyboard.press('Enter');
  await expect(page).toHaveURL(/#components\/button$/);
- await expect(page.getByRole('heading',{name:'Double Button',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Составная кнопка',exact:true})).toBeVisible();
  await expect(page.locator('.docs-component__stage .double-button').first()).toBeVisible();
  await expect(page.locator('.docs-component .lib-code')).toContainText('DoubleButton');
  await expect(dialog).toHaveCount(0);
@@ -207,13 +224,13 @@ test('global command search navigates to full source component page',async({page
 test('mobile docs drawer navigates without horizontal overflow',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  await page.goto(root+'#overview');
- const opener=page.getByRole('button',{name:'Open navigation'});
+ const opener=page.getByRole('button',{name:'Открыть навигацию'});
  await expect(opener).toBeVisible();
  await opener.click();
- const drawer=page.getByRole('complementary',{name:'Documentation navigation'});
+ const drawer=page.getByRole('complementary',{name:'Навигация библиотеки'});
  await expect(drawer).toHaveAttribute('data-open','true');
- await expect(page.getByRole('button',{name:'Close navigation'})).toBeVisible();
- await drawer.getByRole('link',{name:'Typography'}).click();
+ await expect(page.getByRole('button',{name:'Закрыть навигацию'})).toBeVisible();
+ await drawer.getByRole('link',{name:'Типографика'}).click();
  await expect(page).toHaveURL(/#foundations\/typography$/);
  await expect(page.locator('.docs-sidebar')).toHaveAttribute('data-open','false');
  await expect(page.locator('#ds-type')).toBeInViewport();
@@ -223,23 +240,23 @@ test('mobile docs drawer navigates without horizontal overflow',async({page})=>{
 test('wide layout retains on-page toc without replacing sidebar',async({page})=>{
  await page.setViewportSize({width:1760,height:990});
  await page.goto(root+'#foundations');
- const toc=page.getByRole('complementary',{name:'On this page'});
- await expect(toc.getByRole('link',{name:'Colors'})).toBeVisible();
- await expect(page.getByRole('navigation',{name:'Design system',exact:true})).toBeVisible();
- await toc.getByRole('link',{name:'Colors'}).click();
+ const toc=page.getByRole('complementary',{name:'На этой странице'});
+ await expect(toc.getByRole('link',{name:'Цвета'})).toBeVisible();
+ await expect(page.getByRole('navigation',{name:'Дизайн-система',exact:true})).toBeVisible();
+ await toc.getByRole('link',{name:'Цвета'}).click();
  await expect(page.locator('#ds-colors')).toBeInViewport();
- await page.getByRole('button',{name:'Collapse navigation'}).click();
+ await page.getByRole('button',{name:'Свернуть навигацию'}).click();
  await expect(page.locator('.docs-shell')).toHaveAttribute('data-collapsed','true');
- await page.getByRole('button',{name:'Expand navigation'}).click();
+ await page.getByRole('button',{name:'Развернуть навигацию'}).click();
  await expect(page.locator('.docs-shell')).toHaveAttribute('data-collapsed','false');
 });
 
 test('clean homepage and favicon match published APCOSYS source',async({page})=>{
  await page.goto(root);
- await expect(page.getByRole('heading',{name:'Design library'})).toBeVisible();
- await expect(page.locator('.docs-overview__card--visual')).toHaveCount(4);
- await expect(page.locator('.docs-overview__art')).toHaveCount(0);
- await expect(page.locator('.docs-overview__card--visual .docs-overview__card-bottom svg')).toHaveCount(4);
+ await expect(page.getByRole('heading',{name:/Одна система\.\s*Все детали интерфейса\./})).toBeVisible();
+ await expect(page.locator('.client-product-card')).toHaveCount(2);
+ await expect(page.locator('.client-foundation-link')).toHaveCount(4);
+ await expect(page.locator('.client-product-card[href="#saas"]')).toBeVisible();
  const favicon=page.locator('link[rel="icon"]');
  await expect(favicon).toHaveAttribute('href',/assets\/brand\/favicon\.svg$/);
  const url=await favicon.getAttribute('href');
@@ -255,8 +272,8 @@ test('clean homepage and favicon match published APCOSYS source',async({page})=>
 test('search finds an individual icon and opens it',async({page})=>{
  await page.goto(root);
  await page.keyboard.press('ControlOrMeta+k');
- const command=page.getByRole('dialog',{name:'Search design system'});
- await command.getByRole('combobox',{name:'Search all docs'}).fill('activity');
+ const command=page.getByRole('dialog',{name:'Поиск по дизайн-системе'});
+ await command.getByRole('combobox',{name:'Поиск по библиотеке'}).fill('activity');
  await expect(command.getByRole('option',{name:/activity/i}).first()).toBeVisible();
  await command.getByRole('option',{name:/activity/i}).first().click();
  await expect(page).toHaveURL(/#icons\/feather\/activity$/);
@@ -272,10 +289,14 @@ test('full-width component grid has no unused right column at large desktop widt
  const bounds=await page.locator('.lib-grid').boundingBox();
  expect(bounds).not.toBeNull();
  expect(bounds!.x).toBeGreaterThan(240);
- expect(bounds!.x+bounds!.width).toBeGreaterThan(1870);
+ const content=await page.locator('main.docs-content').boundingBox();
+ expect(content).not.toBeNull();
+ expect(Math.abs(bounds!.x-content!.x)).toBeLessThanOrEqual(2);
+ expect(Math.abs(bounds!.width-content!.width)).toBeLessThanOrEqual(2);
+ expect(bounds!.width).toBeGreaterThan(1450);
  expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(1920);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)).toBeLessThanOrEqual(2);
- await page.getByRole('button',{name:'Dark theme'}).click();
+ await page.getByRole('button',{name:'Тёмная тема'}).click();
  const dark=await page.locator('.lib-grid').boundingBox();
  expect(dark!.width).toBeGreaterThan(1450);
 });
@@ -291,36 +312,37 @@ test('color token rows have no empty painted grid cell and use source copy icons
  expect(lastBox!.width).toBeGreaterThan(listBox!.width-3);
  await expect(list.locator('.ds-token-copy svg')).toHaveCount(5);
  await expect(page.getByText('Token JSON ↗')).toHaveCount(0);
- await expect(page.getByRole('link',{name:/Download design tokens/})).toBeVisible();
- await page.getByRole('button',{name:'Dark theme'}).click();
+ await expect(page.getByRole('link',{name:/Скачать токены/})).toBeVisible();
+ await page.getByRole('button',{name:'Тёмная тема'}).click();
  const width=await list.locator('.ds-token-row').last().boundingBox();
  expect(width!.width).toBeGreaterThan(listBox!.width-3);
 });
 
-test('homepage uses simple APCOSYS links with no invented artwork',async({page})=>{
+test('homepage directs clients to website, SaaS and foundations at desktop and mobile sizes',async({page})=>{
  await page.setViewportSize({width:1440,height:900});
  await page.goto(root+'#overview');
- const cards=page.locator('.docs-overview__card--visual');
- await expect(cards).toHaveCount(4);
- await expect(page.locator('.docs-overview__art')).toHaveCount(0);
+ const cards=page.locator('.client-product-card');
+ await expect(cards).toHaveCount(2);
+ await expect(cards.filter({hasText:'SaaS'})).toHaveAttribute('href','#saas');
+ await expect(page.locator('.client-product-card[href="#components"]')).toBeVisible();
+ await expect(page.locator('.client-foundation-link')).toHaveCount(4);
+ await expect(page.locator('.client-home__intro a[href="#start"]')).toBeVisible();
  for(const card of await cards.all()){
    const bounds=await card.boundingBox();
    expect(bounds!.height).toBeGreaterThanOrEqual(100);
    await expect(card.locator('svg')).toHaveCount(1);
-   await expect(card.locator('svg path')).toHaveAttribute('d','M3 8h10M8 3l5 5-5 5');
  }
  await page.setViewportSize({width:390,height:844});
- await expect(page.locator('.docs-overview__grid')).toBeVisible();
+ await expect(page.locator('.client-product-grid')).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)).toBeLessThanOrEqual(2);
 });
 
-test('library UI has no links to the published APCOSYS website',async({page})=>{
+test('library reference links avoid the superseded marketing site',async({page})=>{
  const routes=['#overview','#components','#foundations/colors','#foundations/typography','#icons','#guidelines'];
  for(const route of routes){
   await page.goto(root+route);
-  const publishedLinks=page.locator('a[href*="imonsergey.github.io/apcoweb"],a[href*="apcosys.net"]');
+  const publishedLinks=page.locator('a[href*="imonsergey.github.io/apcoweb"]');
   await expect(publishedLinks).toHaveCount(0);
-  await expect(page.getByRole('link',{name:/APCOSYS website|Live website/i})).toHaveCount(0);
  }
  // Library repository and asset links remain available.
  await expect(page.getByRole('link',{name:/GitHub/i}).first()).toBeVisible();
@@ -329,9 +351,9 @@ test('library UI has no links to the published APCOSYS website',async({page})=>{
 
 test('navigation has no duplicate controls or icon family filters in the sidebar',async({page})=>{
  await page.goto(root+'#components');
- const nav=page.getByRole('navigation',{name:'Design system',exact:true});
- await expect(nav.getByRole('link',{name:'Components',exact:true})).toHaveCount(1);
- await expect(nav.getByRole('link',{name:'Icons',exact:true})).toHaveCount(1);
+ const nav=page.getByRole('navigation',{name:'Дизайн-система',exact:true});
+ await expect(nav.getByRole('link',{name:'Компоненты сайта',exact:true})).toHaveCount(1);
+ await expect(nav.getByRole('link',{name:'Иконки',exact:true})).toHaveCount(1);
  await expect(nav.getByRole('link',{name:'Interface & controls'})).toHaveCount(0);
  await expect(nav.getByRole('link',{name:'Phosphor'})).toHaveCount(0);
  await expect(page.locator('.lib-card__open,.lib-card__foot')).toHaveCount(0);
@@ -341,8 +363,8 @@ test('navigation has no duplicate controls or icon family filters in the sidebar
 test('search results do not repeat the same token destination',async({page})=>{
  await page.goto(root+'#overview');
  await page.keyboard.press('ControlOrMeta+k');
- const dialog=page.getByRole('dialog',{name:'Search design system'});
- await dialog.getByRole('combobox',{name:'Search all docs'}).fill('color');
+ const dialog=page.getByRole('dialog',{name:'Поиск по дизайн-системе'});
+ await dialog.getByRole('combobox',{name:'Поиск по библиотеке'}).fill('color');
  const options=dialog.getByRole('option');
  const hrefs=await options.evaluateAll(nodes=>nodes.map(n=>(n as HTMLAnchorElement).getAttribute('href')));
  expect(hrefs.length).toBeGreaterThan(0);
@@ -364,22 +386,22 @@ test('clipboard permissions denied still provide manually selectable icon code',
  await expect(tile).toHaveAttribute('data-copied','false');
  const fallback=page.locator('.ds-icon-copy-fallback');
  await expect(fallback).toBeVisible();
- await expect(fallback.getByRole('textbox',{name:'Icon JSX code'})).toHaveValue(/LibraryIcon.*activity/);
- await fallback.getByRole('button',{name:'Close copy fallback'}).click();
+ await expect(fallback.getByRole('textbox',{name:'JSX-код иконки'})).toHaveValue(/LibraryIcon.*activity/);
+ await fallback.getByRole('button',{name:'Закрыть поле копирования'}).click();
  await expect(fallback).toHaveCount(0);
 });
 
 test('empty catalog states offer a clear way back to results',async({page})=>{
  await page.goto(root+'#components');
- await page.getByRole('searchbox',{name:'Search components'}).fill('zz_nonexistent_component');
- await expect(page.getByText('No components found.')).toBeVisible();
- await page.getByRole('button',{name:'Clear filters'}).click();
+ await page.getByRole('searchbox',{name:'Найти компонент'}).fill('zz_nonexistent_component');
+ await expect(page.getByText('Компоненты не найдены.')).toBeVisible();
+ await page.getByRole('button',{name:'Сбросить поиск и фильтры'}).click();
  await expect(page.locator('.lib-card')).toHaveCount(28);
  await page.goto(root+'#icons');
- await page.getByRole('searchbox',{name:'Search icons'}).fill('zz_nonexistent_icon');
- await expect(page.getByText('No icons found.')).toBeVisible();
- await page.getByRole('button',{name:'Clear search'}).click();
- await expect(page.getByRole('searchbox',{name:'Search icons'})).toHaveValue('');
+ await page.getByRole('searchbox',{name:'Поиск иконок'}).fill('zz_nonexistent_icon');
+ await expect(page.getByText('Иконки не найдены.')).toBeVisible();
+ await page.getByRole('button',{name:'Очистить поиск'}).click();
+ await expect(page.getByRole('searchbox',{name:'Поиск иконок'})).toHaveValue('');
 });
 
 test('all reference details are visible across layout, spacing, colors and logo',async({page})=>{
@@ -398,8 +420,8 @@ test('all reference details are visible across layout, spacing, colors and logo'
 test('icon settings, states and Morphicons are immediately visible',async({page})=>{
  await page.goto(root+'#icons');
  const settings=page.locator('#docs-icon-options');
- await expect(settings.getByRole('combobox',{name:'Icon size'})).toBeVisible();
- await expect(settings.getByRole('combobox',{name:'Icon stroke width'})).toBeVisible();
+ await expect(settings.getByRole('group',{name:'Размер иконки'})).toBeVisible();
+ await expect(settings.getByRole('group',{name:'Толщина линии иконки'})).toBeVisible();
  await expect(page.locator('#docs-icon-states .ds-icon-state')).toHaveCount(5);
  const morph=page.locator('#docs-icon-morph');
  await expect(morph.getByRole('heading',{name:'Morphicons'})).toBeAttached();
@@ -408,8 +430,8 @@ test('icon settings, states and Morphicons are immediately visible',async({page}
  const before=await settings.boundingBox(),after=await page.locator('.ds-icon-options').boundingBox();
  expect(before&&after).not.toBeNull();
  expect(Math.abs(before!.x-after!.x)).toBeLessThanOrEqual(2);
- await settings.getByRole('combobox',{name:'Icon size'}).selectOption('32');
- await expect(settings.getByRole('combobox',{name:'Icon size'})).toHaveValue('32');
+ await settings.getByRole('group',{name:'Размер иконки'}).getByRole('button',{name:'32',exact:true}).click();
+ await expect(settings.getByRole('group',{name:'Размер иконки'}).getByRole('button',{name:'32',exact:true})).toHaveAttribute('aria-pressed','true');
 });
 test('reference pages fit five breakpoints without horizontal overflow in either theme',async({page})=>{
  for(const width of [375,599,899,1440,1920]){
@@ -428,10 +450,10 @@ test('reference pages fit five breakpoints without horizontal overflow in either
 test('contextual links scroll to visible tokens and morph examples',async({page})=>{
  await page.setViewportSize({width:1920,height:1080});
  await page.goto(root+'#foundations/layout');
- const toc=page.getByRole('complementary',{name:'On this page'});
- await toc.getByRole('link',{name:'Breakpoints'}).click();
+ const toc=page.getByRole('complementary',{name:'На этой странице'});
+ await toc.getByRole('link',{name:'Адаптив'}).click();
  await expect(page.locator('#ds-breakpoints')).toBeInViewport();
  await page.goto(root+'#icons');
- await toc.getByRole('link',{name:'Morphicons'}).click();
+ await toc.getByRole('link',{name:'Переходы'}).click();
  await expect(page.locator('#docs-icon-morph')).toBeInViewport();
 });

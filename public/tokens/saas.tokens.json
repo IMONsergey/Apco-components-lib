@@ -1,0 +1,77 @@
+{
+  "format": "APCOSYS semantic token reference v1",
+  "name": "APCOSYS SaaS interface tokens",
+  "source": "https://github.com/IMONsergey/Assaasdev/tree/7cb2bcfef00acf17cd02f3110fa8cdd1108861e2",
+  "sourceDate": "2026-10-25",
+  "description": "Documented semantic roles from the SaaS source. Preview aliases use --s-* inside .saas-scope. This document does not define backend plan allowances.",
+  "themes": {
+    "light": {
+      "background": "#ffffff",
+      "navigation": "#f5f6f7",
+      "surface": "#f5f6f7",
+      "surfaceHover": "#f1f8f9",
+      "text": "#121314",
+      "muted": "#62666b",
+      "line": "#dfe5e8",
+      "accent": "#03879f",
+      "accentText": "#03758a",
+      "tint": "#e3f4f7",
+      "danger": "#b63d3d",
+      "success": "#21734e",
+      "warning": "#966400"
+    },
+    "dark": {
+      "background": "#11161b",
+      "navigation": "#141b21",
+      "surface": "#1c252d",
+      "surfaceHover": "#1a2b31",
+      "text": "#edf1f3",
+      "muted": "#a7b2b9",
+      "line": "#35434c",
+      "accent": "#38bed2",
+      "accentText": "#78dce8",
+      "tint": "#123b45",
+      "danger": "#ff9d9d",
+      "success": "#8bd7ac",
+      "warning": "#ebc16a"
+    }
+  },
+  "typography": {
+    "ui": "Inter Variable",
+    "display": "Instrument Sans",
+    "mono": "IBM Plex Mono",
+    "basePx": 14,
+    "bodyRem": 1,
+    "secondaryRem": 0.928571,
+    "captionRem": 0.857143,
+    "codeRem": 0.928571,
+    "mobile": {
+      "bodyRem": 1.071429,
+      "secondaryRem": 1,
+      "captionRem": 0.928571,
+      "fieldMinPx": 16
+    }
+  },
+  "geometry": {
+    "pageMaxPx": 1440,
+    "controlHeightPx": 44,
+    "pageGapPx": 24,
+    "cardPaddingPx": 24,
+    "controlRadiusPx": 8,
+    "cardRadiusPx": 14,
+    "dialogRadiusPx": 16,
+    "sidebarWidthPx": 240,
+    "sidebarCollapsedPx": 72,
+    "mobileBreakpointPx": 760,
+    "mobileGutterPx": 16,
+    "tabletGutterPx": 24,
+    "desktopGutterMinPx": 32
+  },
+  "motion": {
+    "controlMs": 160,
+    "panelMs": 180,
+    "shellMs": 220,
+    "easing": "cubic-bezier(.22,.75,.25,1)",
+    "reducedMotion": "Remove entrance motion and use static loading visuals when requested."
+  }
+}

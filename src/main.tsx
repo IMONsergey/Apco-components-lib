@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import { MotionProvider } from './components/visuals/MotionProvider';
 import './styles/instrument-sans.css';
+import './styles/inter.css';
 import './styles/ibm-plex-mono.css';
 import './styles/tokens.css';
 import './styles/theme-page.css';
@@ -22,3 +23,5 @@ import './styles/docs-shell.css';
 import './styles/friendly-ui.css';
 
 createRoot(document.getElementById('root')!).render(<StrictMode><MotionProvider><App /></MotionProvider></StrictMode>);
+
+import './styles/library-workspace.css';

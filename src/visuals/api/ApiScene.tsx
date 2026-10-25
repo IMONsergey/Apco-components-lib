@@ -1,22 +1,21 @@
-import { useEffect,useRef } from 'react';
-import { gsap } from 'gsap';
-import './api-developer-demo.js';
-declare global {
-  interface Window { ApcosysApiWidget?: {configure(options:{gsap:typeof gsap}):void} }
-}
-/** Non-interactive, purely illustrative API walkthrough. */
-export default function ApiScene({className=''}:{className?:string}) {
-  const host=useRef<HTMLDivElement>(null);
-  useEffect(()=>{
-    const parent=host.current;
-    if(!parent)return;
-    window.ApcosysApiWidget?.configure({gsap});
-    const element=document.createElement('api-developer-demo');
-    element.setAttribute('fit','contain');
-    element.inert=true;
-    element.setAttribute('aria-hidden','true');
-    parent.appendChild(element);
-    return ()=>element.remove();
-  },[]);
-  return <div ref={host} className={`apco-api-scene ${className}`} aria-hidden="true" inert/>;
+import { useEffect, useRef } from 'react';
+import { useMotion } from '../../hooks/useMotion';
+import { ApplicationFrame } from '../application/ApplicationFrame';
+import { ApplicationApiScene } from '../application/ApplicationApiScene';
+import { startApplicationPlayback } from '../application/applicationPlayback';
+
+/** Account API access excerpt from the current APCOSYS website. No network requests. */
+export default function ApiScene({ className = '', paused = false }: { className?: string; paused?: boolean }) {
+  const frameRef = useRef<HTMLDivElement>(null);
+  const playback = useRef<ReturnType<typeof startApplicationPlayback> | null>(null);
+  const motion = useMotion();
+  useEffect(() => {
+    if (!frameRef.current) return;
+    playback.current = startApplicationPlayback(frameRef.current, 'api');
+    return () => { playback.current?.dispose(); playback.current = null; };
+  }, []);
+  useEffect(() => playback.current?.setPaused(paused || motion.paused), [paused, motion.paused]);
+  return <div className={`apco-api-scene ${className}`} aria-hidden="true" inert>
+    <ApplicationFrame scene="api" frameRef={frameRef}><ApplicationApiScene /></ApplicationFrame>
+  </div>;
 }

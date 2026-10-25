@@ -1,50 +1,73 @@
-# APCOSYS component source-fidelity audit
+# Sources and reuse boundaries
 
-Reference: `IMONsergey/apcoweb` published landing, current `main` at the time of audit (2026-10-09).
+Updated 25 October 2026 for the client-facing design library.
 
-**Scope:** Each of the 28 gallery entries is classified. “Original” means a file was copied unchanged; “Port” preserves the source DOM, state and CSS with only host dependency removal; “Gallery adapter” means an integration surface that should not be passed off as a verbatim source component. All context-specific breakpoints are retained rather than replaced by a global responsive scaling rule.
+## Source versions
 
-## Components
-
-| Gallery item | Provenance | Authoritative source | Parity contract |
+| Scope | Source | Revision | Use in this library |
 | --- | --- | --- | --- |
-| Turquoise Flow | Original engine | apcoweb `src/visuals/flow` | CSS / canvas renderer / visual state |
-| Dot Cascade | Original engine | apcoweb `src/visuals/dots` | Canvas animation / layout |
-| Signal Globe | Original engine | apcoweb `src/visuals/globe` | SVG and Canvas renderers |
-| Ice Sphere Waves | Original engine | apcoweb `src/visuals/waves` | Responsive waves animation |
-| Animated Rosette | Original engine | apcoweb `src/visuals/shapes` | SVG line geometry |
-| Echo Rings | Original engine | apcoweb `src/visuals/shapes` | SVG motion geometry |
-| AI Chat Orb | User-supplied source | provided `AIChatOrb.zip` | Preserve supplied original |
-| OrbCube Loader | User-supplied source | provided `apcosys-orbcube-loader.zip` | Preserve supplied original |
-| Query Sequence | Gallery adapter | apcoweb `src/visuals/product/product-scenes.js` | Original GSAP source, thin React lifecycle |
-| Search Results | Gallery adapter | same product scenes | Original timed scene, inert UI |
-| Host Intelligence | Gallery adapter | same product scenes | Original timed scene, inert UI |
-| Evidence View | Gallery adapter | same product scenes | Original timed scene, inert UI |
-| Suggestions | Gallery adapter | same product scenes | Original timed scene, inert UI |
-| API Developer Demo | Gallery adapter | apcoweb `src/visuals/api/api-developer-demo.js` | Original GSAP source, React mount |
-| Digit Odometer | Original | apcoweb `src/components/ui/AnimatedPrice.tsx` | Identical React source / WAAPI |
-| Double Button | Original | apcoweb `src/components/ui/DoubleButton.tsx` | Identical React source / CSS states |
-| Animated Details | Locale-free port | apcoweb `src/components/ui/AnimatedDetails.tsx` | Original interaction/height logic, translated copy |
-| Partner Marquee | Gallery adapter | apcoweb `TrustMarquee.tsx` | Original animation/asset CSS; standalone gallery without surrounding copy |
-| Billing Switch | Locale-free port | apcoweb `src/components/ui/BillingSwitch.tsx` | Original semantic radio/segmented DOM |
-| Plan Button | Original CSS | apcoweb `src/components/sections/PricingSection.css` | Original CTA colors, hover and geometry |
-| Plain Button | Standalone port | apcoweb `src/styles/site.css` | Original hover and color parity in both themes |
-| Icon Button | Standalone port | apcoweb `src/styles/site.css` | Source 46px interactive control + original Icon |
-| Search Input | Gallery adapter | apcoweb `src/styles/site.css` search form | Exact visual rules and keyboard-safe native form; no real search API |
-| Navigation Disclosure | Locale-free port | apcoweb `src/components/Header.tsx`, `navigation.css` | Native anchors, Escape, focus and disclosure transitions |
-| Language Control | Source port | apcoweb `src/components/ui/LanguageBadge.tsx` | Original trigger, flags, menu structure, keyboard support, locale independent |
-| Use Case Tags | Original CSS + data adapter | apcoweb `AudienceSection.css` | Token colors and gap / typography |
-| Pricing Card | Source port | apcoweb `PricingSection.tsx/css`, `content/site.ts` | Actual PLUS plan data, 384px source minimum, 32px gap, billing note and CTA; gallery never squashes source geometry |
-| Modal Dialog | Locale-free port | apcoweb `src/components/ui/Modal.tsx`, `site.css` | Source native dialog, opening/closing WAAPI, scroll/focus handling and keyboard cancel |
+| Original brand assets, website controls and decorative visuals | [Apco-components-lib](https://github.com/IMONsergey/Apco-components-lib) | `4f3769b4be2ab7eeecb8f8dc4b5b2aa84360e665` · 9 October 2026 | Existing local components, tokens and assets retained; their public interfaces and usage documentation are extended. |
+| Current website product and API excerpts | [APCOCLEAR2](https://github.com/IMONsergey/APCOCLEAR2/tree/92cb513b50f209d991ea5c7c50591fbbe263db7e) | `92cb513b50f209d991ea5c7c50591fbbe263db7e` · 25 October 2026 | Current React markup, scoped styles, SVG artwork and native playback ported into the library. |
+| SaaS behavior and component conventions | [Assaasdev](https://github.com/IMONsergey/Assaasdev/tree/7cb2bcfef00acf17cd02f3110fa8cdd1108861e2) | `7cb2bcfef00acf17cd02f3110fa8cdd1108861e2` · 25 October 2026 | Standalone, locally interactive teaching examples. They demonstrate interface composition and state handling; they are not a copy of the application backend. |
 
-## Fidelity rules
+The linked source revisions define the comparison baseline. Updating either product does not automatically update this library.
 
-1. **Keep production CSS authoritative.** `src/styles/site-fidelity.css` contains extracted source rules for language/navigation, plan pricing and modals; preview-only layout constraints use separately named `.lib-preview--*` wrappers.
-2. **Do not compress product components to fit thumbnail cards.** Grow the gallery preview or use a scroll container instead. Avoid `max-height:100%` on canonical cards and never set a blanket `transform:scale(...)`.
-3. **Do not invent published content.** The source `PLUS` plan costs **$40 monthly**, includes **25 000 credits / 1 user**, and the CTA says **View Plus**. This contract is derived from current `src/content/site.ts`; the standalone plan data is explicitly versioned in `src/content/site-plans.ts`.
-4. **Published theme semantics must be reused.** Do not apply the light `#e1e4e7` hover value on a dark surface or leave white button text on a light background.
-5. **Port behavior, not only appearance.** Language menus require flags, disabled entries, keyboard behavior, right alignment and focus. Navigation requires anchors, keyboard focus and Escape. Modal uses the source focus-management logic.
-6. **Gallery effects remain gallery concerns.** Visibility unmounting, card dimensions, preview backgrounds and source links must never modify the semantics of the component itself.
-7. **Tests target source invariants.** `npm run test:ux` covers light/dark, controls, layout bounding boxes, keyboard handling, modal lifecycle, navigation and smaller screens. `npm run test:design-system` validates token parity and icon sprite completeness.
+## Component mapping
 
-**Known boundary:** The six standalone product motion demonstrations use the published GSAP engines but intentionally do not reproduce backend interactions; a visual demo is not a functional search product. The UI wrappers above are portable extractions rather than claims of fully independent production applications.
+| Library area | Local source | Notes |
+| --- | --- | --- |
+| Brand assets | `public/assets/brand/` | Existing wordmarks and symbols; light and dark variants remain separate assets. |
+| Marketing colors and typography | `src/tokens/apcosys.tokens.json`, `src/styles/tokens.css`, `src/styles/theme-page.css` | 17 semantic color roles. Public JSON must match source JSON. The font filenames identify their language coverage. |
+| Website controls | `src/components/ui/`, `src/components/system/` | Buttons, billing switch, modal, disclosure, locale selector and pricing card. Callbacks and navigation are provided by the consuming application. |
+| Current website product excerpts | `src/visuals/product/ProductScene.tsx`, `src/visuals/application/` | Five public scene IDs remain stable: query, results, host, evidence and suggestions. The suggestions ID now presents refinement of a query. |
+| Current website API excerpt | `src/visuals/api/ApiScene.tsx`, `src/visuals/application/ApplicationApiScene.tsx` | Account API key, example credit balances and plan limits. Replaces the obsolete datasets/request illustration. |
+| Decorative visuals | `src/visuals/dots/`, `flow/`, `globe/`, `shapes/`, `waves/`, `uploads/` | Existing visual engines retained. Decorative illustrations are not network data or product capabilities. |
+| SaaS primitives and patterns | `src/saas/` | Self-contained examples using local demonstration state and reserved/example identifiers. Source references and dependencies accompany the examples. |
+| Icon catalog | `src/components/ui/Icon.tsx`, `src/components/system/LibraryIcon.tsx`, `scripts/generate-icons.mjs` | Native icons plus locally generated Feather and Phosphor sprites. Preserve third-party notices. |
+
+## Adapters in the current scenes
+
+The current marketing source uses application-level translation, asset and pricing helpers. The library replaces those dependencies with small local adapters:
+
+- `sceneContent.ts` supplies English scene copy and bundled paths for four source SVG assets. Selecting a language in the locale-control preview does not translate the documentation or every scene.
+- `site-plans.ts` and `pricing.ts` provide the shared plan amounts and API rate text.
+- CSS defines the original scene's spacing and type tokens within `.application-scene`; preview themes are scoped with `data-tone`.
+- The native playback clock pauses off-screen, in a hidden tab, on explicit pause and for reduced-motion preferences. Cleanup cancels animation frames and observers.
+- The surrounding React wrappers keep the established `ProductScene` and `ApiScene` import paths. Both accept `paused`; `ProductScene` retains `scene`.
+
+The obsolete GSAP web-component files are removed. Current product excerpts render readable HTML without loading those engines and do not make API requests.
+
+## Pricing and locale contract
+
+| Plan | Monthly billing | Annual monthly equivalent | Annual total |
+| --- | ---: | ---: | ---: |
+| Free | $0 | $0 | $0 |
+| Plus | $50 | $40 | $480 |
+| Expert | $300 | $240 | $2,880 |
+| Business | $900 | $720 | $8,640 |
+
+Annual billing applies the 20% discount once to the monthly list price. The previous `$40 / month` Plus value was an annual equivalent and must not be used as the monthly input to the pricing function.
+
+The locale control demonstrates EN, RU and ZH selection, includes their flags and supports keyboard navigation. A consuming application must connect the selected locale to its own translations and routes.
+
+## Product boundaries
+
+- A preview is not evidence that an API operation exists or has been integrated.
+- Unknown totals must stay unknown. Numbered total-page pagination is appropriate only when a source supplies a total; next/previous behavior uses the source's continuation signal.
+- Account API keys in examples are masked or explicitly fake. Copying a sample does not provision a credential.
+- Demo selection of a plan does not create an order or charge a payment method.
+- Scanner scheduling, credit accounting, authorization and organization roles are backend contracts. Confirm the relevant application's API behavior before integration.
+- A CVE association is context, not confirmation that a host is exploitable.
+
+## Verification
+
+Run the maintained checks from the repository root:
+
+```sh
+npm ci
+npm run build
+npm run test:design-system
+npm run test:ux
+```
+
+The design-system check validates token parity, SVG sprite counts and brand asset presence. The browser suite verifies interaction and layout behavior. Integration into another application still requires checking its global styles, asset paths, routing and real API responses.

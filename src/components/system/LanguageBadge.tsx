@@ -2,12 +2,12 @@ import { useId, useRef, type KeyboardEvent } from 'react';
 import { Icon } from '../ui/Icon';
 
 const languages = [
-  { value: 'en', label: 'English', disabled: false },
-  { value: 'ru', label: '\u0420\u0443\u0441\u0441\u043a\u0438\u0439', disabled: true },
-  { value: 'zh', label: '\u4e2d\u6587', disabled: true },
+  { value: 'en', label: 'English' },
+  { value: 'ru', label: '\u0420\u0443\u0441\u0441\u043a\u0438\u0439' },
+  { value: 'zh', label: '\u4e2d\u6587' },
 ] as const;
 
-type LanguageCode = (typeof languages)[number]['value'];
+export type LanguageCode = (typeof languages)[number]['value'];
 
 function focusInPlace(node?: HTMLElement) {
   if (!node) return;
@@ -54,6 +54,7 @@ function LanguageFlag({ locale }: { locale: LanguageCode }) {
               fill="#ffde00"
               d="m6.2 4.1.9 2.1 2.3.2-1.8 1.5.6 2.2-2-1.2-2 1.2.6-2.2-1.8-1.5 2.3-.2z"
             />
+            <path fill="#ffde00" d="m11.1 3.3.3.7.8.1-.6.5.2.8-.7-.4-.7.4.2-.8-.6-.5.8-.1zM13.2 5.4l.3.7.8.1-.6.5.2.8-.7-.4-.7.4.2-.8-.6-.5.8-.1zM13.2 8.3l.3.7.8.1-.6.5.2.8-.7-.4-.7.4.2-.8-.6-.5.8-.1zM11.1 10.5l.3.7.8.1-.6.5.2.8-.7-.4-.7.4.2-.8-.6-.5.8-.1z" />
           </>
         )}
       </g>
@@ -64,9 +65,13 @@ function LanguageFlag({ locale }: { locale: LanguageCode }) {
 export function LanguageBadge({
   open,
   onOpenChange,
+  value = 'en',
+  onChange,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  value?: LanguageCode;
+  onChange?: (value: LanguageCode) => void;
 }) {
   const id = useId();
   const panelId = id + '-languages';
@@ -77,18 +82,16 @@ export function LanguageBadge({
     onOpenChange(false);
     focusInPlace(trigger.current ?? undefined);
   };
-  const focusEnglish = () => {
+  const focusOption = (index?: number) => {
     requestAnimationFrame(() =>
       focusInPlace(
-        panel.current?.querySelector<HTMLButtonElement>('button:not(:disabled)') ?? undefined,
+        panel.current?.querySelectorAll<HTMLButtonElement>('button')[index ?? languages.findIndex(language => language.value === value)],
       ),
     );
   };
-  const openMenu = (fromKeyboard = false) => {
+  const openMenu = (fromKeyboard = false, index?: number) => {
     onOpenChange(true);
-    // Pointer activation should not paint a keyboard focus ring on English.
-    // Keyboard and assistive-technology activation still enter the menu.
-    if (fromKeyboard) focusEnglish();
+    if (fromKeyboard) focusOption(index);
   };
   const onMenuKey = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Escape') {
@@ -97,7 +100,11 @@ export function LanguageBadge({
       close();
     } else if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
       event.preventDefault();
-      focusEnglish();
+      const buttons = Array.from(panel.current?.querySelectorAll<HTMLButtonElement>('button') ?? []);
+      const current = buttons.findIndex(button => button === document.activeElement);
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? languages.length - 1 :
+        (current + (event.key === 'ArrowUp' ? -1 : 1) + languages.length) % languages.length;
+      focusOption(next);
     }
   };
 
@@ -113,7 +120,7 @@ export function LanguageBadge({
         type="button"
         className="language"
         data-language-selector=""
-        aria-label="EN — Language"
+        aria-label={value.toUpperCase() + ' — Language'}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={panelId}
@@ -128,15 +135,15 @@ export function LanguageBadge({
         onKeyDown={(event) => {
           if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
             event.preventDefault();
-            openMenu(true);
+            openMenu(true, event.key === 'End' || event.key === 'ArrowUp' ? languages.length - 1 : 0);
           } else if (event.key === 'Tab' && open) {
             onOpenChange(false);
           }
         }}
       >
-        <LanguageFlag locale="en" />
+        <LanguageFlag locale={value} />
         <span className="locale-text" lang="en">
-          EN
+          {value.toUpperCase()}
         </span>
         <Icon name="chevron" />
       </button>
@@ -157,23 +164,17 @@ export function LanguageBadge({
             key={language.value}
             type="button"
             role="menuitemradio"
-            aria-checked={language.value === 'en'}
-            aria-disabled={language.disabled || undefined}
-            disabled={language.disabled}
-            tabIndex={open && !language.disabled ? 0 : -1}
+            aria-checked={language.value === value}
+            tabIndex={open ? 0 : -1}
             lang={language.value === 'zh' ? 'zh-Hans' : language.value}
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => {
-              if (!language.disabled) close();
+              onChange?.(language.value);
+              close();
             }}
           >
             <LanguageFlag locale={language.value} />
             <span>{language.label}</span>
-            {language.disabled && (
-              <span className="language-soon" aria-hidden="true">
-                SOON
-              </span>
-            )}
           </button>
         ))}
       </div>

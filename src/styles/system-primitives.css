@@ -27,7 +27,7 @@
   --ds-space-25: 100px;
   --ds-space-32: 128px;
   --ds-space-40: 160px;
-  --ds-grid-max: 1760px;
+  --ds-grid-max: var(--layout-max);
   --ds-ease-standard: var(--ease);
   --ds-duration-fast: 160ms;
   --ds-duration-standard: 220ms;

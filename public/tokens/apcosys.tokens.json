@@ -1,11 +1,11 @@
 {
-  "version": "1.0.0",
+  "version": "2.1.0",
   "name": "APCOSYS Design Tokens",
   "verifiedAgainst": "IMONsergey/apcoweb/main",
   "sources": {
     "colors": "src/styles/tokens.css + src/styles/theme.css",
     "typography": "src/styles/tokens.css + src/styles/site.css",
-    "layout": "src/styles/tokens.css + src/styles/interface-layout.css",
+    "layout": "APCOCLEAR2/src/styles/tokens.css (1440px content rail; gutters and density rules)",
     "spacing": "normalized from production values"
   },
   "colors": {
@@ -130,7 +130,21 @@
       "weights": [
         400,
         500
+      ],
+      "cyrillicAssets": [
+        "/fonts/ibm-plex-mono-cyrillic-400.woff2",
+        "/fonts/ibm-plex-mono-cyrillic-500.woff2"
       ]
+    },
+    "russian": {
+      "family": "Onest",
+      "css": "html[lang='ru'] --font-sans",
+      "assets": [
+        "/fonts/onest-latin.woff2",
+        "/fonts/onest-cyrillic.woff2"
+      ],
+      "weights": "100–900",
+      "source": "APCOCLEAR2/src/styles/russian-type.css"
     }
   },
   "typography": [
@@ -193,7 +207,7 @@
     "navigationPanel": "12px"
   },
   "layout": {
-    "maxWidth": "1760px",
+    "maxWidth": "1440px",
     "baseGutter": "clamp(32px, calc(4vw - 8px), 40px)",
     "desktopWideGutter": "clamp(48px, calc(10vw - 112px), 80px) at 1600px+",
     "mobileGutter": "24px at <=599px; 20px at <=375px; 16px at <=340px",
@@ -278,5 +292,21 @@
     ],
     "defaultColor": "currentColor",
     "minTouchTarget": "44px (library recommendation)"
+  },
+  "alignment": {
+    "date": "2026-10-25",
+    "repository": "IMONsergey/APCOCLEAR2",
+    "verified": [
+      "colors (17 semantic roles, light and dark)",
+      "layout.maxWidth",
+      "control and panel radii",
+      "Instrument Sans / Onest / IBM Plex Mono families"
+    ],
+    "sources": [
+      "src/styles/tokens.css",
+      "src/styles/theme.css",
+      "src/styles/type-scale.css",
+      "src/styles/russian-type.css"
+    ]
   }
 }
